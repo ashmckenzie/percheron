@@ -1,7 +1,8 @@
 # Percheron
 
-Organise your Docker containers with muscle and intelligence.
+[![Gem Version](https://badge.fury.io/rb/percheron.svg)](http://badge.fury.io/rb/percheron)
 
+Organise your Docker containers with muscle and intelligence.
 
 ## Installation
 
