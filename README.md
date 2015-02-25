@@ -1,6 +1,7 @@
 # Percheron
 
 [![Gem Version](https://badge.fury.io/rb/percheron.svg)](http://badge.fury.io/rb/percheron)
+[![Travis CI](https://travis-ci.org/ashmckenzie/percheron.svg?branch=wip)](https://travis-ci.org/ashmckenzie/percheron)
 
 Organise your Docker containers with muscle and intelligence.
 
