@@ -11,7 +11,7 @@ describe Percheron::Validators::ContainerConfig do
     context 'when container config is invalid' do
       let(:config) { {} }
 
-      it 'is false' do
+      it 'raises exception' do
         expect{ subject.valid? }.to raise_error(Percheron::Errors::ContainerConfigInvalid, '["Name is invalid", "Version is invalid", "Dockerfile is invalid"]')
       end
     end

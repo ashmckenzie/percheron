@@ -10,7 +10,7 @@ describe Percheron::Validators::Config do
     context 'when config is invalid' do
       let(:config_file) { Pathname.new('./spec/fixtures/missing.yml') }
 
-      it 'is false' do
+      it 'raises exception' do
         expect{ subject.valid? }.to raise_error(Percheron::Errors::ConfigFileInvalid, '["Config file does not exist"]')
       end
     end
