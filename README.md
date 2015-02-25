@@ -1,7 +1,7 @@
 # Percheron
 
 [![Gem Version](https://badge.fury.io/rb/percheron.svg)](http://badge.fury.io/rb/percheron)
-[![Travis CI](https://travis-ci.org/ashmckenzie/percheron.svg?branch=wip)](https://travis-ci.org/ashmckenzie/percheron)
+[![Travis CI](https://travis-ci.org/ashmckenzie/percheron.svg)](https://travis-ci.org/ashmckenzie/percheron)
 [![Code Climate](https://codeclimate.com/github/ashmckenzie/percheron/badges/gpa.svg)](https://codeclimate.com/github/ashmckenzie/percheron)
 [![Test Coverage](https://codeclimate.com/github/ashmckenzie/percheron/badges/coverage.svg)](https://codeclimate.com/github/ashmckenzie/percheron)
 
