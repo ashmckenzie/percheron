@@ -38,4 +38,14 @@ describe Percheron::Config do
     end
   end
 
+  describe '#stacks' do
+    it 'returns a hash of Stack objects' do
+      expect(subject.stacks).to be_an(Hash)
+    end
+
+    it "has one Stack called debian_jessie'" do
+      expect(subject.stacks['debian_jessie']).to be_a(Percheron::Stack)
+    end
+  end
+
 end
