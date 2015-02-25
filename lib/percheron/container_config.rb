@@ -1,6 +1,3 @@
-require 'forwardable'
-require 'pathname'
-
 module Percheron
   class ContainerConfig
 

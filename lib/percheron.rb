@@ -1,5 +1,7 @@
 require 'docker'
 require 'hashie'
+require 'forwardable'
+require 'pathname'
 
 require 'percheron/version'
 require 'percheron/config'
