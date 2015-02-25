@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'logger'
+require 'percheron'
+require 'percheron/cli'
+
+$logger = Logger.new(STDOUT)
+
+logger_level = Logger::ERROR
+
+if ENV['VERBOSE'] == 'true'
+  logger_level = Logger::INFO
+end
+
+if ENV['DEBUG'] == 'true'
+  require 'pry-byebug'
+  logger_level = Logger::DEBUG
+end
+
+$logger.level = logger_level
+
+Percheron::CLI::MainCommand.run
