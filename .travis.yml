@@ -3,5 +3,6 @@ rvm:
   - 2.2
 branches:
   only:
+    - master
     - wip
 script: bundle exec rake spec
