@@ -1,0 +1,13 @@
+---
+docker:
+  host: "https://192.168.59.103:2376"
+  timeout: 10
+
+stacks:
+  -
+    name: debian_jessie
+    containers:
+      -
+        name: debian
+        version: jessie
+        dockerfile: ./Dockerfile
