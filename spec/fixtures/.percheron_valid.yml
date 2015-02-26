@@ -9,5 +9,5 @@ stacks:
     container_configs:
       -
         name: debian
-        version: jessie
+        version: 1.0
         dockerfile: ./Dockerfile

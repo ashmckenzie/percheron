@@ -33,7 +33,7 @@ describe Percheron::Config do
     end
 
      it 'has one stack' do
-      data = { stacks: [ { name: "debian_jessie", container_configs: [ { name: "debian", version: "jessie", dockerfile: "./Dockerfile" } ] } ] }
+      data = { stacks: [ { name: "debian_jessie", container_configs: [ { name: "debian", version: 1.0, dockerfile: "./Dockerfile" } ] } ] }
       expect(subject.settings).to include(data)
     end
   end

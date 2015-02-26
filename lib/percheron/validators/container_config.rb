@@ -29,11 +29,11 @@ module Percheron
         end
 
         def validate_name
-          'Name is invalid' if container_config.name.nil? || !container_config.name.match(/[\w\d]{3,}/)
+          'Name is invalid' if container_config.name.nil? || !container_config.name.to_s.match(/[\w\d]{3,}/)
         end
 
         def validate_version
-          'Version is invalid' if container_config.version.nil? || !container_config.version.match(/[\w\d]{1,}/)
+          'Version is invalid' if container_config.version.nil? || !container_config.version.to_s.match(/[\w\d]{1,}/)
         end
 
         def validate_dockerfile
