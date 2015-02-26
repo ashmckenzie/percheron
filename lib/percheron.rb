@@ -3,6 +3,7 @@ require 'hashie'
 require 'forwardable'
 require 'pathname'
 
+require 'percheron/core_extensions'
 require 'percheron/version'
 require 'percheron/config'
 require 'percheron/errors'
