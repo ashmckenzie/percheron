@@ -3,7 +3,7 @@ module Percheron
 
     extend Forwardable
 
-    def_delegators :stack_config, :name
+    def_delegators :stack_config, :name, :description
 
     def initialize(config, stack_config)
       @config = config
