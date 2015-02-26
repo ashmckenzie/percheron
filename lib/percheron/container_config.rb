@@ -1,3 +1,5 @@
+require 'docker/null_container'
+
 module Percheron
   class ContainerConfig
 
@@ -16,7 +18,7 @@ module Percheron
     end
 
     def id
-      info.id[0...12]
+      exists? ? info.id[0...12] : 'N/A'
     end
 
     def image
@@ -28,8 +30,7 @@ module Percheron
     end
 
     def running?
-      current_info = info
-      current_info && current_info.State.Running
+      exists? && info.State.Running
     end
 
     def exposed_ports
@@ -53,8 +54,14 @@ module Percheron
 
       attr_reader :config, :container_config
 
+      def exists?
+        !info.empty?
+      end
+
       def docker_container
         Docker::Container.get(name)
+      rescue Docker::Error::NotFoundError
+        Docker::NullContainer.new
       end
 
       def info

@@ -27,68 +27,91 @@ describe Percheron::ContainerConfig do
 
   subject { described_class.new(config, container_config) }
 
-  before do
-    allow(Docker::Container).to receive(:get).with('container1').and_return(docker_container)
-  end
+  context 'when the Docker Container exists' do
 
-  describe '#id' do
-    it 'is 12 characters in length' do
-      expect(subject.id.length).to eql(12)
+    before do
+      allow(Docker::Container).to receive(:get).with('container1').and_raise(Docker::Error::NotFoundError)
     end
 
-    it 'is valid' do
-      expect(subject.id).to eql('123456789012')
-    end
-  end
-
-  describe '#image' do
-    it 'is a combination of name and version' do
-      expect(subject.image).to eql('container1:1.0')
-    end
-  end
-
-  describe '#exposed_ports' do
-    it 'returns a hash of exposed ports' do
-      expect(subject.exposed_ports).to eql({ '9999' => {} })
-    end
-  end
-
-  describe '#links' do
-    it 'returns an array of dependant container names' do
-      expect(subject.links).to eql([ 'dependant_container1:dependant_container1' ])
-    end
-  end
-
-  describe '#valid?' do
-    context 'when config is invalid' do
-      let(:container_config) { {} }
-
-      it 'raises exception' do
-        expect{ subject.valid? }.to raise_error(Percheron::Errors::ContainerConfigInvalid)
+    describe '#id' do
+      it 'is N/A' do
+        expect(subject.id).to eql('N/A')
       end
     end
 
-    context 'when config is valid' do
-      it 'is true' do
-        expect(subject.valid?).to be(true)
-      end
-    end
-  end
-
-  describe '#running?' do
-    context 'when off' do
-      let(:extra_data) { { 'State' => { 'Running' => false } } }
-
+    describe '#running?' do
       it 'is false' do
         expect(subject.running?).to be(false)
       end
     end
 
-    context 'when on' do
-      let(:extra_data) { { 'State' => { 'Running' => true } } }
+  end
 
-      it 'is true' do
-        expect(subject.running?).to be(true)
+  context 'when the Docker Container exists' do
+
+    before do
+      allow(Docker::Container).to receive(:get).with('container1').and_return(docker_container)
+    end
+
+    describe '#id' do
+      it 'is 12 characters in length' do
+        expect(subject.id.length).to eql(12)
+      end
+
+      it 'is valid' do
+        expect(subject.id).to eql('123456789012')
+      end
+    end
+
+    describe '#image' do
+      it 'is a combination of name and version' do
+        expect(subject.image).to eql('container1:1.0')
+      end
+    end
+
+    describe '#exposed_ports' do
+      it 'returns a hash of exposed ports' do
+        expect(subject.exposed_ports).to eql({ '9999' => {} })
+      end
+    end
+
+    describe '#links' do
+      it 'returns an array of dependant container names' do
+        expect(subject.links).to eql([ 'dependant_container1:dependant_container1' ])
+      end
+    end
+
+    describe '#valid?' do
+      context 'when config is invalid' do
+        let(:container_config) { {} }
+
+        it 'raises exception' do
+          expect{ subject.valid? }.to raise_error(Percheron::Errors::ContainerConfigInvalid)
+        end
+      end
+
+      context 'when config is valid' do
+        it 'is true' do
+          expect(subject.valid?).to be(true)
+        end
+      end
+    end
+
+    describe '#running?' do
+      context 'when off' do
+        let(:extra_data) { { 'State' => { 'Running' => false } } }
+
+        it 'is false' do
+          expect(subject.running?).to be(false)
+        end
+      end
+
+      context 'when on' do
+        let(:extra_data) { { 'State' => { 'Running' => true } } }
+
+        it 'is true' do
+          expect(subject.running?).to be(true)
+        end
       end
     end
   end
