@@ -60,7 +60,7 @@ module Percheron
 
       def docker_container
         Docker::Container.get(name)
-      rescue Docker::Error::NotFoundError
+      rescue Docker::Error::NotFoundError, Excon::Errors::SocketError
         Docker::NullContainer.new
       end
 
