@@ -5,9 +5,7 @@ docker:
 
 stacks:
   -
-    name: debian_jessie
+    name: 1
     containers:
       -
-        name: debian
-        version: jessie
         dockerfile: ./Dockerfile

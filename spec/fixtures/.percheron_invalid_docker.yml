@@ -1,0 +1,7 @@
+---
+stacks:
+  -
+    name: 1
+    containers:
+      -
+        dockerfile: ./Dockerfile
