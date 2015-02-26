@@ -2,11 +2,13 @@ require 'spec_helper'
 
 describe Percheron::ContainerConfig do
 
-  let(:config) do
+  let(:config) { Percheron::Config.new('./spec/fixtures/.percheron_valid.yml') }
+
+  let(:container_config) do
     {
       name: 'container1',
       version: '1.0',
-      dockerfile: './spec/fixtures/Dockerfile',
+      dockerfile: './Dockerfile',
       ports: [ '9999:9999' ],
       dependant_container_names: [ 'dependant_container1' ],
       volumes: [ '/outside/container/path:/inside/container/path' ]
@@ -23,7 +25,7 @@ describe Percheron::ContainerConfig do
     }
   end
 
-  subject { described_class.new(config) }
+  subject { described_class.new(config, container_config) }
 
   before do
     allow(Docker::Container).to receive(:get).with('container1').and_return(docker_container)
@@ -59,10 +61,10 @@ describe Percheron::ContainerConfig do
 
   describe '#valid?' do
     context 'when config is invalid' do
-      let(:config) { {} }
+      let(:container_config) { {} }
 
       it 'raises exception' do
-        expect{ subject.valid? }.to raise_error(Percheron::Errors::ContainerConfigInvalid, '["Name is invalid", "Version is invalid", "Dockerfile is invalid"]')
+        expect{ subject.valid? }.to raise_error(Percheron::Errors::ContainerConfigInvalid)
       end
     end
 

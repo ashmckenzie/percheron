@@ -2,16 +2,16 @@ require 'spec_helper'
 
 describe Percheron::Config do
 
-  let(:config_file) { './spec/fixtures/.percheron.yml' }
+  let(:config_file) { './spec/fixtures/.percheron_valid.yml' }
 
   subject { described_class.new(config_file) }
 
   describe '#valid?' do
     context 'when config file is invalid' do
-      let(:config_file) { './spec/fixtures/missing.yml' }
+      let(:config_file) { './spec/fixtures/.percheron_empty.yml' }
 
       it 'raises exception' do
-        expect{ subject.valid? }.to raise_error(Percheron::Errors::ConfigFileInvalid, '["Config file does not exist"]')
+        expect{ subject.valid? }.to raise_error(Percheron::Errors::ConfigFileInvalid)
       end
     end
 
@@ -33,18 +33,8 @@ describe Percheron::Config do
     end
 
      it 'has one stack' do
-      data = { stacks: [ { name: "debian_jessie", containers: [ { name: "debian", version: "jessie", dockerfile: "./Dockerfile" } ] } ] }
+      data = { stacks: [ { name: "debian_jessie", container_configs: [ { name: "debian", version: "jessie", dockerfile: "./Dockerfile" } ] } ] }
       expect(subject.settings).to include(data)
-    end
-  end
-
-  describe '#stacks' do
-    it 'returns a hash of Stack objects' do
-      expect(subject.stacks).to be_an(Hash)
-    end
-
-    it "has one Stack called debian_jessie'" do
-      expect(subject.stacks['debian_jessie']).to be_a(Percheron::Stack)
     end
   end
 

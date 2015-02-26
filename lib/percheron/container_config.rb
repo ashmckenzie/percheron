@@ -5,12 +5,13 @@ module Percheron
     extend ConfigDelegator
 
     def_delegators :docker_container, :start!, :stop!
-    def_delegators :config, :name, :version
+    def_delegators :container_config, :name, :version
 
-    def_config_item_with_default :config, [], :env, :ports, :volumes, :dependant_container_names
+    def_config_item_with_default :container_config, [], :env, :ports, :volumes, :dependant_container_names
 
-    def initialize(config)
-      @config = Hashie::Mash.new(config)
+    def initialize(config, container_config)
+      @config = config
+      @container_config = Hashie::Mash.new(container_config)
       valid?
     end
 
@@ -23,7 +24,7 @@ module Percheron
     end
 
     def dockerfile
-      config.dockerfile ? Pathname.new(config.dockerfile).expand_path : nil
+      container_config.dockerfile ? Pathname.new(File.expand_path(container_config.dockerfile, config.file_base_path)): nil
     end
 
     def running?
@@ -50,7 +51,7 @@ module Percheron
 
     private
 
-      attr_reader :config
+      attr_reader :config, :container_config
 
       def docker_container
         Docker::Container.get(name)
