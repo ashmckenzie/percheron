@@ -2,6 +2,7 @@ require 'docker'
 require 'hashie'
 require 'forwardable'
 require 'pathname'
+require 'naught'
 
 require 'percheron/core_extensions'
 require 'percheron/version'
