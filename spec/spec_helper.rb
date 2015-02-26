@@ -1,4 +1,5 @@
-require "codeclimate-test-reporter"
+require 'pry-byebug'
+require 'codeclimate-test-reporter'
 CodeClimate::TestReporter.start
 
 require 'simplecov'

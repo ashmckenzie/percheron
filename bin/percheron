@@ -17,6 +17,7 @@ end
 
 if ENV['DEBUG'] == 'true'
   require 'pry-byebug'
+  require 'awesome_print'
   logger_level = Logger::DEBUG
 end
 
