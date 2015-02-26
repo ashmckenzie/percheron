@@ -7,14 +7,10 @@ module Percheron
       end
 
       def valid?
-        messages = []
-        messages << validate_name
-        messages << validate_version
-        messages << validate_dockerfile
-        messages.compact!
+        message = rules.return { |rule| send(rule) }
 
-        unless messages.empty?
-          raise Errors::ContainerConfigInvalid.new(messages)
+        if message
+          raise Errors::ContainerConfigInvalid.new(message)
         else
           true
         end
@@ -23,6 +19,14 @@ module Percheron
       private
 
         attr_reader :container_config
+
+        def rules
+          [
+            :validate_name,
+            :validate_version,
+            :validate_dockerfile
+          ]
+        end
 
         def validate_name
           'Name is invalid' if container_config.name.nil? || !container_config.name.match(/[\w\d]{3,}/)

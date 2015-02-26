@@ -7,12 +7,10 @@ module Percheron
       end
 
       def valid?
-        messages = []
-        messages << validate_config_file_existence
-        messages.compact!
+        message = rules.return { |rule| send(rule) }
 
-        unless messages.empty?
-          raise Errors::ConfigFileInvalid.new(messages)
+        if message
+          raise Errors::ConfigFileInvalid.new(message)
         else
           true
         end
@@ -22,8 +20,28 @@ module Percheron
 
         attr_reader :config_file
 
+        def rules
+          [
+            :validate_config_file_existence,
+            :validate_config_file_not_empty,
+            :validate_config_file_contents
+          ]
+        end
+
+        def config_file_contents
+          @config_file_contents ||= Hashie::Mash.new(YAML.load_file(config_file))
+        end
+
         def validate_config_file_existence
           'Config file does not exist' unless config_file.exist?
+        end
+
+        def validate_config_file_not_empty
+          'Config file is empty' if config_file_contents.empty?
+        end
+
+        def validate_config_file_contents
+          'Config file is invalid' unless config_file_contents.docker
         end
     end
   end

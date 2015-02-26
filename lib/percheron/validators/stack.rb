@@ -7,12 +7,10 @@ module Percheron
       end
 
       def valid?
-        messages = []
-        messages << validate_name
-        messages.compact!
+        message = rules.return { |rule| send(rule) }
 
-        unless messages.empty?
-          raise Errors::StackInvalid.new(messages)
+        if message
+          raise Errors::StackInvalid.new(message)
         else
           true
         end
@@ -22,8 +20,14 @@ module Percheron
 
         attr_reader :stack
 
+        def rules
+          [
+            :validate_name
+          ]
+        end
+
         def validate_name
-          'Name is invalid' if stack.name.nil? || !stack.name.match(/[\w\d]{3,}/)
+          'Name is invalid' if stack.name.nil? || !stack.name.to_s.match(/[\w\d]{3,}/)
         end
 
     end

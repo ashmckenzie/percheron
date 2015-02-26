@@ -2,23 +2,22 @@ require 'spec_helper'
 
 describe Percheron::Validators::Stack do
 
-  let(:config) { {} }
-  let(:stack) { Percheron::Stack.new(Hashie::Mash.new(config)) }
+  let(:config_file_name) { './spec/fixtures/.percheron_valid.yml' }
+  let(:config) { Percheron::Config.new(config_file_name) }
+  let(:stack) { Percheron::Stack.new(config, config.settings.stacks.first) }
 
   subject { described_class.new(stack) }
 
   describe '#valid?' do
     context 'when stack is invalid' do
-      let(:config) { {} }
+      let(:config_file_name) { './spec/fixtures/.percheron_invalid_stacks.yml' }
 
       it 'raises exception' do
-        expect{ subject.valid? }.to raise_error(Percheron::Errors::StackInvalid, '["Name is invalid"]')
+        expect{ subject.valid? }.to raise_error(Percheron::Errors::StackInvalid, 'Name is invalid')
       end
     end
 
     context 'when stack is valid' do
-      let(:config) { { name: 'stack1', containers: [ ] } }
-
       it 'is true' do
         expect(subject.valid?).to be(true)
       end
