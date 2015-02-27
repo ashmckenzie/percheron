@@ -10,6 +10,7 @@ module Percheron
     def initialize(file)
       @file = Pathname.new(file).expand_path
       valid?
+      self
     end
 
     def stacks

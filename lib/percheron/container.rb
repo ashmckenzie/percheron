@@ -13,6 +13,7 @@ module Percheron
       @stack = stack
       @container_name = container_name
       valid?
+      self
     end
 
     def id

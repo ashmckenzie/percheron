@@ -9,6 +9,7 @@ module Percheron
       @config = config
       @stack_name = stack_name
       valid?
+      self
     end
 
     def self.all(config)
