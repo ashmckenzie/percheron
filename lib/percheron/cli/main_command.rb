@@ -1,7 +1,8 @@
 module Percheron
   module CLI
-      subcommand 'list', 'List stacks and containers', ListCommand
     class MainCommand < Clamp::Command
+      subcommand 'list', "List stacks and it's containers", ListCommand
+      subcommand 'start', 'Start a stack', StartCommand
     end
   end
 end
