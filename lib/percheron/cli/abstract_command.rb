@@ -12,7 +12,7 @@ module Percheron
       def config
         @config ||= Percheron::Config.new(config_file)
       rescue Errors::ConfigFileInvalid => e
-        $logger.error "An error has occurred - #{e.message}"
+        $logger.error "An error has occurred while reading your config file - #{e.message}"
       end
     end
   end

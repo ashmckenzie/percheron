@@ -1,7 +1,7 @@
-require 'docker'
 require 'hashie'
 require 'forwardable'
 require 'pathname'
+require 'docker'
 require 'naught'
 
 require 'percheron/core_extensions'
@@ -13,6 +13,7 @@ require 'percheron/formatters'
 require 'percheron/validators'
 require 'percheron/stack'
 require 'percheron/container'
+require 'percheron/docker_connection'
 
 module Percheron
 end

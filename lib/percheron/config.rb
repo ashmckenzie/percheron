@@ -3,6 +3,10 @@ require 'yaml'
 module Percheron
   class Config
 
+    extend Forwardable
+
+    def_delegators :contents, :docker
+
     def initialize(file)
       @file = Pathname.new(file).expand_path
       valid?

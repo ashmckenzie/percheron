@@ -6,7 +6,6 @@ module Percheron
     extend Forwardable
     extend ConfigDelegator
 
-    def_delegators :docker_container, :start!, :stop!
     def_delegators :container, :name, :version
 
     def_config_item_with_default :container, [], :env, :ports, :volumes, :dependant_container_names
@@ -30,10 +29,6 @@ module Percheron
       container.dockerfile ? Pathname.new(File.expand_path(container.dockerfile, config.file_base_path)): nil
     end
 
-    def running?
-      exists? && info.State.Running
-    end
-
     def exposed_ports
       ports.inject({}) do |all, p|
         all[p.split(':')[1]] = {}
@@ -47,6 +42,19 @@ module Percheron
       end
     end
 
+    def start!
+      if exists?
+        docker_container.start!
+      else
+        new_container = create!(create_opts)
+        new_container.start!(start_opts)
+      end
+    end
+
+    def running?
+      exists? && info.State.Running
+    end
+
     def valid?
       Validators::Container.new(self).valid?
     end
@@ -55,6 +63,35 @@ module Percheron
 
       attr_reader :config, :stack, :container_name
 
+      def create!(opts)
+        Docker::Container.create(opts)
+      end
+
+      def create_opts
+        {
+          'name'         => name,
+          'Image'        => image,
+          'Hostname'     => name,
+          'Env'          => env,
+          'ExposedPorts' => exposed_ports,
+          'VolumesFrom'  => volumes
+        }
+      end
+
+      def start_opts
+        opts = ports.inject({}) do |all, p|
+          destination, source = p.split(':')
+          all[source] = [ { 'HostPort' => destination } ]
+          all
+        end
+
+        {
+          'PortBindings' => opts,
+          'Links' => links,
+          'Binds' => binds
+        }
+      end
+
       def exists?
         !info.empty?
       end
@@ -62,7 +99,7 @@ module Percheron
       def docker_container
         Docker::Container.get(name)
       rescue Docker::Error::NotFoundError, Excon::Errors::SocketError
-        Docker::NullContainer.new
+        Docker::NullContainer.new  # FIXME
       end
 
       def info

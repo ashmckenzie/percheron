@@ -20,10 +20,6 @@ module Percheron
       all
     end
 
-    def valid?
-      Validators::Stack.new(self).valid?
-    end
-
     def container_configs
       stack_config.containers.inject({}) do |all, container|
         all[container.name] = container unless all[container.name]
@@ -38,6 +34,16 @@ module Percheron
         containers[container.name] = container
       end
       containers
+    end
+
+    def start!
+      containers.each do |container_name, container|
+        container.start!
+      end
+    end
+
+    def valid?
+      Validators::Stack.new(self).valid?
     end
 
     private
