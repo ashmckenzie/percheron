@@ -51,6 +51,10 @@ module Percheron
       end
     end
 
+    def stop!
+      docker_container.stop! if running?
+    end
+
     def running?
       exists? && info.State.Running
     end
@@ -70,12 +74,12 @@ module Percheron
 
       def create_opts
         {
-          'name'         => name,
-          'Image'        => image,
-          'Hostname'     => name,
-          'Env'          => env,
-          'ExposedPorts' => exposed_ports,
-          'VolumesFrom'  => volumes
+          'name'          => name,
+          'Image'         => image,
+          'Hostname'      => name,
+          'Env'           => env,
+          'ExposedPorts'  => exposed_ports,
+          'VolumesFrom'   => volumes
         }
       end
 
@@ -87,8 +91,8 @@ module Percheron
         end
 
         {
-          'PortBindings' => opts,
-          'Links' => links,
+          'PortBindings'  => opts,
+          'Links'         => links,
           'Binds'         => volumes
         }
       end
