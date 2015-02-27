@@ -5,18 +5,19 @@ module Percheron
 
     def_delegators :stack_config, :name, :description
 
-    def initialize(config, stack_config)
+    def initialize(config, stack_name)
       @config = config
-      @stack_config = stack_config
+      @stack_name = stack_name
       valid?
     end
 
     def self.all(config)
-      config.settings.stacks.inject({}) do |all, stack_config|
-        stack = new(config, stack_config)
-        all[stack.name] = stack unless all[stack.name]
-        all
+      all = {}
+      config.stacks.each do |stack_name, _|
+        stack = new(config, stack_name)
+        all[stack.name] = stack
       end
+      all
     end
 
     def valid?
@@ -33,6 +34,10 @@ module Percheron
 
     private
 
-      attr_reader :config, :stack_config
+      attr_reader :config, :stack_name
+
+      def stack_config
+        @stack_config ||= config.stacks[stack_name] || Hashie::Mash.new({})
+      end
   end
 end

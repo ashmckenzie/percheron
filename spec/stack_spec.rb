@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Percheron::Stack do
 
   let(:config) { Percheron::Config.new('./spec/fixtures/.percheron_valid.yml') }
-  let(:stack_config) { config.settings.stacks.first }
+  let(:stack_name) { 'debian_jessie' }
 
-  subject { described_class.new(config, stack_config) }
+  subject { described_class.new(config, stack_name) }
 
   describe '.all' do
     it 'returns an Hash of Stacks' do
@@ -14,15 +14,15 @@ describe Percheron::Stack do
   end
 
   describe '#valid?' do
-    context 'when config is invalid' do
-      let(:stack_config) { Hashie::Mash.new({}) }
+    context 'when stack name is invalid' do
+      let(:stack_name) { 'unknown' }
 
       it 'raises exception' do
         expect{ subject.valid? }.to raise_error(Percheron::Errors::StackInvalid)
       end
     end
 
-    context 'when config is valid' do
+    context 'when stack name is valid' do
       it 'is true' do
         expect(subject.valid?).to be(true)
       end
