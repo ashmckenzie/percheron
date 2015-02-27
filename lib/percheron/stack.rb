@@ -13,7 +13,7 @@ module Percheron
 
     def self.all(config)
       all = {}
-      config.stack_configs.each do |stack_name, _|
+      config.stacks.each do |stack_name, _|
         stack = new(config, stack_name)
         all[stack.name] = stack
       end
@@ -46,7 +46,7 @@ module Percheron
       attr_reader :config, :stack_name
 
       def stack_config
-        @stack_config ||= config.stack_configs[stack_name] || Hashie::Mash.new({})
+        @stack_config ||= config.stacks[stack_name] || Hashie::Mash.new({})
       end
   end
 end

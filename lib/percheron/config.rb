@@ -8,8 +8,8 @@ module Percheron
       valid?
     end
 
-    def stack_configs
-      contents.stack_configs.inject({}) do |all, stack_config|
+    def stacks
+      contents.stacks.inject({}) do |all, stack_config|
         all[stack_config.name] = stack_config unless all[stack_config.name]
         all
       end

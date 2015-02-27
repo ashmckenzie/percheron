@@ -8,11 +8,11 @@ describe Percheron::Config do
 
   describe '#stacks' do
     it 'returns a Hash of stack configs' do
-      expect(subject.stack_configs).to be_a(Hash)
+      expect(subject.stacks).to be_a(Hash)
     end
 
     it 'has one stack config' do
-      expect(subject.stack_configs.count).to eql(1)
+      expect(subject.stacks.count).to eql(1)
     end
   end
 
