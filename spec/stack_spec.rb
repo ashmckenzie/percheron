@@ -22,8 +22,24 @@ describe Percheron::Stack do
   end
 
   describe '#container_configs' do
-    it 'returns a Hash of ContainerConfigs' do
+    it 'returns a Hash of Containers' do
       expect(subject.container_configs).to be_a(Hash)
+    end
+
+    it 'is as Hash that contains two Hashie::Mashes' do
+      expect(subject.container_configs.keys.count).to eql(2)
+      expect(subject.container_configs.values.collect(&:class).uniq.first).to eql(Hashie::Mash)
+    end
+  end
+
+  describe '#containers' do
+    it 'returns a Hash of Containers' do
+      expect(subject.containers).to be_a(Hash)
+    end
+
+    it 'is as Hash that contains two Percheron::Containers' do
+      expect(subject.containers.keys.count).to eql(2)
+      expect(subject.containers.values.collect(&:class).uniq.first).to eql(Percheron::Container)
     end
   end
 

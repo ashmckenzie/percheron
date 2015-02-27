@@ -24,21 +24,20 @@ module Percheron
       Validators::Stack.new(self).valid?
     end
 
-    # FIXME
-    def container_configs_configs
-      stack_config.container_configs.inject({}) do |all, container_config|
-        all[container_config.name] = container_config unless all[container_config.name]
+    def container_configs
+      stack_config.containers.inject({}) do |all, container|
+        all[container.name] = container unless all[container.name]
         all
       end
     end
 
-    def container_configs
-      container_configs = {}
-      stack_config.container_configs.each do |container_config|
-        container_config = ContainerConfig.new(config, self, container_config.name)
-        container_configs[container_config.name] = container_config
+    def containers
+      containers = {}
+      stack_config.containers.each do |container|
+        container = Container.new(config, self, container.name)
+        containers[container.name] = container
       end
-      container_configs
+      containers
     end
 
     private

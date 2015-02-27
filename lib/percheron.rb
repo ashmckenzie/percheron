@@ -12,7 +12,7 @@ require 'percheron/config_delegator'
 require 'percheron/formatters'
 require 'percheron/validators'
 require 'percheron/stack'
-require 'percheron/container_config'
+require 'percheron/container'
 
 module Percheron
 end

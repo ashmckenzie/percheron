@@ -29,12 +29,12 @@ module Percheron
           end
 
           def rows
-            stack.container_configs.map do |container_name, container_config|
+            stack.containers.map do |container_name, container|
               [
                 container_name,
-                container_config.id,
-                container_config.version,
-                container_config.running?
+                container.id,
+                container.version,
+                container.running?
               ]
             end
           end

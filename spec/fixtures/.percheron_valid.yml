@@ -6,7 +6,7 @@ docker:
 stacks:
   -
     name: debian_jessie
-    container_configs:
+    containers:
       -
         name: dependant_debian
         version: 1.1

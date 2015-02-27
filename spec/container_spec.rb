@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Percheron::ContainerConfig do
+describe Percheron::Container do
 
   let(:extra_data) { {} }
   let(:docker_container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
@@ -14,9 +14,9 @@ describe Percheron::ContainerConfig do
 
   let(:config) { Percheron::Config.new('./spec/fixtures/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
-  let(:container_config_name) { 'debian' }
+  let(:container_name) { 'debian' }
 
-  subject { described_class.new(config, stack, container_config_name) }
+  subject { described_class.new(config, stack, container_name) }
 
   context 'when the Docker Container does not exist' do
 

@@ -1,20 +1,20 @@
 require 'docker/null_container'
 
 module Percheron
-  class ContainerConfig
+  class Container
 
     extend Forwardable
     extend ConfigDelegator
 
     def_delegators :docker_container, :start!, :stop!
-    def_delegators :container_config, :name, :version
+    def_delegators :container, :name, :version
 
-    def_config_item_with_default :container_config, [], :env, :ports, :volumes, :dependant_container_names
+    def_config_item_with_default :container, [], :env, :ports, :volumes, :dependant_container_names
 
-    def initialize(config, stack, container_config_name)
+    def initialize(config, stack, container_name)
       @config = config
       @stack = stack
-      @container_config_name = container_config_name
+      @container_name = container_name
       valid?
     end
 
@@ -27,7 +27,7 @@ module Percheron
     end
 
     def dockerfile
-      container_config.dockerfile ? Pathname.new(File.expand_path(container_config.dockerfile, config.file_base_path)): nil
+      container.dockerfile ? Pathname.new(File.expand_path(container.dockerfile, config.file_base_path)): nil
     end
 
     def running?
@@ -48,12 +48,12 @@ module Percheron
     end
 
     def valid?
-      Validators::ContainerConfig.new(self).valid?
+      Validators::Container.new(self).valid?
     end
 
     private
 
-      attr_reader :config, :stack, :container_config_name
+      attr_reader :config, :stack, :container_name
 
       def exists?
         !info.empty?
@@ -69,8 +69,8 @@ module Percheron
         Hashie::Mash.new(docker_container.info)
       end
 
-      def container_config
-        @container_config ||= stack.container_configs_configs[container_config_name] || Hashie::Mash.new({})
+      def container
+        @container ||= stack.container_configs[container_name] || Hashie::Mash.new({})
       end
 
   end
