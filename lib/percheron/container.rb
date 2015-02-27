@@ -46,7 +46,7 @@ module Percheron
       if exists?
         docker_container.start!
       else
-        new_container = create!(create_opts)
+        new_container = create!
         new_container.start!(start_opts)
       end
     end
@@ -63,8 +63,9 @@ module Percheron
 
       attr_reader :config, :stack, :container_name
 
-      def create!(opts)
-        Docker::Container.create(opts)
+      def create!
+        build! unless image_exists?
+        Docker::Container.create(create_opts)
       end
 
       def create_opts
@@ -88,12 +89,32 @@ module Percheron
         {
           'PortBindings' => opts,
           'Links' => links,
-          'Binds' => binds
+          'Binds'         => volumes
+        }
+      end
+
+      def build!(nocache: false)
+        base_dir = dockerfile.dirname.to_s
+        Docker::Image.build_from_dir(base_dir, build_opts(nocache: nocache)) do |out|
+          $logger.debug 'Container#build! out=[%s]' % [ out.strip ]
+        end
+      end
+
+      def build_opts(nocache: false)
+        {
+          'dockerfile'  => dockerfile.basename.to_s,
+          't'           => image,
+          'forcerm'     => true,
+          'nocache'     => nocache
         }
       end
 
       def exists?
         !info.empty?
+      end
+
+      def image_exists?
+        Docker::Image.exist?(image)
       end
 
       def docker_container

@@ -37,8 +37,7 @@ module Percheron
     end
 
     def start!
-      containers.each do |container_name, container|
-        container.start!
+      exec_on_containers { |container| container.start! }
       end
     end
 
@@ -52,6 +51,12 @@ module Percheron
 
       def stack_config
         @stack_config ||= config.stacks[stack_name] || Hashie::Mash.new({})
+      end
+
+      def exec_on_containers
+        containers.each do |container_name, container|
+          yield(container)
+        end
       end
   end
 end
