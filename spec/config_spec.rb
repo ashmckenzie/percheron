@@ -6,22 +6,6 @@ describe Percheron::Config do
 
   subject { described_class.new(config_file) }
 
-  describe '#valid?' do
-    context 'when config file is invalid' do
-      let(:config_file) { './spec/fixtures/.percheron_empty.yml' }
-
-      it 'raises exception' do
-        expect{ subject.valid? }.to raise_error(Percheron::Errors::ConfigFileInvalid)
-      end
-    end
-
-    context 'when config file is valid' do
-      it 'is true' do
-        expect(subject.valid?).to be(true)
-      end
-    end
-  end
-
   describe '#settings' do
     it 'returns a Hashie::Mash' do
       expect(subject.settings).to be_a(Hashie::Mash)
@@ -35,6 +19,22 @@ describe Percheron::Config do
      it 'has one stack' do
       data = { stacks: [ { name: "debian_jessie", container_configs: [ { name: "debian", version: 1.0, dockerfile: "./Dockerfile" } ] } ] }
       expect(subject.settings).to include(data)
+    end
+  end
+
+  describe '#valid?' do
+    context 'when config file is invalid' do
+      let(:config_file) { './spec/fixtures/.percheron_empty.yml' }
+
+      it 'raises exception' do
+        expect{ subject.valid? }.to raise_error(Percheron::Errors::ConfigFileInvalid)
+      end
+    end
+
+    context 'when config file is valid' do
+      it 'is true' do
+        expect(subject.valid?).to be(true)
+      end
     end
   end
 
