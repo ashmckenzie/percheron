@@ -1,10 +1,7 @@
-require 'clamp'
-
 module Percheron
   module CLI
     class AbstractCommand < Clamp::Command
 
-      option [ '-s', '--stack' ], 'STACK', 'Stack to perform action on'
       option [ '-c', '--config_file' ], 'CONFIG', 'Configuration file', default: '.percheron.yml'
 
       option '--version', :flag, 'show version' do

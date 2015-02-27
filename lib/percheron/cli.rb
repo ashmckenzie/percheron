@@ -1,3 +1,5 @@
+require 'clamp'
+
 require 'percheron/cli/abstract_command'
 require 'percheron/cli/list_command'
 require 'percheron/cli/main_command'
