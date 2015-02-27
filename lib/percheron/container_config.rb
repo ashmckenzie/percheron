@@ -11,9 +11,10 @@ module Percheron
 
     def_config_item_with_default :container_config, [], :env, :ports, :volumes, :dependant_container_names
 
-    def initialize(config, container_config)
+    def initialize(config, stack, container_config_name)
       @config = config
-      @container_config = Hashie::Mash.new(container_config)
+      @stack = stack
+      @container_config_name = container_config_name
       valid?
     end
 
@@ -52,7 +53,7 @@ module Percheron
 
     private
 
-      attr_reader :config, :container_config
+      attr_reader :config, :stack, :container_config_name
 
       def exists?
         !info.empty?
@@ -66,6 +67,10 @@ module Percheron
 
       def info
         Hashie::Mash.new(docker_container.info)
+      end
+
+      def container_config
+        @container_config ||= stack.container_configs_configs[container_config_name] || Hashie::Mash.new({})
       end
 
   end

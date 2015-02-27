@@ -14,14 +14,6 @@ describe Percheron::Stack do
   end
 
   describe '#valid?' do
-    context 'when stack name is invalid' do
-      let(:stack_name) { 'unknown' }
-
-      it 'raises exception' do
-        expect{ subject.valid? }.to raise_error(Percheron::Errors::StackInvalid)
-      end
-    end
-
     context 'when stack name is valid' do
       it 'is true' do
         expect(subject.valid?).to be(true)

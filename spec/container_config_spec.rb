@@ -2,19 +2,6 @@ require 'spec_helper'
 
 describe Percheron::ContainerConfig do
 
-  let(:config) { Percheron::Config.new('./spec/fixtures/.percheron_valid.yml') }
-
-  let(:container_config) do
-    {
-      name: 'container1',
-      version: '1.0',
-      dockerfile: './Dockerfile',
-      ports: [ '9999:9999' ],
-      dependant_container_names: [ 'dependant_container1' ],
-      volumes: [ '/outside/container/path:/inside/container/path' ]
-    }
-  end
-
   let(:extra_data) { {} }
   let(:docker_container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
   let(:docker_data) do
@@ -25,12 +12,16 @@ describe Percheron::ContainerConfig do
     }
   end
 
-  subject { described_class.new(config, container_config) }
+  let(:config) { Percheron::Config.new('./spec/fixtures/.percheron_valid.yml') }
+  let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
+  let(:container_config_name) { 'debian' }
+
+  subject { described_class.new(config, stack, container_config_name) }
 
   context 'when the Docker Container does not exist' do
 
     before do
-      allow(Docker::Container).to receive(:get).with('container1').and_raise(Docker::Error::NotFoundError)
+      allow(Docker::Container).to receive(:get).with('debian').and_raise(Docker::Error::NotFoundError)
     end
 
     describe '#id' do
@@ -50,7 +41,7 @@ describe Percheron::ContainerConfig do
   context 'when the Docker Container exists' do
 
     before do
-      allow(Docker::Container).to receive(:get).with('container1').and_return(docker_container)
+      allow(Docker::Container).to receive(:get).with('debian').and_return(docker_container)
     end
 
     describe '#id' do
@@ -65,7 +56,7 @@ describe Percheron::ContainerConfig do
 
     describe '#image' do
       it 'is a combination of name and version' do
-        expect(subject.image).to eql('container1:1.0')
+        expect(subject.image).to eql('debian:1.0')
       end
     end
 
@@ -77,19 +68,11 @@ describe Percheron::ContainerConfig do
 
     describe '#links' do
       it 'returns an array of dependant container names' do
-        expect(subject.links).to eql([ 'dependant_container1:dependant_container1' ])
+        expect(subject.links).to eql([ 'dependant_debian:dependant_debian' ])
       end
     end
 
     describe '#valid?' do
-      context 'when config is invalid' do
-        let(:container_config) { {} }
-
-        it 'raises exception' do
-          expect{ subject.valid? }.to raise_error(Percheron::Errors::ContainerConfigInvalid)
-        end
-      end
-
       context 'when config is valid' do
         it 'is true' do
           expect(subject.valid?).to be(true)
