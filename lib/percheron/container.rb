@@ -1,5 +1,3 @@
-require 'docker/null_container'
-
 module Percheron
   class Container
 
@@ -124,7 +122,7 @@ module Percheron
       def docker_container
         Docker::Container.get(name)
       rescue Docker::Error::NotFoundError, Excon::Errors::SocketError
-        Docker::NullContainer.new  # FIXME
+        DockerNullContainer.new
       end
 
       def info
