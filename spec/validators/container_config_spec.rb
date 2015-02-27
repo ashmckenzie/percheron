@@ -33,7 +33,7 @@ describe Percheron::Validators::ContainerConfig do
     end
 
     context 'when container config is valid' do
-      let(:container_config_config) { config.settings.stacks.first.container_configs.first }
+      let(:container_config_config) { config.stack_configs.first[1].container_configs.first }
 
       it 'is true' do
         expect(subject.valid?).to be(true)

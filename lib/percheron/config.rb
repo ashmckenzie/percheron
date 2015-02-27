@@ -8,12 +8,8 @@ module Percheron
       valid?
     end
 
-    def settings
-      Hashie::Mash.new(YAML.load_file(file))
-    end
-
-    def stacks
-      settings.stacks.inject({}) do |all, stack_config|
+    def stack_configs
+      contents.stacks.inject({}) do |all, stack_config|
         all[stack_config.name] = stack_config unless all[stack_config.name]
         all
       end
@@ -30,6 +26,10 @@ module Percheron
     private
 
       attr_reader :file
+
+      def contents
+        Hashie::Mash.new(YAML.load_file(file))
+      end
 
   end
 end
