@@ -27,7 +27,7 @@ describe Percheron::ContainerConfig do
 
   subject { described_class.new(config, container_config) }
 
-  context 'when the Docker Container exists' do
+  context 'when the Docker Container does not exist' do
 
     before do
       allow(Docker::Container).to receive(:get).with('container1').and_raise(Docker::Error::NotFoundError)
