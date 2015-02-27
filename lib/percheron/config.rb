@@ -10,6 +10,7 @@ module Percheron
     def initialize(file)
       @file = Pathname.new(file).expand_path
       valid?
+      docker_setup!
       self
     end
 
@@ -34,6 +35,10 @@ module Percheron
 
       def contents
         Hashie::Mash.new(YAML.load_file(file))
+      end
+
+      def docker_setup!
+        Percheron::DockerConnection.new(self).setup!
       end
 
   end
