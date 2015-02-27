@@ -23,18 +23,8 @@ describe Percheron::Config do
   end
 
   describe '#valid?' do
-    context 'when config file is invalid' do
-      let(:config_file) { './spec/fixtures/.percheron_empty.yml' }
-
-      it 'raises exception' do
-        expect{ subject.valid? }.to raise_error(Percheron::Errors::ConfigFileInvalid)
-      end
-    end
-
-    context 'when config file is valid' do
-      it 'is true' do
-        expect(subject.valid?).to be(true)
-      end
+    it 'is true' do
+      expect(subject.valid?).to be(true)
     end
   end
 

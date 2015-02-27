@@ -73,10 +73,8 @@ describe Percheron::Container do
     end
 
     describe '#valid?' do
-      context 'when config is valid' do
-        it 'is true' do
-          expect(subject.valid?).to be(true)
-        end
+      it 'is true' do
+        expect(subject.valid?).to be(true)
       end
     end
 

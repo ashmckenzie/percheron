@@ -14,10 +14,8 @@ describe Percheron::Stack do
   end
 
   describe '#valid?' do
-    context 'when stack name is valid' do
-      it 'is true' do
-        expect(subject.valid?).to be(true)
-      end
+    it 'is true' do
+      expect(subject.valid?).to be(true)
     end
   end
 
