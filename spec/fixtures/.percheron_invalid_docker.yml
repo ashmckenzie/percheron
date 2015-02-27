@@ -1,5 +1,5 @@
 ---
-stacks:
+stack_configs:
   -
     name: 1
     containers:

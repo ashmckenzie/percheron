@@ -3,7 +3,7 @@ docker:
   host: "https://127.0.0.1:2376"
   timeout: 10
 
-stacks:
+stack_configs:
   -
     name: debian_jessie
     container_configs:
