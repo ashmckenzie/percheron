@@ -13,7 +13,6 @@ require 'percheron/formatters'
 require 'percheron/validators'
 require 'percheron/stack'
 require 'percheron/container'
-require 'percheron/docker_null_container'
 require 'percheron/docker_connection'
 
 module Percheron
