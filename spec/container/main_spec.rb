@@ -16,7 +16,43 @@ describe Percheron::Container::Main do
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:container_name) { 'debian' }
 
+  let(:logger_double) { double('Logger') }
+  let(:stop_double) { double('Percheron::Container::Actions::Stop') }
+  let(:start_double) { double('Percheron::Container::Actions::Start') }
+
   subject { described_class.new(config, stack, container_name) }
+
+  before do
+    $logger = logger_double
+  end
+
+  context 'when the Docker Container does OR does not exist' do
+
+    describe '#image' do
+      it 'is a combination of name and version' do
+        expect(subject.image).to eql('debian:1.0')
+      end
+    end
+
+    describe '#dockerfile' do
+      it 'returns a Pathname object' do
+        expect(subject.dockerfile).to be_a(Pathname)
+      end
+    end
+
+    describe '#exposed_ports' do
+      it 'returns a hash of exposed ports' do
+        expect(subject.exposed_ports).to eql({ '9999' => {} })
+      end
+    end
+
+    describe '#links' do
+      it 'returns an array of dependant container names' do
+        expect(subject.links).to eql([ 'dependant_debian:dependant_debian' ])
+      end
+    end
+
+  end
 
   context 'when the Docker Container does not exist' do
 
@@ -27,6 +63,39 @@ describe Percheron::Container::Main do
     describe '#id' do
       it 'is N/A' do
         expect(subject.id).to eql('N/A')
+      end
+    end
+
+    describe '#stop!' do
+      before do
+        expect(Percheron::Container::Actions::Stop).to receive(:new).with(subject).and_return(stop_double)
+      end
+
+      it 'asks Container::Actions::Stop to execute' do
+        expect(stop_double).to receive(:execute!).and_raise(Percheron::Errors::ContainerNotRunning)
+        expect(logger_double).to receive(:debug).with("Container 'debian' is not running")
+        subject.stop!
+      end
+    end
+
+    describe '#start!' do
+      let(:create_double) { double('Percheron::Container::Actions::Create') }
+
+      before do
+        expect(Percheron::Container::Actions::Create).to receive(:new).with(subject).and_return(create_double)
+        expect(Percheron::Container::Actions::Start).to receive(:new).with(subject).and_return(start_double)
+      end
+
+      it 'asks Percheron::Container::Actions::Start to execute' do
+        expect(create_double).to receive(:execute!)
+        expect(start_double).to receive(:execute!)
+        subject.start!
+      end
+    end
+
+    describe '#docker_container' do
+      it 'returns a Percheron::Container::Null' do
+        expect(subject.docker_container).to be_a(Percheron::Container::Null)
       end
     end
 
@@ -54,28 +123,32 @@ describe Percheron::Container::Main do
       end
     end
 
-    describe '#image' do
-      it 'is a combination of name and version' do
-        expect(subject.image).to eql('debian:1.0')
-      end
-    end
-
-    describe '#exposed_ports' do
-      it 'returns a hash of exposed ports' do
-        expect(subject.exposed_ports).to eql({ '9999' => {} })
-      end
-    end
-
-    describe '#links' do
-      it 'returns an array of dependant container names' do
-        expect(subject.links).to eql([ 'dependant_debian:dependant_debian' ])
+    describe '#docker_container' do
+      it 'returns a Percheron::Container::Null' do
+        expect(subject.docker_container).to be(docker_container)
       end
     end
 
     describe '#stop!' do
+      before do
+        expect(Percheron::Container::Actions::Stop).to receive(:new).with(subject).and_return(stop_double)
+      end
+
+      it 'asks Percheron::Container::Actions::Stop to execute' do
+        expect(stop_double).to receive(:execute!)
+        subject.stop!
+      end
     end
 
     describe '#start!' do
+      before do
+        expect(Percheron::Container::Actions::Start).to receive(:new).with(subject).and_return(start_double)
+      end
+
+      it 'asks Percheron::Container::Actions::Start to execute' do
+        expect(start_double).to receive(:execute!)
+        subject.start!
+      end
     end
 
     describe '#valid?' do

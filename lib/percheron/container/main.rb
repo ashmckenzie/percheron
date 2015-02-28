@@ -20,7 +20,7 @@ module Percheron
       def stop!
         Container::Actions::Stop.new(self).execute!
       rescue Errors::ContainerNotRunning
-        $logger.debug "Container '#{name}' not running"
+        $logger.debug "Container '#{name}' is not running"
       end
 
       def start!
@@ -53,6 +53,12 @@ module Percheron
         end
       end
 
+      def docker_container
+        Docker::Container.get(name)
+      rescue Docker::Error::NotFoundError, Excon::Errors::SocketError
+        Container::Null.new
+      end
+
       def running?
         exists? && info.State.Running
       end
@@ -63,12 +69,6 @@ module Percheron
 
       def valid?
         Validators::Container.new(self).valid?
-      end
-
-      def docker_container
-        Docker::Container.get(name)
-      rescue Docker::Error::NotFoundError, Excon::Errors::SocketError
-        DockerNullContainer.new
       end
 
       protected
