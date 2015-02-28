@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Percheron::Container do
+describe Percheron::Container::Main do
 
   let(:extra_data) { {} }
   let(:docker_container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
@@ -72,6 +72,12 @@ describe Percheron::Container do
       end
     end
 
+    describe '#stop!' do
+    end
+
+    describe '#start!' do
+    end
+
     describe '#valid?' do
       it 'is true' do
         expect(subject.valid?).to be(true)
@@ -95,6 +101,7 @@ describe Percheron::Container do
         end
       end
     end
+
   end
 
 end

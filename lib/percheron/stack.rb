@@ -31,7 +31,7 @@ module Percheron
     def containers
       containers = {}
       stack_config.containers.each do |container|
-        container = Container.new(config, self, container.name)
+        container = Container::Main.new(config, self, container.name)
         containers[container.name] = container
       end
       containers

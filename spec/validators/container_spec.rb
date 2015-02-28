@@ -5,7 +5,7 @@ describe Percheron::Validators::Container do
   let(:config) { Percheron::Config.new('./spec/fixtures/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:container_name) { 'debian' }
-  let(:container) { Percheron::Container.new(config, stack, container_name) }
+  let(:container) { Percheron::Container::Main.new(config, stack, container_name) }
 
   subject { described_class.new(container) }
 
