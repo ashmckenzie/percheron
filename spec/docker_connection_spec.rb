@@ -14,10 +14,10 @@ describe Percheron::DockerConnection do
 
   describe '#setup!' do
     context "when ENV['DOCKER_CERT_PATH'] is defined" do
-      let(:expected_options) { {:client_cert=>"/Users/ash/src/personal/percheron/spec/fixtures/cert.pem", :client_key=>"/Users/ash/src/personal/percheron/spec/fixtures/key.pem", :ssl_ca_file=>"/Users/ash/src/personal/percheron/spec/fixtures/ca.pem", :scheme=>"https", :connect_timeout=>10} }
+      let(:expected_options) { {:client_cert=>"/tmp/cert.pem", :client_key=>"/tmp/key.pem", :ssl_ca_file=>"/tmp/ca.pem", :scheme=>"https", :connect_timeout=>10} }
 
       before do
-        ENV['DOCKER_CERT_PATH'] = './spec/fixtures'
+        ENV['DOCKER_CERT_PATH'] = '/tmp'
       end
 
       it 'sets Docker url' do
