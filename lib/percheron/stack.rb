@@ -37,12 +37,12 @@ module Percheron
       containers
     end
 
-    def start!
-      exec_on_containers { |container| container.start! }
-    end
-
     def stop!
       exec_on_containers { |container| container.stop! }
+    end
+
+    def start!
+      exec_on_containers { |container| container.start! }
     end
 
     def valid?
