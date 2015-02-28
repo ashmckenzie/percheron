@@ -37,7 +37,6 @@ describe Percheron::Container::Actions::Start do
 
     context 'when a Docker container does not exist' do
       let(:container_exists) { false }
-      let(:build_double) { double('Percheron::Container::Actions::Build') }
 
       it 'raises an exception' do
         expect{ subject.execute! }.to raise_error(Percheron::Errors::ContainerDoesNotExist)
