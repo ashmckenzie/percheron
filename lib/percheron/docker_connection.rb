@@ -9,14 +9,21 @@ module Percheron
       Docker.logger = $logger if ENV['DOCKER_DEBUG'] == 'true'
       Docker.url = config.docker.host
 
-      Docker.options = {
+      opts = {
         chunk_size:       1,
         connect_timeout:  config.docker.timeout,
-        client_cert:      File.join(cert_path, 'cert.pem'),
-        client_key:       File.join(cert_path, 'key.pem'),
-        ssl_ca_file:      File.join(cert_path, 'ca.pem'),
         scheme:          'https'
       }
+
+      if cert_path
+        opts.merge!({
+          client_cert:  File.join(cert_path, 'cert.pem'),
+          client_key:   File.join(cert_path, 'key.pem'),
+          ssl_ca_file:  File.join(cert_path, 'ca.pem')
+        })
+      end
+
+      Docker.options = opts
     end
 
     private
@@ -24,7 +31,13 @@ module Percheron
       attr_reader :config
 
       def cert_path
-        @cert_path ||= File.expand_path(ENV['DOCKER_CERT_PATH'])
+        @cert_path ||= begin
+          if ENV['DOCKER_CERT_PATH']
+            File.expand_path(ENV['DOCKER_CERT_PATH'])
+          else
+            nil
+          end
+        end
       end
   end
 end
