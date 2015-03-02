@@ -22,6 +22,7 @@ module Percheron
 
         def rules
           [
+            :validate_config_file_defined,
             :validate_config_file_existence,
             :validate_config_file_not_empty,
             :validate_config_file_contents
@@ -32,16 +33,24 @@ module Percheron
           @config_file_contents ||= Hashie::Mash.new(YAML.load_file(config_file))
         end
 
+        def validate_config_file_defined
+          'Config file is not defined' if config_file.nil?
+        end
+
         def validate_config_file_existence
-          'Config file does not exist' unless config_file.exist?
+          "#{base_message} does not exist" unless config_file.exist?
         end
 
         def validate_config_file_not_empty
-          'Config file is empty' if config_file_contents.empty?
+          "#{base_message} is empty" if config_file_contents.empty?
         end
 
         def validate_config_file_contents
-          'Config file is invalid' unless config_file_contents.docker
+          "#{base_message} is invalid" unless config_file_contents.docker
+        end
+
+        def base_message
+          "Config file '#{config_file}'"
         end
     end
   end
