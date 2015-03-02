@@ -3,6 +3,7 @@
 [![Gem Version](https://badge.fury.io/rb/percheron.svg)](http://badge.fury.io/rb/percheron)
 [![Travis CI](https://travis-ci.org/ashmckenzie/percheron.svg)](https://travis-ci.org/ashmckenzie/percheron)
 [![Code Climate GPA](https://codeclimate.com/github/ashmckenzie/percheron/badges/gpa.svg)](https://codeclimate.com/github/ashmckenzie/percheron)
+[![Dependency Status](https://gemnasium.com/ashmckenzie/percheron.svg)](https://gemnasium.com/ashmckenzie/percheron)
 
 Organise your Docker containers with muscle and intelligence.
 
