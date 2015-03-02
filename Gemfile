@@ -7,6 +7,6 @@ group :test do
 end
 
 group :development do
-  gem 'pry-byebug', '~> 2.0'
+  gem 'pry-byebug', '~> 3.0'
   gem 'awesome_print', '~> 1.0'
 end
