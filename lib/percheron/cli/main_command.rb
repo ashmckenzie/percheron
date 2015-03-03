@@ -5,6 +5,8 @@ module Percheron
       subcommand 'console', 'Start a pry console session', ConsoleCommand
       subcommand 'start', 'Start a stack', StartCommand
       subcommand 'stop', 'Stop a stack', StopCommand
+      subcommand 'restart', 'Restart a stack', RestartCommand
+      subcommand 'create', 'Create a stack', CreateCommand
       subcommand 'recreate', 'Recreate a stack', RecreateCommand
     end
   end
