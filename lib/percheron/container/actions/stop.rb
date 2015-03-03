@@ -12,6 +12,7 @@ module Percheron
             $logger.debug "Stopping '#{container.name}'"
             container.docker_container.stop!
           else
+            $logger.debug "Not stopping '#{container.name}' container as it's not running"
             raise Errors::ContainerNotRunning.new
           end
         end

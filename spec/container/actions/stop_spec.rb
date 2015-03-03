@@ -37,6 +37,7 @@ describe Percheron::Container::Actions::Stop do
       let(:container_running) { false }
 
       it 'raises an exception' do
+        expect(logger_double).to receive(:debug).with("Not stopping 'debian' container as it's not running")
         expect{ subject.execute! }.to raise_error(Percheron::Errors::ContainerNotRunning)
       end
 

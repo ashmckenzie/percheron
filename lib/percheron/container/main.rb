@@ -5,9 +5,12 @@ module Percheron
       extend Forwardable
       extend ConfigDelegator
 
-      def_delegators :container_config, :name, :version
+      def_delegators :container_config, :name, :dockerfile_md5
 
+      def_config_item_with_default :container_config, false, :auto_recreate
       def_config_item_with_default :container_config, [], :env, :ports, :volumes, :dependant_container_names
+
+      alias_method :auto_recreate?, :auto_recreate
 
       def initialize(config, stack, container_name)
         @config = config
@@ -17,23 +20,20 @@ module Percheron
         self
       end
 
-      def stop!
-        Container::Actions::Stop.new(self).execute!
-      rescue Errors::ContainerNotRunning
-        $logger.debug "Container '#{name}' is not running"
-      end
-
-      def start!
-        Container::Actions::Create.new(self).execute! unless exists?
-        Container::Actions::Start.new(self).execute!
-      end
-
       def id
         exists? ? info.id[0...12] : 'N/A'
       end
 
       def image
-        '%s:%s' % [ name, version ]
+        '%s:%s' % [ name, version.to_s ]
+      end
+
+      def version
+        Semantic::Version.new(container_config.version)
+      end
+
+      def built_version
+        exists? ? Semantic::Version.new(built_image_version) : nil
       end
 
       def dockerfile
@@ -59,6 +59,25 @@ module Percheron
         Container::Null.new
       end
 
+      def stop!
+        Container::Actions::Stop.new(self).execute!
+      rescue Errors::ContainerNotRunning
+        $logger.debug "Container '#{name}' is not running"
+      end
+
+      def start!
+        Container::Actions::Create.new(self).execute! unless exists?
+        Container::Actions::Start.new(self).execute!
+      end
+
+      def recreatable?
+        exists? && !md5s_match?
+      end
+
+      def recreate?
+        recreatable? && versions_mismatch? && auto_recreate?
+      end
+
       def running?
         exists? && info.State.Running
       end
@@ -74,6 +93,26 @@ module Percheron
       protected
 
         attr_reader :config, :stack, :container_name
+
+        def md5s_match?
+          stored_dockerfile_md5 == current_dockerfile_md5
+        end
+
+        def versions_mismatch?
+          version > built_version
+        end
+
+        def built_image_version
+          info.Config.Image.split(':')[1]
+        end
+
+        def stored_dockerfile_md5
+          dockerfile_md5 || current_dockerfile_md5
+        end
+
+        def current_dockerfile_md5
+          Digest::MD5.file(dockerfile).hexdigest
+        end
 
         def info
           Hashie::Mash.new(docker_container.info)

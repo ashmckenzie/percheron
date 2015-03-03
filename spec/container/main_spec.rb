@@ -30,7 +30,7 @@ describe Percheron::Container::Main do
 
     describe '#image' do
       it 'is a combination of name and version' do
-        expect(subject.image).to eql('debian:1.0')
+        expect(subject.image).to eql('debian:1.0.0')
       end
     end
 
@@ -52,6 +52,12 @@ describe Percheron::Container::Main do
       end
     end
 
+    describe '#valid?' do
+      it 'is true' do
+        expect(subject.valid?).to be(true)
+      end
+    end
+
   end
 
   context 'when the Docker Container does not exist' do
@@ -63,6 +69,18 @@ describe Percheron::Container::Main do
     describe '#id' do
       it 'is N/A' do
         expect(subject.id).to eql('N/A')
+      end
+    end
+
+    describe '#built_version' do
+      it 'returns nil' do
+        expect(subject.built_version).to be_nil
+      end
+    end
+
+    describe '#docker_container' do
+      it 'returns a Percheron::Container::Null' do
+        expect(subject.docker_container).to be_a(Percheron::Container::Null)
       end
     end
 
@@ -93,9 +111,15 @@ describe Percheron::Container::Main do
       end
     end
 
-    describe '#docker_container' do
-      it 'returns a Percheron::Container::Null' do
-        expect(subject.docker_container).to be_a(Percheron::Container::Null)
+    describe '#recreatable?' do
+      it 'returns false' do
+        expect(subject.recreatable?).to be(false)
+      end
+    end
+
+    describe '#recreate?' do
+      it 'returns false' do
+        expect(subject.recreate?).to be(false)
       end
     end
 
@@ -105,9 +129,16 @@ describe Percheron::Container::Main do
       end
     end
 
+    describe '#exists?' do
+      it 'is false' do
+        expect(subject.exists?).to be(false)
+      end
+    end
+
   end
 
   context 'when the Docker Container exists' do
+    let(:extra_data) { { 'Config' => { 'Image' => 'test1:1.0.0' } } }
 
     before do
       allow(Docker::Container).to receive(:get).with('debian').and_return(docker_container)
@@ -120,6 +151,16 @@ describe Percheron::Container::Main do
 
       it 'is valid' do
         expect(subject.id).to eql('123456789012')
+      end
+    end
+
+    describe '#built_version' do
+      it 'returns a Semantic::Version object' do
+        expect(subject.built_version).to be_a(Semantic::Version)
+      end
+
+      it "is '1.0.0'" do
+        expect(subject.built_version.to_s).to eql('1.0.0')
       end
     end
 
@@ -151,10 +192,99 @@ describe Percheron::Container::Main do
       end
     end
 
-    describe '#valid?' do
-      it 'is true' do
-        expect(subject.valid?).to be(true)
+    describe '#recreatable?' do
+      context "when the MD5's of the stored and current Dockerfile do not match" do
+
+        before do
+          expect(subject).to receive(:dockerfile_md5).and_return('1234567890')
+        end
+
+        it 'returns true' do
+          expect(subject.recreatable?).to be(true)
+        end
       end
+
+      context "when the MD5's of the stored and current Dockerfile match" do
+        it 'returns false' do
+          expect(subject.recreatable?).to be(false)
+        end
+      end
+    end
+
+    describe '#recreate?' do
+      context 'when not #recreatable? is false' do
+
+        before do
+          expect(subject).to receive(:recreatable?).and_return(false)
+        end
+
+        it 'returns false' do
+          expect(subject.recreate?).to be(false)
+        end
+      end
+
+      context 'when #recreatable? is true' do
+
+        before do
+          expect(subject).to receive(:recreatable?).and_return(true)
+        end
+
+        context 'when version > built_version is false' do
+
+          before do
+            expect(subject).to receive(:version).and_return(1)
+            expect(subject).to receive(:built_version).and_return(1)
+          end
+
+          it 'returns false' do
+            expect(subject.recreate?).to be(false)
+          end
+        end
+
+        context 'when version > built_version is true' do
+
+          before do
+            expect(subject).to receive(:version).and_return(2)
+            expect(subject).to receive(:built_version).and_return(1)
+          end
+
+          context 'when #auto_recreate? is false (default)' do
+
+            before do
+              expect(subject).to receive(:auto_recreate?).and_return(false)
+            end
+
+            it 'returns false' do
+              expect(subject.recreate?).to be(false)
+            end
+
+          end
+
+          context 'when #auto_recreate? is true' do
+
+            before do
+              expect(subject).to receive(:auto_recreate?).and_return(true)
+            end
+
+            it 'returns true' do
+              expect(subject.recreate?).to be(true)
+            end
+
+          end
+
+        end
+
+      end
+
+      # context 'when auto_recreate attribute is false (default)' do
+      # end
+
+      # context 'when auto_recreate attribute is true' do
+      # end
+
+      # it 'returns false' do
+      #   expect(subject.recreate?).to be(false)
+      # end
     end
 
     describe '#running?' do
@@ -172,6 +302,12 @@ describe Percheron::Container::Main do
         it 'is true' do
           expect(subject.running?).to be(true)
         end
+      end
+    end
+
+    describe '#exists?' do
+      it 'is true' do
+        expect(subject.exists?).to be(true)
       end
     end
 

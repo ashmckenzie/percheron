@@ -33,7 +33,10 @@ module Percheron
         end
 
         def validate_version
-          'Version is invalid' if container.version.nil? || !container.version.to_s.match(/[\w\d]{1,}/)
+          container.version
+          nil
+        rescue ArgumentError
+          'Version is invalid'
         end
 
         def validate_dockerfile

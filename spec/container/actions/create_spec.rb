@@ -9,18 +9,18 @@ describe Percheron::Container::Actions::Create do
   let(:container_name) { 'debian' }
   let(:container) { Percheron::Container::Main.new(config, stack, container_name) }
 
-  let(:expected_opts) { {"name"=>"debian", "Image"=>"debian:1.0", "Hostname"=>"debian", "Env"=>[], "ExposedPorts"=>{"9999"=>{}}, "VolumesFrom"=>["/outside/container/path:/inside/container/path"]} }
+  let(:expected_opts) { {"name"=>"debian", "Image"=>"debian:1.0.0", "Hostname"=>"debian", "Env"=>[], "ExposedPorts"=>{"9999"=>{}}, "VolumesFrom"=>["/outside/container/path:/inside/container/path"]} }
 
   subject { described_class.new(container) }
 
   before do
     $logger = logger_double
-    expect(Docker::Image).to receive(:exist?).with('debian:1.0').and_return(image_exists)
+    expect(Docker::Image).to receive(:exist?).with('debian:1.0.0').and_return(image_exists)
   end
 
   describe '#execute!' do
     before do
-      expect(logger_double).to receive(:debug).with("Creating 'debian'")
+      expect(logger_double).to receive(:debug).with("Creating 'debian' container")
     end
 
     context 'when a Docker image already exists' do
@@ -38,6 +38,7 @@ describe Percheron::Container::Actions::Create do
 
       before do
         expect(Percheron::Container::Actions::Build).to receive(:new).with(container).and_return(build_double)
+        expect(logger_double).to receive(:debug).with("Creating 'debian:1.0.0' image")
       end
 
       it 'calls Container::Actions::Build#execute! AND creates a Docker::Container' do
