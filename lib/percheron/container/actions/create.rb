@@ -8,8 +8,12 @@ module Percheron
         end
 
         def execute!
-          Container::Actions::Build.new(container).execute! unless image_exists?
-          $logger.debug "Creating '#{container.name}'"
+          unless image_exists?
+            $logger.debug "Creating '#{container.image}' image"
+            Container::Actions::Build.new(container).execute!
+          end
+
+          $logger.debug "Creating '#{container.name}' container"
           Docker::Container.create(create_opts)
         end
 
