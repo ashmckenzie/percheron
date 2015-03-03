@@ -3,6 +3,7 @@ require 'forwardable'
 require 'pathname'
 require 'docker'
 require 'naught'
+require 'semantic'
 
 require 'percheron/core_extensions'
 require 'percheron/version'
