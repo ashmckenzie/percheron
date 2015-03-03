@@ -5,7 +5,7 @@ module Percheron
       extend Forwardable
       extend ConfigDelegator
 
-      def_delegators :container_config, :name, :version
+      def_delegators :container_config, :name
 
       def_config_item_with_default :container_config, [], :env, :ports, :volumes, :dependant_container_names
 
@@ -34,6 +34,9 @@ module Percheron
 
       def image
         '%s:%s' % [ name, version ]
+
+      def version
+        Semantic::Version.new(container_config.version)
       end
 
       def dockerfile
