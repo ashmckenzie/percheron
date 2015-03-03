@@ -9,7 +9,7 @@ require 'percheron/cli'
 
 $logger = Logger.new(STDOUT)
 
-logger_level = Logger::ERROR
+logger_level = Logger::WARN
 
 if ENV['VERBOSE'] == 'true'
   logger_level = Logger::INFO
