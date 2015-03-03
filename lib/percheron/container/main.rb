@@ -5,7 +5,7 @@ module Percheron
       extend Forwardable
       extend ConfigDelegator
 
-      def_delegators :container_config, :name
+      def_delegators :container_config, :name, :dockerfile_md5
 
       def_config_item_with_default :container_config, false, :auto_recreate
       def_config_item_with_default :container_config, [], :env, :ports, :volumes, :dependant_container_names
