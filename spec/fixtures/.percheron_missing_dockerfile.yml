@@ -9,7 +9,7 @@ stacks:
     containers:
       -
         name: debian
-        version: 1.0
+        version: 1.0.0
         ports:
           - '9999:9999'
         volumes:

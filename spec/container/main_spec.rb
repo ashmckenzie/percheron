@@ -30,7 +30,7 @@ describe Percheron::Container::Main do
 
     describe '#image' do
       it 'is a combination of name and version' do
-        expect(subject.image).to eql('debian:1.0')
+        expect(subject.image).to eql('debian:1.0.0')
       end
     end
 

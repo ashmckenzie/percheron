@@ -24,6 +24,13 @@ describe Percheron::Validators::Container do
       end
     end
 
+    context 'when container config contains an invalid version' do
+      let(:config) { Percheron::Config.new('./spec/fixtures/.percheron_invalid_version.yml') }
+      it 'raises exception' do
+        expect{ subject.valid? }.to raise_error(Percheron::Errors::ContainerInvalid, 'Version is invalid')
+      end
+    end
+
     context 'when container config is missing dockerfile' do
       let(:config) { Percheron::Config.new('./spec/fixtures/.percheron_missing_dockerfile.yml') }
       it 'raises exception' do
