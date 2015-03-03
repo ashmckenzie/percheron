@@ -2,6 +2,7 @@ require 'clamp'
 
 require 'percheron/cli/abstract_command'
 require 'percheron/cli/list_command'
+require 'percheron/cli/restart_command'
 require 'percheron/cli/start_command'
 require 'percheron/cli/stop_command'
 require 'percheron/cli/console_command'
