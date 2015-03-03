@@ -33,7 +33,7 @@ module Percheron
               [
                 container_name,
                 container.id,
-                container.version,
+                container.built_version,
                 container.running?
               ]
             end
