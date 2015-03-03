@@ -1,4 +1,5 @@
 require 'pry-byebug'
+require 'timecop'
 require 'codeclimate-test-reporter'
 CodeClimate::TestReporter.start
 
