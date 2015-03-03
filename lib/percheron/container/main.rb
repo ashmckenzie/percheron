@@ -20,17 +20,6 @@ module Percheron
         self
       end
 
-      def stop!
-        Container::Actions::Stop.new(self).execute!
-      rescue Errors::ContainerNotRunning
-        $logger.debug "Container '#{name}' is not running"
-      end
-
-      def start!
-        Container::Actions::Create.new(self).execute! unless exists?
-        Container::Actions::Start.new(self).execute!
-      end
-
       def id
         exists? ? info.id[0...12] : 'N/A'
       end
@@ -68,6 +57,17 @@ module Percheron
         Docker::Container.get(name)
       rescue Docker::Error::NotFoundError, Excon::Errors::SocketError
         Container::Null.new
+      end
+
+      def stop!
+        Container::Actions::Stop.new(self).execute!
+      rescue Errors::ContainerNotRunning
+        $logger.debug "Container '#{name}' is not running"
+      end
+
+      def start!
+        Container::Actions::Create.new(self).execute! unless exists?
+        Container::Actions::Start.new(self).execute!
       end
 
       def recreate?
