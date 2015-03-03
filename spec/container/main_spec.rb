@@ -27,7 +27,6 @@ describe Percheron::Container::Main do
   end
 
   context 'when the Docker Container does OR does not exist' do
-
     describe '#image' do
       it 'is a combination of name and version' do
         expect(subject.image).to eql('debian:1.0.0')
@@ -52,16 +51,22 @@ describe Percheron::Container::Main do
       end
     end
 
+    describe '#restart!' do
+      it 'asks Percheron::Container::Actions::Start to execute' do
+        expect(subject).to receive(:stop!)
+        expect(subject).to receive(:start!)
+        subject.restart!
+      end
+    end
+
     describe '#valid?' do
       it 'is true' do
         expect(subject.valid?).to be(true)
       end
     end
-
   end
 
   context 'when the Docker Container does not exist' do
-
     before do
       allow(Docker::Container).to receive(:get).with('debian').and_raise(Docker::Error::NotFoundError)
     end
@@ -97,17 +102,39 @@ describe Percheron::Container::Main do
     end
 
     describe '#start!' do
-      let(:create_double) { double('Percheron::Container::Actions::Create') }
-
       before do
-        expect(Percheron::Container::Actions::Create).to receive(:new).with(subject).and_return(create_double)
+        expect(logger_double).to receive(:warn).with("Not recreating 'debian' container as it does not exist")
         expect(Percheron::Container::Actions::Start).to receive(:new).with(subject).and_return(start_double)
       end
 
       it 'asks Percheron::Container::Actions::Start to execute' do
-        expect(create_double).to receive(:execute!)
+        expect(subject).to receive(:create!)
         expect(start_double).to receive(:execute!)
         subject.start!
+      end
+    end
+
+    describe '#create!' do
+      let(:create_double) { double('Percheron::Container::Actions::Create') }
+
+      before do
+        expect(logger_double).to receive(:debug).with("Container 'debian' does not exist, creating")
+        expect(Percheron::Container::Actions::Create).to receive(:new).with(subject).and_return(create_double)
+      end
+
+      it 'asks Percheron::Container::Actions::Create to execute' do
+        expect(create_double).to receive(:execute!)
+        subject.create!
+      end
+    end
+
+    describe '#recreate!' do
+      before do
+        expect(logger_double).to receive(:warn).with("Not recreating 'debian' container as it does not exist")
+      end
+
+      it 'warns the container does not exist ' do
+        subject.recreate!
       end
     end
 
@@ -134,7 +161,6 @@ describe Percheron::Container::Main do
         expect(subject.exists?).to be(false)
       end
     end
-
   end
 
   context 'when the Docker Container exists' do
@@ -183,6 +209,8 @@ describe Percheron::Container::Main do
 
     describe '#start!' do
       before do
+        expect(logger_double).to receive(:warn).with("Not creating 'debian' container as it already exists")
+        expect(logger_double).to receive(:debug).with("Container 'debian' does not need to be recreated")
         expect(Percheron::Container::Actions::Start).to receive(:new).with(subject).and_return(start_double)
       end
 
@@ -192,9 +220,65 @@ describe Percheron::Container::Main do
       end
     end
 
+    describe '#create!' do
+      before do
+        expect(logger_double).to receive(:warn).with("Not creating 'debian' container as it already exists")
+      end
+
+      it 'warns the container already exists' do
+        subject.create!
+      end
+    end
+
+    describe '#recreate!' do
+      before do
+        expect(subject).to receive(:recreate?).and_return(recreate)
+      end
+
+      context 'when #recreate? is false' do
+        let(:recreate) { false }
+
+        before do
+          expect(subject).to receive(:recreatable?).and_return(recreatable)
+        end
+
+        context 'when not #recreatable? is false' do
+          let(:recreatable) { false }
+
+          it 'debug logs that the container does not need to recreated' do
+            expect(logger_double).to receive(:debug).with("Container 'debian' does not need to be recreated")
+            subject.recreate!
+          end
+        end
+
+        context 'when not #recreatable? is true' do
+          let(:recreatable) { true }
+
+          it "warns the container's MD5's do not match" do
+            expect(logger_double).to receive(:warn).with("Container 'debian' MD5's do not match, consider recreating")
+            subject.recreate!
+          end
+        end
+      end
+
+      context 'when #recreate? is true' do
+        let(:recreate) { true }
+        let(:recreate_double) { double('Percheron::Container::Actions::Recreate') }
+
+        before do
+          expect(logger_double).to receive(:warn).with("Container 'debian' exists and will be recreated")
+          expect(Percheron::Container::Actions::Recreate).to receive(:new).with(subject).and_return(recreate_double)
+        end
+
+        it 'asks Percheron::Container::Actions::Recreate to execute' do
+          expect(recreate_double).to receive(:execute!)
+          subject.recreate!
+        end
+      end
+    end
+
     describe '#recreatable?' do
       context "when the MD5's of the stored and current Dockerfile do not match" do
-
         before do
           expect(subject).to receive(:dockerfile_md5).and_return('1234567890')
         end
@@ -213,7 +297,6 @@ describe Percheron::Container::Main do
 
     describe '#recreate?' do
       context 'when not #recreatable? is false' do
-
         before do
           expect(subject).to receive(:recreatable?).and_return(false)
         end
@@ -224,13 +307,11 @@ describe Percheron::Container::Main do
       end
 
       context 'when #recreatable? is true' do
-
         before do
           expect(subject).to receive(:recreatable?).and_return(true)
         end
 
         context 'when version > built_version is false' do
-
           before do
             expect(subject).to receive(:version).and_return(1)
             expect(subject).to receive(:built_version).and_return(1)
@@ -242,14 +323,12 @@ describe Percheron::Container::Main do
         end
 
         context 'when version > built_version is true' do
-
           before do
             expect(subject).to receive(:version).and_return(2)
             expect(subject).to receive(:built_version).and_return(1)
           end
 
           context 'when #auto_recreate? is false (default)' do
-
             before do
               expect(subject).to receive(:auto_recreate?).and_return(false)
             end
@@ -257,11 +336,9 @@ describe Percheron::Container::Main do
             it 'returns false' do
               expect(subject.recreate?).to be(false)
             end
-
           end
 
           context 'when #auto_recreate? is true' do
-
             before do
               expect(subject).to receive(:auto_recreate?).and_return(true)
             end
@@ -269,22 +346,9 @@ describe Percheron::Container::Main do
             it 'returns true' do
               expect(subject.recreate?).to be(true)
             end
-
           end
-
         end
-
       end
-
-      # context 'when auto_recreate attribute is false (default)' do
-      # end
-
-      # context 'when auto_recreate attribute is true' do
-      # end
-
-      # it 'returns false' do
-      #   expect(subject.recreate?).to be(false)
-      # end
     end
 
     describe '#running?' do
@@ -310,7 +374,5 @@ describe Percheron::Container::Main do
         expect(subject.exists?).to be(true)
       end
     end
-
   end
-
 end
