@@ -72,23 +72,30 @@ describe Percheron::Stack do
     end
 
     describe '#recreate!' do
+      before do
+        expect(container_double).to receive(:recreate!).with(bypass_auto_recreate: expected_bypass_auto_recreate)
+      end
+
       context 'with bypass_auto_recreate not defined' do
+        let (:expected_bypass_auto_recreate) { false }
+
         it 'asks each Container to recreate!' do
-          expect(container_double).to receive(:recreate!).with(bypass_auto_recreate: false)
           subject.recreate!
         end
       end
 
       context 'with bypass_auto_recreate set to false' do
+        let (:expected_bypass_auto_recreate) { false }
+
         it 'asks each Container to recreate!' do
-          expect(container_double).to receive(:recreate!).with(bypass_auto_recreate: false)
           subject.recreate!(bypass_auto_recreate: false)
         end
       end
 
       context 'with bypass_auto_recreate set to true' do
+        let (:expected_bypass_auto_recreate) { true }
+
         it 'asks each Container to recreate!' do
-          expect(container_double).to receive(:recreate!).with(bypass_auto_recreate: true)
           subject.recreate!(bypass_auto_recreate: true)
         end
       end
