@@ -122,7 +122,7 @@ module Percheron
         Validators::Container.new(self).valid?
       end
 
-      protected
+      private
 
         attr_reader :config, :stack, :container_name
 
