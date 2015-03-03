@@ -43,6 +43,10 @@ module Percheron
         Semantic::Version.new(container_config.version)
       end
 
+      def built_version
+        exists? ? Semantic::Version.new(info.Config.Image.split(':')[1]) : nil
+      end
+
       def dockerfile
         container_config.dockerfile ? Pathname.new(File.expand_path(container_config.dockerfile, config.file_base_path)): nil
       end
@@ -66,6 +70,18 @@ module Percheron
         Container::Null.new
       end
 
+      def recreate?
+        could_rebuild? && (version > built_version) && auto_recreate?
+      end
+
+      def could_rebuild?
+        exists? && !md5s_match?
+      end
+
+      def md5s_match?
+        stored_dockerfile_md5 == current_dockerfile_md5
+      end
+
       def running?
         exists? && info.State.Running
       end
@@ -81,6 +97,14 @@ module Percheron
       protected
 
         attr_reader :config, :stack, :container_name
+
+        def stored_dockerfile_md5
+          dockerfile_md5 || current_dockerfile_md5
+        end
+
+        def current_dockerfile_md5
+          Digest::MD5.file(dockerfile).hexdigest
+        end
 
         def info
           Hashie::Mash.new(docker_container.info)
