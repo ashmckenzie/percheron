@@ -16,6 +16,7 @@ stacks:
         name: debian
         version: 1.0.0
         dockerfile: ./Dockerfile
+        dockerfile_md5: 0b03152a88e90de1c5466d6484b8ce5b
         ports:
           - '9999:9999'
         volumes:

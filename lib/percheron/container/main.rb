@@ -33,7 +33,7 @@ module Percheron
       end
 
       def built_version
-        exists? ? Semantic::Version.new(info.Config.Image.split(':')[1]) : nil
+        exists? ? Semantic::Version.new(built_image_version) : nil
       end
 
       def dockerfile
@@ -70,16 +70,12 @@ module Percheron
         Container::Actions::Start.new(self).execute!
       end
 
-      def recreate?
-        could_rebuild? && (version > built_version) && auto_recreate?
-      end
-
-      def could_rebuild?
+      def recreatable?
         exists? && !md5s_match?
       end
 
-      def md5s_match?
-        stored_dockerfile_md5 == current_dockerfile_md5
+      def recreate?
+        recreatable? && versions_mismatch? && auto_recreate?
       end
 
       def running?
@@ -97,6 +93,18 @@ module Percheron
       protected
 
         attr_reader :config, :stack, :container_name
+
+        def md5s_match?
+          stored_dockerfile_md5 == current_dockerfile_md5
+        end
+
+        def versions_mismatch?
+          version > built_version
+        end
+
+        def built_image_version
+          info.Config.Image.split(':')[1]
+        end
 
         def stored_dockerfile_md5
           dockerfile_md5 || current_dockerfile_md5
