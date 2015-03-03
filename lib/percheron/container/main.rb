@@ -81,7 +81,7 @@ module Percheron
           $logger.debug "Container '#{name}' does not exist, creating"
           Container::Actions::Create.new(self).execute!
         else
-          $logger.warn "Not creating '#{name}' container as it already exists"
+          $logger.debug "Not creating '#{name}' container as it already exists"
         end
       end
 

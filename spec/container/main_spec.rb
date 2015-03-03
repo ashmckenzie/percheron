@@ -209,7 +209,7 @@ describe Percheron::Container::Main do
 
     describe '#start!' do
       before do
-        expect(logger_double).to receive(:warn).with("Not creating 'debian' container as it already exists")
+        expect(logger_double).to receive(:debug).with("Not creating 'debian' container as it already exists")
         expect(logger_double).to receive(:debug).with("Container 'debian' does not need to be recreated")
         expect(Percheron::Container::Actions::Start).to receive(:new).with(subject).and_return(start_double)
       end
@@ -222,7 +222,7 @@ describe Percheron::Container::Main do
 
     describe '#create!' do
       before do
-        expect(logger_double).to receive(:warn).with("Not creating 'debian' container as it already exists")
+        expect(logger_double).to receive(:debug).with("Not creating 'debian' container as it already exists")
       end
 
       it 'warns the container already exists' do
