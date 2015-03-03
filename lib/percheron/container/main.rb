@@ -66,16 +66,48 @@ module Percheron
       end
 
       def start!
-        Container::Actions::Create.new(self).execute! unless exists?
+        create!
+        recreate!
         Container::Actions::Start.new(self).execute!
       end
 
-      def recreatable?
-        exists? && !md5s_match?
+      def restart!
+        stop!
+        start!
       end
 
-      def recreate?
-        recreatable? && versions_mismatch? && auto_recreate?
+      def create!
+        unless exists?
+          $logger.debug "Container '#{name}' does not exist, creating"
+          Container::Actions::Create.new(self).execute!
+        else
+          $logger.warn "Not creating '#{name}' container as it already exists"
+        end
+      end
+
+      def recreate!(bypass_auto_recreate: false)
+        if exists?
+          if recreate?(bypass_auto_recreate: bypass_auto_recreate)
+            $logger.warn "Container '#{name}' exists and will be recreated"
+            Container::Actions::Recreate.new(self).execute!
+          else
+            if recreatable?
+              $logger.warn "Container '#{name}' MD5's do not match, consider recreating"
+            else
+              $logger.debug "Container '#{name}' does not need to be recreated"
+            end
+          end
+        else
+          $logger.warn "Not recreating '#{name}' container as it does not exist"
+        end
+      end
+
+      def recreatable?
+        !dockerfile_md5s_match?
+      end
+
+      def recreate?(bypass_auto_recreate: false)
+        recreatable? && versions_mismatch? && (bypass_auto_recreate || auto_recreate?)
       end
 
       def running?
@@ -94,7 +126,7 @@ module Percheron
 
         attr_reader :config, :stack, :container_name
 
-        def md5s_match?
+        def dockerfile_md5s_match?
           stored_dockerfile_md5 == current_dockerfile_md5
         end
 
