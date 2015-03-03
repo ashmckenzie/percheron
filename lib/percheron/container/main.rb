@@ -5,7 +5,7 @@ module Percheron
       extend Forwardable
       extend ConfigDelegator
 
-      def_delegators :container_config, :name, :dockerfile_md5
+      def_delegators :container_config, :name
 
       def_config_item_with_default :container_config, false, :auto_recreate
       def_config_item_with_default :container_config, [], :env, :ports, :volumes, :dependant_container_names
@@ -80,6 +80,7 @@ module Percheron
         unless exists?
           $logger.debug "Container '#{name}' does not exist, creating"
           Container::Actions::Create.new(self).execute!
+          set_dockerfile_md5!
         else
           $logger.debug "Not creating '#{name}' container as it already exists"
         end
@@ -90,6 +91,7 @@ module Percheron
           if recreate?(bypass_auto_recreate: bypass_auto_recreate)
             $logger.warn "Container '#{name}' exists and will be recreated"
             Container::Actions::Recreate.new(self).execute!
+            set_dockerfile_md5!
           else
             if recreatable?
               $logger.warn "Container '#{name}' MD5's do not match, consider recreating"
@@ -140,6 +142,19 @@ module Percheron
 
         def stored_dockerfile_md5
           dockerfile_md5 || current_dockerfile_md5
+        end
+
+        def metadata_key
+          @metadata_key ||= 'stacks/%s/containers/%s' % [ stack.name, name ]
+        end
+
+        def dockerfile_md5
+          $metadata.get("#{metadata_key}/dockerfile_md5")
+        end
+
+        def set_dockerfile_md5!
+          $logger.debug "Setting MD5 for '#{name}' container to #{current_dockerfile_md5}"
+          $metadata.set("#{metadata_key}/dockerfile_md5", current_dockerfile_md5)
         end
 
         def current_dockerfile_md5

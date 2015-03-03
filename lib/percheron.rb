@@ -7,6 +7,7 @@ require 'semantic'
 
 require 'percheron/core_extensions'
 require 'percheron/version'
+require 'percheron/metadata'
 require 'percheron/config'
 require 'percheron/errors'
 require 'percheron/config_delegator'
