@@ -21,6 +21,14 @@ module Percheron
       all
     end
 
+    def self.get(config, stack_name)
+      if stack = all(config)[stack_name]
+        { stack.name => stack }
+      else
+        {}
+      end
+    end
+
     def container_configs
       stack_config.containers.inject({}) do |all, container|
         all[container.name] = container unless all[container.name]

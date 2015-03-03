@@ -11,8 +11,38 @@ describe Percheron::Stack do
   subject { described_class.new(config, stack_name) }
 
   describe '.all' do
-    it 'returns an Hash of Stacks' do
+    it 'returns a Hash of Stacks' do
       expect(described_class.all(config)).to be_a(Hash)
+    end
+
+    it 'has one Stack' do
+      expect(described_class.all(config).keys.count).to eql(1)
+    end
+
+    it 'is the debian_jessie Stack' do
+      expect(described_class.all(config).keys.first).to eql('debian_jessie')
+    end
+  end
+
+  describe '.get' do
+    context 'with a stack_name that does not exist' do
+      it 'returns an empty Hash' do
+        expect(described_class.get(config, 'does_not_exist')).to eql({})
+      end
+    end
+
+    context 'with a stack_name that exists' do
+      it 'returns a Hash of Stacks' do
+        expect(described_class.get(config, 'debian_jessie')).to be_a(Hash)
+      end
+
+      it 'has one Stack' do
+        expect(described_class.get(config, 'debian_jessie').keys.count).to eql(1)
+      end
+
+      it 'is the debian_jessie Stack' do
+        expect(described_class.get(config, 'debian_jessie').keys.first).to eql('debian_jessie')
+      end
     end
   end
 
