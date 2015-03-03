@@ -33,7 +33,8 @@ module Percheron
       end
 
       def image
-        '%s:%s' % [ name, version ]
+        '%s:%s' % [ name, version.to_s ]
+      end
 
       def version
         Semantic::Version.new(container_config.version)
