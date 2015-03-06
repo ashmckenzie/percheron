@@ -4,10 +4,14 @@ describe Percheron::Container::Main do
 
   let(:extra_data) { {} }
   let(:docker_container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
+  let(:dependant_docker_container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
   let(:docker_data) do
     {
       info: {
-        id: '1234567890123'
+        id: '1234567890123',
+        State: {
+          Running: false
+        }
       }.merge(extra_data)
     }
   end
@@ -71,6 +75,7 @@ describe Percheron::Container::Main do
   context 'when the Docker Container does not exist' do
     before do
       allow(Docker::Container).to receive(:get).with('debian').and_raise(Docker::Error::NotFoundError)
+      allow(Docker::Container).to receive(:get).with('dependant_debian').and_raise(Docker::Error::NotFoundError)
     end
 
     describe '#id' do
@@ -104,14 +109,25 @@ describe Percheron::Container::Main do
     end
 
     describe '#start!' do
+      let(:dependant_start_double) { double('Percheron::Container::Actions::Start') }
+      let(:dependant_container) { stack.containers['dependant_debian'] }
+
       before do
-        expect(logger_double).to receive(:warn).with("Not recreating 'debian' container as it does not exist")
+        expect(subject).to receive(:dependant_containers).and_return([ dependant_container ])
+        expect(Percheron::Container::Actions::Start).to receive(:new).with(dependant_container).and_return(dependant_start_double)
         expect(Percheron::Container::Actions::Start).to receive(:new).with(subject).and_return(start_double)
       end
 
       it 'asks Percheron::Container::Actions::Start to execute' do
+        expect(logger_double).to receive(:debug).with("Container 'dependant_debian' being started as it's a dependancy")
+        expect(dependant_container).to receive(:create!)
+        expect(dependant_container).to receive(:recreate!)
+        expect(dependant_start_double).to receive(:execute!)
+
         expect(subject).to receive(:create!)
+        expect(subject).to receive(:recreate!)
         expect(start_double).to receive(:execute!)
+
         subject.start!
       end
     end
@@ -172,6 +188,7 @@ describe Percheron::Container::Main do
 
     before do
       allow(Docker::Container).to receive(:get).with('debian').and_return(docker_container)
+      allow(Docker::Container).to receive(:get).with('dependant_debian').and_return(dependant_docker_container)
     end
 
     describe '#id' do
@@ -212,14 +229,23 @@ describe Percheron::Container::Main do
     end
 
     describe '#start!' do
+      let(:dependant_start_double) { double('Percheron::Container::Actions::Start') }
+      let(:dependant_container) { stack.containers['dependant_debian'] }
+
       before do
+        expect(subject).to receive(:dependant_containers).and_return([ dependant_container ])
+        expect(Percheron::Container::Actions::Start).to receive(:new).with(dependant_container).and_return(dependant_start_double)
         expect(Percheron::Container::Actions::Start).to receive(:new).with(subject).and_return(start_double)
       end
 
       it 'asks Percheron::Container::Actions::Start to execute' do
-        expect(logger_double).to receive(:debug).with("Not creating 'debian' container as it already exists")
-        expect(logger_double).to receive(:debug).with("Container 'debian' does not need to be recreated")
-        expect(metastore_double).to receive(:get).with('stacks.debian_jessie.containers.debian.dockerfile_md5').twice
+        expect(logger_double).to receive(:debug).with("Container 'dependant_debian' being started as it's a dependancy")
+        expect(dependant_container).to receive(:create!)
+        expect(dependant_container).to receive(:recreate!)
+        expect(dependant_start_double).to receive(:execute!)
+
+        expect(subject).to receive(:create!)
+        expect(subject).to receive(:recreate!)
         expect(start_double).to receive(:execute!)
 
         subject.start!

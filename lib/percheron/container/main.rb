@@ -66,6 +66,7 @@ module Percheron
       end
 
       def start!
+        start_dependant_containers!
         create!
         recreate!
         Container::Actions::Start.new(self).execute!
@@ -167,6 +168,18 @@ module Percheron
 
         def container_config
           @container_config ||= stack.container_configs[container_name] || Hashie::Mash.new({})
+        end
+
+        def dependant_containers
+          dependant_container_names.map { |container_name| stack.containers[container_name] }
+        end
+
+        def start_dependant_containers!
+          dependant_containers.each do |container|
+            next if container.running?
+            $logger.debug "Container '#{container.name}' being started as it's a dependancy"
+            container.start!
+          end
         end
 
     end
