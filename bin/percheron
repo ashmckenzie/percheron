@@ -7,7 +7,7 @@ require 'logger'
 require 'percheron'
 require 'percheron/cli'
 
-$metadata = Percheron::Metadata.new
+$metastore = Metastore::Cabinet.new(File.join(ENV['HOME'], '.percheron', 'metastore.yaml'))
 $logger = Logger.new(STDOUT)
 
 logger_level = Logger::WARN
