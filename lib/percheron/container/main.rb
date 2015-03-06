@@ -144,17 +144,17 @@ module Percheron
           dockerfile_md5 || current_dockerfile_md5
         end
 
-        def metadata_key
-          @metadata_key ||= 'stacks/%s/containers/%s' % [ stack.name, name ]
+        def metastore_key
+          @metastore_key ||= 'stacks.%s.containers.%s' % [ stack.name, name ]
         end
 
         def dockerfile_md5
-          $metadata.get("#{metadata_key}/dockerfile_md5")
+          $metastore.get("#{metastore_key}.dockerfile_md5")
         end
 
         def set_dockerfile_md5!
           $logger.debug "Setting MD5 for '#{name}' container to #{current_dockerfile_md5}"
-          $metadata.set("#{metadata_key}/dockerfile_md5", current_dockerfile_md5)
+          $metastore.set("#{metastore_key}.dockerfile_md5", current_dockerfile_md5)
         end
 
         def current_dockerfile_md5

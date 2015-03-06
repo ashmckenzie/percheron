@@ -17,6 +17,7 @@ describe Percheron::Container::Main do
   let(:container_name) { 'debian' }
 
   let(:logger_double) { double('Logger') }
+  let(:metastore_double) { double('Metastore::Cabinet') }
   let(:stop_double) { double('Percheron::Container::Actions::Stop') }
   let(:start_double) { double('Percheron::Container::Actions::Start') }
 
@@ -24,6 +25,7 @@ describe Percheron::Container::Main do
 
   before do
     $logger = logger_double
+    $metastore = metastore_double
   end
 
   context 'when the Docker Container does OR does not exist' do
@@ -118,34 +120,36 @@ describe Percheron::Container::Main do
       let(:create_double) { double('Percheron::Container::Actions::Create') }
 
       before do
-        expect(logger_double).to receive(:debug).with("Container 'debian' does not exist, creating")
         expect(Percheron::Container::Actions::Create).to receive(:new).with(subject).and_return(create_double)
       end
 
       it 'asks Percheron::Container::Actions::Create to execute' do
+        expect(logger_double).to receive(:debug).with("Container 'debian' does not exist, creating")
+        expect(logger_double).to receive(:debug).with("Setting MD5 for 'debian' container to 0b03152a88e90de1c5466d6484b8ce5b")
+        expect(metastore_double).to receive(:set).with('stacks.debian_jessie.containers.debian.dockerfile_md5', '0b03152a88e90de1c5466d6484b8ce5b')
         expect(create_double).to receive(:execute!)
+
         subject.create!
       end
     end
 
     describe '#recreate!' do
-      before do
-        expect(logger_double).to receive(:warn).with("Not recreating 'debian' container as it does not exist")
-      end
-
       it 'warns the container does not exist ' do
+        expect(logger_double).to receive(:warn).with("Not recreating 'debian' container as it does not exist")
         subject.recreate!
       end
     end
 
     describe '#recreatable?' do
       it 'returns false' do
+        expect(metastore_double).to receive(:get).with('stacks.debian_jessie.containers.debian.dockerfile_md5')
         expect(subject.recreatable?).to be(false)
       end
     end
 
     describe '#recreate?' do
       it 'returns false' do
+        expect(metastore_double).to receive(:get).with('stacks.debian_jessie.containers.debian.dockerfile_md5')
         expect(subject.recreate?).to be(false)
       end
     end
@@ -209,13 +213,15 @@ describe Percheron::Container::Main do
 
     describe '#start!' do
       before do
-        expect(logger_double).to receive(:debug).with("Not creating 'debian' container as it already exists")
-        expect(logger_double).to receive(:debug).with("Container 'debian' does not need to be recreated")
         expect(Percheron::Container::Actions::Start).to receive(:new).with(subject).and_return(start_double)
       end
 
       it 'asks Percheron::Container::Actions::Start to execute' do
+        expect(logger_double).to receive(:debug).with("Not creating 'debian' container as it already exists")
+        expect(logger_double).to receive(:debug).with("Container 'debian' does not need to be recreated")
+        expect(metastore_double).to receive(:get).with('stacks.debian_jessie.containers.debian.dockerfile_md5').twice
         expect(start_double).to receive(:execute!)
+
         subject.start!
       end
     end
@@ -266,12 +272,15 @@ describe Percheron::Container::Main do
         let(:recreate_double) { double('Percheron::Container::Actions::Recreate') }
 
         before do
-          expect(logger_double).to receive(:warn).with("Container 'debian' exists and will be recreated")
           expect(Percheron::Container::Actions::Recreate).to receive(:new).with(subject).and_return(recreate_double)
         end
 
         it 'asks Percheron::Container::Actions::Recreate to execute' do
+          expect(logger_double).to receive(:warn).with("Container 'debian' exists and will be recreated")
+          expect(logger_double).to receive(:debug).with("Setting MD5 for 'debian' container to 0b03152a88e90de1c5466d6484b8ce5b")
+          expect(metastore_double).to receive(:set).with('stacks.debian_jessie.containers.debian.dockerfile_md5', '0b03152a88e90de1c5466d6484b8ce5b')
           expect(recreate_double).to receive(:execute!)
+
           subject.recreate!
         end
       end
@@ -290,6 +299,7 @@ describe Percheron::Container::Main do
 
       context "when the MD5's of the stored and current Dockerfile match" do
         it 'returns false' do
+          expect(metastore_double).to receive(:get).with('stacks.debian_jessie.containers.debian.dockerfile_md5')
           expect(subject.recreatable?).to be(false)
         end
       end
