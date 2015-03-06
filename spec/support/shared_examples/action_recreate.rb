@@ -1,4 +1,4 @@
-shared_examples "a recreate action" do
+shared_examples 'an Actions::Recreate' do
 
   context 'and the container was not running' do
     let(:running) { false }

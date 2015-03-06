@@ -55,13 +55,13 @@ describe Percheron::Container::Actions::Recreate do
           expect(build_double).to receive(:execute!)
         end
 
-        include_examples 'a recreate action'
+        include_examples 'an Actions::Recreate'
       end
 
       context 'when an image already exists' do
         let(:image_exists) { true }
 
-        include_examples 'a recreate action'
+        include_examples 'an Actions::Recreate'
       end
     end
 
