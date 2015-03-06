@@ -31,10 +31,7 @@ module Percheron
       end
 
       def base_docker_options
-        {
-          connect_timeout:  config.docker.timeout,
-          scheme:          'https'
-        }
+        { connect_timeout: config.docker.timeout }
       end
 
       def extra_docker_opts

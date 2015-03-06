@@ -32,7 +32,7 @@ describe Percheron::DockerConnection do
     end
 
     context "when ENV['DOCKER_CERT_PATH'] is not defined" do
-      let(:expected_options) { {:connect_timeout=>10, :scheme=>"https"} }
+      let(:expected_options) { {:connect_timeout=>10} }
 
       it 'sets Docker url' do
         subject.setup!
