@@ -15,10 +15,7 @@ module Percheron
     end
 
     def stacks
-      contents.stacks.inject({}) do |all, stack_config|
-        all[stack_config.name] = stack_config unless all[stack_config.name]
-        all
-      end
+      contents.stacks.to_hash_by_key(:name)
     end
 
     def file_base_path

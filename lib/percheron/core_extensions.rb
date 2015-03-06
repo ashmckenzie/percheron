@@ -1,7 +1,8 @@
 module Percheron
   module CoreExtensions
     module Array
-      module Returning
+      module Extras
+
         def return
           result = nil
           each do |x|
@@ -13,9 +14,17 @@ module Percheron
           end
           result
         end
+
+        def to_hash_by_key(key_attr)
+          inject({}) do |all, e|
+            all[e.send(key_attr)] = e unless all[e.send(key_attr)]
+            all
+          end
+        end
+
       end
     end
   end
 end
 
-Array.include(Percheron::CoreExtensions::Array::Returning)
+Array.include(Percheron::CoreExtensions::Array::Extras)

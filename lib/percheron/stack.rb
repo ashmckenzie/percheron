@@ -30,10 +30,7 @@ module Percheron
     end
 
     def container_configs
-      stack_config.containers.inject({}) do |all, container|
-        all[container.name] = container unless all[container.name]
-        all
-      end
+      stack_config.containers.to_hash_by_key(:name)
     end
 
     def containers
