@@ -6,6 +6,8 @@
 [![Test Coverage](https://codeclimate.com/github/ashmckenzie/percheron/badges/coverage.svg)](https://codeclimate.com/github/ashmckenzie/percheron)
 [![Dependency Status](https://gemnasium.com/ashmckenzie/percheron.svg)](https://gemnasium.com/ashmckenzie/percheron)
 
+![Perheron](https://raw.githubusercontent.com/ashmckenzie/percheron/cache-store/assets/percheron.png)
+
 Organise your Docker containers with muscle and intelligence.
 
 ## Installation
