@@ -332,13 +332,33 @@ describe Percheron::Container::Main do
     end
 
     describe '#recreate?' do
-      context 'when not #recreatable? is false' do
+      context 'when #recreatable? is false' do
         before do
-          expect(subject).to receive(:recreatable?).and_return(false)
+          allow(subject).to receive(:recreatable?).and_return(false)
         end
 
-        it 'returns false' do
-          expect(subject.recreate?).to be(false)
+        context 'when force_recreate is not defined' do
+          it 'returns false' do
+            expect(subject.recreate?).to be(false)
+          end
+        end
+
+        context 'when force_recreate is false' do
+          it 'returns false' do
+            expect(subject.recreate?(force_recreate: false)).to be(false)
+          end
+        end
+
+        context 'when force_recreate is true and force_auto_recreate is false' do
+          it 'returns false' do
+            expect(subject.recreate?(force_recreate: true, force_auto_recreate: false)).to be(false)
+          end
+        end
+
+        context 'when force_recreate is true and force_auto_recreate is true' do
+          it 'returns true' do
+            expect(subject.recreate?(force_recreate: true, force_auto_recreate: true)).to be(true)
+          end
         end
       end
 

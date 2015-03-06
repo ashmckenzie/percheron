@@ -103,30 +103,55 @@ describe Percheron::Stack do
 
     describe '#recreate!' do
       before do
-        expect(container_double).to receive(:recreate!).with(bypass_auto_recreate: expected_bypass_auto_recreate)
+        expect(container_double).to receive(:recreate!).with(force_recreate: force_recreate, force_auto_recreate: expected_force_auto_recreate)
       end
 
-      context 'with bypass_auto_recreate not defined' do
-        let (:expected_bypass_auto_recreate) { false }
+      context 'with force_recreate and force_auto_recreate not defined' do
+        let (:force_recreate) { false }
+        let (:expected_force_auto_recreate) { false }
 
         it 'asks each Container to recreate!' do
           subject.recreate!
         end
       end
 
-      context 'with bypass_auto_recreate set to false' do
-        let (:expected_bypass_auto_recreate) { false }
+      context 'with force_auto_recreate set to false' do
+        let (:expected_force_auto_recreate) { false }
 
-        it 'asks each Container to recreate!' do
-          subject.recreate!(bypass_auto_recreate: false)
+        context 'with force_recreate set to false' do
+          let (:force_recreate) { false }
+
+          it 'asks each Container to recreate!' do
+            subject.recreate!(force_recreate: false, force_auto_recreate: false)
+          end
+        end
+
+        context 'with force_recreate set to true' do
+          let (:force_recreate) { true }
+
+          it 'asks each Container to recreate!' do
+            subject.recreate!(force_recreate: true, force_auto_recreate: false)
+          end
         end
       end
 
-      context 'with bypass_auto_recreate set to true' do
-        let (:expected_bypass_auto_recreate) { true }
+      context 'with force_auto_recreate set to true' do
+        let (:expected_force_auto_recreate) { true }
 
-        it 'asks each Container to recreate!' do
-          subject.recreate!(bypass_auto_recreate: true)
+        context 'with force_recreate set to false' do
+          let (:force_recreate) { false }
+
+          it 'asks each Container to recreate!' do
+            subject.recreate!(force_recreate: false, force_auto_recreate: true)
+          end
+        end
+
+        context 'with force_recreate set to true' do
+          let (:force_recreate) { true }
+
+          it 'asks each Container to recreate!' do
+            subject.recreate!(force_recreate: true, force_auto_recreate: true)
+          end
         end
       end
     end

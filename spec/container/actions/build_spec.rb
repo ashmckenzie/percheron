@@ -20,13 +20,13 @@ describe Percheron::Container::Actions::Build do
   describe '#execute!' do
     let(:out) { 'output from Docker::Image.build_from_dir()' }
 
-    before do
-      expect(logger_double).to receive(:debug).with("Building 'debian:1.0.0'")
-    end
-
     it 'creates a Docker::Container' do
-      expect(logger_double).to receive(:debug).with(out)
+      expect(logger_double).to receive(:debug).with(Regexp.new("Executing '/bin/bash -x .+/percheron/spec/fixtures/pre_build_script.sh 2>&1' for 'debian' container"))
+      expect(logger_double).to receive(:debug).with(/echo 'Hello!'/)
+      expect(logger_double).to receive(:debug).with("Hello!")
+      expect(logger_double).to receive(:debug).with("Building 'debian:1.0.0'")
       expect(Docker::Image).to receive(:build_from_dir).with(container.dockerfile.dirname.to_s, expected_opts).and_yield(out)
+      expect(logger_double).to receive(:debug).with(out)
       subject.execute!
     end
   end

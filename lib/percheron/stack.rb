@@ -58,8 +58,8 @@ module Percheron
       exec_on_containers { |container| container.create! }
     end
 
-    def recreate!(bypass_auto_recreate: false)
-      exec_on_containers { |container| container.recreate!(bypass_auto_recreate: bypass_auto_recreate) }
+    def recreate!(force_recreate: false, force_auto_recreate: false)
+      exec_on_containers { |container| container.recreate!(force_recreate: force_recreate, force_auto_recreate: force_auto_recreate) }
     end
 
     def valid?

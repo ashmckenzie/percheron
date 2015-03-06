@@ -8,7 +8,7 @@ module Percheron
       def_delegators :container_config, :name
 
       def_config_item_with_default :container_config, false, :auto_recreate
-      def_config_item_with_default :container_config, [], :env, :ports, :volumes, :dependant_container_names
+      def_config_item_with_default :container_config, [], :env, :ports, :volumes, :dependant_container_names, :pre_build_scripts
 
       alias_method :auto_recreate?, :auto_recreate
 
@@ -87,9 +87,9 @@ module Percheron
         end
       end
 
-      def recreate!(bypass_auto_recreate: false)
+      def recreate!(force_recreate: false, force_auto_recreate: false)
         if exists?
-          if recreate?(bypass_auto_recreate: bypass_auto_recreate)
+          if recreate?(force_recreate: force_recreate, force_auto_recreate: force_auto_recreate)
             $logger.warn "Container '#{name}' exists and will be recreated"
             Container::Actions::Recreate.new(self).execute!
             set_dockerfile_md5!
@@ -109,8 +109,8 @@ module Percheron
         !dockerfile_md5s_match?
       end
 
-      def recreate?(bypass_auto_recreate: false)
-        recreatable? && versions_mismatch? && (bypass_auto_recreate || auto_recreate?)
+      def recreate?(force_recreate: false, force_auto_recreate: false)
+        (force_recreate || (recreatable? && versions_mismatch?)) && (force_auto_recreate || auto_recreate?)
       end
 
       def running?
