@@ -30,5 +30,4 @@ describe Percheron::Container::Actions::Build do
       subject.execute!
     end
   end
-
 end

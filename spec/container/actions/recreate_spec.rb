@@ -21,7 +21,6 @@ describe Percheron::Container::Actions::Recreate do
   end
 
   describe '#execute!' do
-
     context 'when the temporary Docker container does not exist' do
 
       let(:docker_container_double) { double('Docker::Container') }
@@ -36,7 +35,7 @@ describe Percheron::Container::Actions::Recreate do
 
         expect(container).to receive(:docker_container).and_return(docker_container_double)
         expect(container).to receive(:running?).and_return(running).at_least(:once)
-        expect(Docker::Image).to receive(:get).with('debian:1.0.0').and_return(image_exists)
+        expect(Docker::Image).to receive(:get).with('debian:1.0.0').and_return(docker_image_double)
         expect(Docker::Container).to receive(:get).with('debian_wip').and_return(wip_docker_container_double)
         expect(Docker::Container).to receive(:create).with(expected_opts)
         expect(logger_double).to receive(:debug).with("Recreating 'debian' container as 'debian_wip'")
@@ -47,7 +46,7 @@ describe Percheron::Container::Actions::Recreate do
       end
 
       context 'when an image does not exist' do
-        let(:image_exists) { false }
+        let(:docker_image_double) { nil }
 
         before do
           expect(logger_double).to receive(:debug).with("Creating 'debian:1.0.0' image")
@@ -59,7 +58,7 @@ describe Percheron::Container::Actions::Recreate do
       end
 
       context 'when an image already exists' do
-        let(:image_exists) { true }
+        let(:docker_image_double) { double('Docker::Image') }
 
         include_examples 'an Actions::Recreate'
       end
@@ -78,5 +77,4 @@ describe Percheron::Container::Actions::Recreate do
       end
     end
   end
-
 end

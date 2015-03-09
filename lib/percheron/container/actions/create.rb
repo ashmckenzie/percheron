@@ -11,6 +11,7 @@ module Percheron
 
         def execute!
           build!
+          insert_post_start_scripts!
           create!
         end
 
@@ -39,6 +40,14 @@ module Percheron
           def create!
             $logger.debug "Creating '#{container.name}' container"
             Docker::Container.create(create_opts)
+          end
+
+          def insert_post_start_scripts!
+            container.post_start_scripts.each do |script|
+              file = Pathname.new(File.expand_path(script, base_dir))
+              new_image = container.image.insert_local('localPath' => file.to_s, 'outputPath' => "/tmp/#{file.basename}")
+              new_image.tag(repo: container.name, tag: container.version.to_s, force: true)
+            end
           end
 
       end

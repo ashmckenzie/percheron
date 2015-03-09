@@ -38,7 +38,7 @@ module Percheron
             '%s_wip' % container.name
           end
 
-          # FIXME
+          # FIXME: brittle
           def temporary_container_exists?
             temporary_container.info.empty?
           rescue Docker::Error::NotFoundError
@@ -91,7 +91,7 @@ module Percheron
           end
 
           def rename_wip_to_current!
-            # FIXME
+            # FIXME: brittle
             $logger.debug "Renaming '#{temporary_name}' container to '#{container.name}'"
             Docker::Container.get(temporary_name).rename(container.name)
           end

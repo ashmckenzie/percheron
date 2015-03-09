@@ -17,7 +17,6 @@ describe Percheron::Container::Actions::Stop do
   end
 
   describe '#execute!' do
-
     context 'when the Docker container is running' do
       let(:container_running) { true }
       let(:docker_container_double) { double('Docker::Container') }
@@ -40,8 +39,6 @@ describe Percheron::Container::Actions::Stop do
         expect(logger_double).to receive(:debug).with("Not stopping 'debian' container as it's not running")
         expect{ subject.execute! }.to raise_error(Percheron::Errors::ContainerNotRunning)
       end
-
     end
   end
-
 end

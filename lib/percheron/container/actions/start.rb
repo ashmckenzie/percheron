@@ -12,6 +12,7 @@ module Percheron
         def execute!
           if container.exists?
             start!
+            execute_post_start_scripts!
           else
             raise Errors::ContainerDoesNotExist.new
           end
@@ -38,6 +39,17 @@ module Percheron
           def start!
             $logger.debug "Starting '#{container.name}'"
             container.docker_container.start!(start_opts)
+          end
+
+          def execute_post_start_scripts!
+            container.post_start_scripts.each do |script|
+              in_working_directory(base_dir) do
+                file = Pathname.new(File.expand_path(script, base_dir))
+                command = '/bin/bash -x /tmp/%s 2>&1' % file.basename
+                $logger.debug "Executing POST create '#{command}' for '#{container.name}' container"
+                container.docker_container.exec(command.split(' '))
+              end
+            end
           end
 
       end
