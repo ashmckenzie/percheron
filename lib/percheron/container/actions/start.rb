@@ -11,8 +11,7 @@ module Percheron
 
         def execute!
           if container.exists?
-            $logger.debug "Starting '#{container.name}'"
-            container.docker_container.start!(start_opts)
+            start!
           else
             raise Errors::ContainerDoesNotExist.new
           end
@@ -34,6 +33,11 @@ module Percheron
               'Links'         => container.links,
               'Binds'         => container.volumes
             }
+          end
+
+          def start!
+            $logger.debug "Starting '#{container.name}'"
+            container.docker_container.start!(start_opts)
           end
 
       end

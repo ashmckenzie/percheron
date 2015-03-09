@@ -15,7 +15,7 @@ describe Percheron::Container::Actions::Create do
 
   before do
     $logger = logger_double
-    expect(Docker::Image).to receive(:exist?).with('debian:1.0.0').and_return(image_exists)
+    expect(Docker::Image).to receive(:get).with('debian:1.0.0').and_return(image_exists)
   end
 
   describe '#execute!' do

@@ -1,5 +1,3 @@
-require 'open3'
-
 module Percheron
   module Container
     module Actions
@@ -13,13 +11,7 @@ module Percheron
         end
 
         def execute!
-          in_working_directory(base_dir) do
-            execute_pre_build_scripts!
-            $logger.debug "Building '#{container.image_name}'"
-            Docker::Image.build_from_dir(base_dir, build_opts) do |out|
-              $logger.debug '%s' % [ out.strip ]
-            end
-          end
+          build!
         end
 
         private
@@ -33,6 +25,17 @@ module Percheron
               'forcerm'     => true,
               'nocache'     => nocache
             }
+          end
+
+          def build!
+            in_working_directory(base_dir) do
+              execute_pre_build_scripts!
+
+              $logger.debug "Building '#{container.image_name}'"
+              Docker::Image.build_from_dir(base_dir, build_opts) do |out|
+                $logger.debug '%s' % [ out.strip ]
+              end
+            end
           end
 
           def execute_pre_build_scripts!

@@ -10,18 +10,22 @@ module Percheron
         end
 
         def execute!
-          if container.running?
-            $logger.debug "Stopping '#{container.name}'"
-            container.docker_container.stop!
-          else
-            $logger.debug "Not stopping '#{container.name}' container as it's not running"
-            raise Errors::ContainerNotRunning.new
-          end
+          stop!
         end
 
         private
 
           attr_reader :container
+
+          def stop!
+            if container.running?
+              $logger.debug "Stopping '#{container.name}'"
+              container.docker_container.stop!
+            else
+              $logger.debug "Not stopping '#{container.name}' container as it's not running"
+              raise Errors::ContainerNotRunning.new
+            end
+          end
 
       end
     end

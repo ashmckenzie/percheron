@@ -10,13 +10,8 @@ module Percheron
         end
 
         def execute!
-          unless image_exists?
-            $logger.debug "Creating '#{container.image_name}' image"
-            Container::Actions::Build.new(container).execute!
-          end
-
-          $logger.debug "Creating '#{container.name}' container"
-          Docker::Container.create(create_opts)
+          build!
+          create!
         end
 
         private
@@ -34,8 +29,16 @@ module Percheron
             }
           end
 
-          def image_exists?
-            Docker::Image.exist?(container.image_name)
+          def build!
+            unless container.image
+              $logger.debug "Creating '#{container.image_name}' image"
+              Container::Actions::Build.new(container).execute!
+            end
+          end
+
+          def create!
+            $logger.debug "Creating '#{container.name}' container"
+            Docker::Container.create(create_opts)
           end
 
       end
