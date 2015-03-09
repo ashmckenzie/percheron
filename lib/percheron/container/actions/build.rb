@@ -5,6 +5,8 @@ module Percheron
     module Actions
       class Build
 
+        include Base
+
         def initialize(container, nocache: false)
           @container = container
           @nocache = nocache
@@ -31,17 +33,6 @@ module Percheron
               'forcerm'     => true,
               'nocache'     => nocache
             }
-          end
-
-          def base_dir
-            container.dockerfile.dirname.to_s
-          end
-
-          def in_working_directory(new_dir)
-            old_dir = Dir.pwd
-            Dir.chdir(new_dir)
-            yield
-            Dir.chdir(old_dir)
           end
 
           def execute_pre_build_scripts!

@@ -3,6 +3,8 @@ module Percheron
     module Actions
       class Start
 
+        include Base
+
         def initialize(container)
           @container = container
         end

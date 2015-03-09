@@ -3,6 +3,8 @@ module Percheron
     module Actions
       class Recreate
 
+        include Base
+
         def initialize(container)
           @container = container
         end
