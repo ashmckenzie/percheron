@@ -8,7 +8,7 @@ module Percheron
       def_delegators :container_config, :name
 
       def_config_item_with_default :container_config, false, :auto_recreate
-      def_config_item_with_default :container_config, [], :env, :ports, :volumes, :dependant_container_names, :pre_build_scripts
+      def_config_item_with_default :container_config, [], :env, :ports, :volumes, :dependant_container_names, :pre_build_scripts, :post_start_scripts
 
       alias_method :auto_recreate?, :auto_recreate
 
