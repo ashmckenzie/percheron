@@ -15,7 +15,7 @@ module Percheron
         def execute!
           in_working_directory(base_dir) do
             execute_pre_build_scripts!
-            $logger.debug "Building '#{container.image}'"
+            $logger.debug "Building '#{container.image_name}'"
             Docker::Image.build_from_dir(base_dir, build_opts) do |out|
               $logger.debug '%s' % [ out.strip ]
             end
@@ -29,7 +29,7 @@ module Percheron
           def build_opts
             {
               'dockerfile'  => container.dockerfile.basename.to_s,
-              't'           => container.image,
+              't'           => container.image_name,
               'forcerm'     => true,
               'nocache'     => nocache
             }
@@ -39,7 +39,7 @@ module Percheron
             container.pre_build_scripts.each do |script|
               in_working_directory(base_dir) do
                 command = '/bin/bash -x %s 2>&1' % Pathname.new(File.expand_path(script))
-                $logger.debug "Executing '#{command}' for '#{container.name}' container"
+                $logger.debug "Executing PRE build '#{command}' for '#{container.name}' container"
                 Open3.popen2e(command) do |stdin, stdout_err, wait_thr|
                   while line = stdout_err.gets
                     $logger.debug line.strip

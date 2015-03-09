@@ -32,10 +32,34 @@ describe Percheron::Container::Main do
     $metastore = metastore_double
   end
 
-  context 'when the Docker Container does OR does not exist' do
-    describe '#image' do
+  context 'when the Docker Container does / does not exist' do
+    describe '#image_name' do
       it 'is a combination of name and version' do
-        expect(subject.image).to eql('debian:1.0.0')
+        expect(subject.image_name).to eql('debian:1.0.0')
+      end
+    end
+
+    describe '#image' do
+      context 'when the Docker Image does not exist' do
+        before do
+          expect(Docker::Image).to receive(:get).with('debian:1.0.0').and_raise(Docker::Error::NotFoundError)
+        end
+
+        it 'returns nil' do
+          expect(subject.image).to be_nil
+        end
+      end
+
+      context 'when the Docker Image does exist' do
+        let(:docker_image_double) { double('Docker::Image') }
+
+        before do
+          expect(Docker::Image).to receive(:get).with('debian:1.0.0').and_return(docker_image_double)
+        end
+
+        it 'returns a Docker::Image' do
+          expect(subject.image).to eql(docker_image_double)
+        end
       end
     end
 

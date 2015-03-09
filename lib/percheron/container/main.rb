@@ -25,6 +25,12 @@ module Percheron
       end
 
       def image
+        Docker::Image.get(image_name)
+      rescue Docker::Error::NotFoundError
+        nil
+      end
+
+      def image_name
         '%s:%s' % [ name, version.to_s ]
       end
 

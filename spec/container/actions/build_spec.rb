@@ -21,7 +21,7 @@ describe Percheron::Container::Actions::Build do
     let(:out) { 'output from Docker::Image.build_from_dir()' }
 
     it 'creates a Docker::Container' do
-      expect(logger_double).to receive(:debug).with(Regexp.new("Executing '/bin/bash -x .+/percheron/spec/fixtures/pre_build_script.sh 2>&1' for 'debian' container"))
+      expect(logger_double).to receive(:debug).with(Regexp.new("Executing PRE build '/bin/bash -x .+/percheron/spec/fixtures/pre_build_script.sh 2>&1' for 'debian' container"))
       expect(logger_double).to receive(:debug).with(/echo 'PRE build script'/)
       expect(logger_double).to receive(:debug).with("PRE build script")
       expect(logger_double).to receive(:debug).with("Building 'debian:1.0.0'")

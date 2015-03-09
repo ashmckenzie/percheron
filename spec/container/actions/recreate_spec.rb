@@ -36,7 +36,7 @@ describe Percheron::Container::Actions::Recreate do
 
         expect(container).to receive(:docker_container).and_return(docker_container_double)
         expect(container).to receive(:running?).and_return(running).at_least(:once)
-        expect(Docker::Image).to receive(:exist?).with('debian:1.0.0').and_return(image_exists)
+        expect(Docker::Image).to receive(:get).with('debian:1.0.0').and_return(image_exists)
         expect(Docker::Container).to receive(:get).with('debian_wip').and_return(wip_docker_container_double)
         expect(Docker::Container).to receive(:create).with(expected_opts)
         expect(logger_double).to receive(:debug).with("Recreating 'debian' container as 'debian_wip'")

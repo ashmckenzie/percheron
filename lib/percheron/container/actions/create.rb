@@ -11,7 +11,7 @@ module Percheron
 
         def execute!
           unless image_exists?
-            $logger.debug "Creating '#{container.image}' image"
+            $logger.debug "Creating '#{container.image_name}' image"
             Container::Actions::Build.new(container).execute!
           end
 
@@ -26,7 +26,7 @@ module Percheron
           def create_opts
             {
               'name'          => container.name,
-              'Image'         => container.image,
+              'Image'         => container.image_name,
               'Hostname'      => container.name,
               'Env'           => container.env,
               'ExposedPorts'  => container.exposed_ports,
@@ -35,7 +35,7 @@ module Percheron
           end
 
           def image_exists?
-            Docker::Image.exist?(container.image)
+            Docker::Image.exist?(container.image_name)
           end
 
       end
