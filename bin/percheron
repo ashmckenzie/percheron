@@ -16,10 +16,12 @@ if ENV['VERBOSE'] == 'true'
   logger_level = Logger::INFO
 end
 
-if ENV['DEBUG'] == 'true'
+if ENV['DEBUG'] == 'true' || ENV['DOCKER_DEBUG'] == 'true'
   require 'pry-byebug'
   require 'awesome_print'
   logger_level = Logger::DEBUG
+
+  Docker.logger = $logger if ENV['DOCKER_DEBUG'] == 'true'
 end
 
 $logger.level = logger_level
