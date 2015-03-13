@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Percheron::Actions::Build do
 
   let(:logger) { double('Logger').as_null_object }
-  let(:exec_action) { double('Percheron::Actions::Exec') }
+  let(:exec_local_action) { double('Percheron::Actions::ExecLocal') }
 
   let(:config) { Percheron::Config.new('./spec/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
@@ -28,12 +28,12 @@ describe Percheron::Actions::Build do
 
     before do
       allow(Docker::Image).to receive(:build_from_dir).with(container.dockerfile.dirname.to_s, expected_opts).and_yield(out)
-      allow(Percheron::Actions::Exec).to receive(:new).with(container, dependant_containers.values, ["./pre_build_script2.sh"], 'PRE build').and_return(exec_action)
-      allow(exec_action).to receive(:execute!)
+      allow(Percheron::Actions::ExecLocal).to receive(:new).with(container, ["./pre_build_script2.sh"], 'PRE build').and_return(exec_local_action)
+      allow(exec_local_action).to receive(:execute!)
     end
 
     it 'executes pre build scripts' do
-      expect(exec_action).to receive(:execute!)
+      expect(exec_local_action).to receive(:execute!)
       subject.execute!
     end
 

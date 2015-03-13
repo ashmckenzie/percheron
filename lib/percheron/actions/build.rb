@@ -39,7 +39,7 @@ module Percheron
         end
 
         def execute_pre_build_scripts!
-          Exec.new(container, container.dependant_containers.values, container.pre_build_scripts, 'PRE build').execute!
+          ExecLocal.new(container, container.pre_build_scripts, 'PRE build').execute!
         end
 
     end
