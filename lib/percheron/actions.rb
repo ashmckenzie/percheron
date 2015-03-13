@@ -8,6 +8,7 @@ require 'percheron/actions/rename'
 require 'percheron/actions/build'
 require 'percheron/actions/purge'
 require 'percheron/actions/exec'
+require 'percheron/actions/exec_local'
 
 module Percheron
   module Actions
