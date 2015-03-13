@@ -11,6 +11,17 @@ stacks:
         name: dependant_debian
         version: 1.1.0
         dockerfile: ./Dockerfile
+        dockerfile_md5: 0b03152a88e90de1c5466d6484b8ce5b
+        pre_build_scripts:
+          - ./pre_build_script1.sh
+        post_create_scripts:
+          - ./post_create_script1.sh
+        post_start_scripts:
+          - ./post_start_script1.sh
+        ports:
+          - '8888:8888'
+        volumes:
+          - '/outside/container/path:/inside/container/path'
 
       -
         name: debian
@@ -18,9 +29,11 @@ stacks:
         dockerfile: ./Dockerfile
         dockerfile_md5: 0b03152a88e90de1c5466d6484b8ce5b
         pre_build_scripts:
-          - ./pre_build_script.sh
+          - ./pre_build_script2.sh
+        post_create_scripts:
+          - ./post_create_script2.sh
         post_start_scripts:
-          - ./post_start_script.sh
+          - ./post_start_script2.sh
         ports:
           - '9999:9999'
         volumes:

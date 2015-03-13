@@ -1,4 +1,4 @@
 #!/bin/bash
 
-echo "POST start script"
+echo "POST create script #"
 touch /testing.txt
