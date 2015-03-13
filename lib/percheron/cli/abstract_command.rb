@@ -11,6 +11,13 @@ module Percheron
         exit(0)
       end
 
+      def self.default_parameters!
+        parameter('STACK_NAME', 'stack name', required: false)
+        parameter('CONTAINER_NAMES', 'container names', required: false, default: []) do |container_names|
+          container_names.split(/,/)
+        end
+      end
+
       def default_config_file
         ENV.fetch('PERCHERON_CONFIG', DEFAULT_CONFIG_FILE)
       end

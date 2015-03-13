@@ -2,10 +2,11 @@ module Percheron
   module CLI
     class StartCommand < AbstractCommand
 
-      parameter 'STACK_NAME', 'stack name'
+      default_parameters!
 
       def execute
-        Percheron::Stack.new(config, stack_name).start!
+        opts = { container_names: container_names }
+        Percheron::Stack.new(config, stack_name).start!(opts)
       end
     end
   end

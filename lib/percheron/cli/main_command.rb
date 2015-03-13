@@ -8,6 +8,7 @@ module Percheron
       subcommand 'restart', 'Restart a stack', RestartCommand
       subcommand 'create', 'Create a stack', CreateCommand
       subcommand 'recreate', 'Recreate a stack', RecreateCommand
+      subcommand 'purge', 'Purge a stack', PurgeCommand
     end
   end
 end
