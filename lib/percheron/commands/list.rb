@@ -1,6 +1,6 @@
 module Percheron
-  module CLI
-    class ListCommand < AbstractCommand
+  module Commands
+    class List < Abstract
 
       parameter('STACK_NAME', 'stack name', required: false)
 

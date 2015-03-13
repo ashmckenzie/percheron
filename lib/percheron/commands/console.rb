@@ -1,6 +1,6 @@
 module Percheron
-  module CLI
-    class ConsoleCommand < AbstractCommand
+  module Commands
+    class Console < Abstract
 
       def execute
         pry

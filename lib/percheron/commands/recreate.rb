@@ -1,6 +1,6 @@
 module Percheron
-  module CLI
-    class RecreateCommand < AbstractCommand
+  module Commands
+    class Recreate < Abstract
 
       default_parameters!
 

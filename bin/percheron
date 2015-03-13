@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require 'logger'
 require 'percheron'
-require 'percheron/cli'
+require 'percheron/commands'
 
 $metastore = Metastore::Cabinet.new(File.join(ENV['HOME'], '.percheron', 'metastore.yaml'))
 $logger = Logger.new(STDOUT)
@@ -27,7 +27,7 @@ end
 $logger.level = logger_level
 
 begin
-  Percheron::CLI::MainCommand.run
+  Percheron::Commands::Main.run
 rescue => e
   puts Percheron::OhDear.new(e).generate
 end

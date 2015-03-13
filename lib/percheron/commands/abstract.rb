@@ -1,6 +1,6 @@
 module Percheron
-  module CLI
-    class AbstractCommand < Clamp::Command
+  module Commands
+    class Abstract < Clamp::Command
 
       DEFAULT_CONFIG_FILE = '.percheron.yml'
 

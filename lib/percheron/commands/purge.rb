@@ -1,6 +1,6 @@
 module Percheron
-  module CLI
-    class PurgeCommand < AbstractCommand
+  module Commands
+    class Purge < Abstract
 
       parameter('STACK_NAME', 'stack name', required: false)
 
