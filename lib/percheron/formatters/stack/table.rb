@@ -29,7 +29,7 @@ module Percheron
           end
 
           def rows
-            stack.containers.map do |container_name, container|
+            stack.filter_containers.map do |container_name, container|
               [
                 container_name,
                 container.id,

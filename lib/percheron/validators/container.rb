@@ -10,7 +10,7 @@ module Percheron
         message = rules.return { |rule| send(rule) }
 
         if message
-          raise Errors::ContainerInvalid.new(message)
+          raise Errors::ContainerInvalid.new(formatted_message(message))
         else
           true
         end
@@ -19,6 +19,14 @@ module Percheron
       private
 
         attr_reader :container
+
+        def formatted_message(message)
+          if container.name
+            "Container config for '%s' is invalid: %s" % [ container.name, message ]
+          else
+            "Container config is invalid: %s" % [ message ]
+          end
+        end
 
         def rules
           [

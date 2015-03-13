@@ -12,20 +12,17 @@ module Percheron
       self
     end
 
-    def self.all(config)
-      all = {}
-      config.stacks.each do |stack_name, _|
+    def self.get(config, stack_name=nil)
+      if stack_name
         stack = new(config, stack_name)
-        all[stack.name] = stack
-      end
-      all
-    end
-
-    def self.get(config, stack_name)
-      if stack = all(config)[stack_name]
-        { stack.name => stack }
+        stack ? { stack.name => stack } : {}
       else
-        {}
+        all = {}
+        config.stacks.each do |stack_name, _|
+          stack = new(config, stack_name)
+          all[stack.name] = stack
+        end
+        all
       end
     end
 
@@ -33,33 +30,52 @@ module Percheron
       stack_config.containers.to_hash_by_key(:name)
     end
 
-    def containers
-      containers = {}
-      stack_config.containers.each do |container|
-        container = Container::Main.new(config, self, container.name)
-        containers[container.name] = container
+    # FIXME: YUCK
+    def filter_containers(container_names=[])
+      container_names = !container_names.empty? ? container_names : filter_container_names
+      container_names.inject({}) do |all, container_name|
+        all[container_name] = Container.new(config, self, container_name)
+        all
       end
-      containers
     end
 
-    def stop!
-      exec_on_containers { |container| container.stop! }
+    def stop!(container_names: [])
+      container_names = dependant_containers(container_names).reverse
+      serial_processor(container_names) { |container| Actions::Stop.new(container).execute! }
     end
 
-    def start!
-      exec_on_containers { |container| container.start! }
+    def start!(container_names: [])
+      container_names = dependant_containers(container_names)
+      serial_processor(container_names) { |container| Actions::Start.new(container, container.dependant_containers.values).execute! }
     end
 
-    def restart!
-      exec_on_containers { |container| container.restart! }
+    def restart!(container_names: [])
+      container_names = dependant_containers(container_names).reverse
+      serial_processor(container_names) { |container| Actions::Restart.new(container).execute! }
     end
 
-    def create!
-      exec_on_containers { |container| container.create! }
+    def create!(container_names: [])
+      container_names = dependant_containers(container_names)
+      serial_processor(container_names) { |container| Actions::Create.new(container).execute! }
     end
 
-    def recreate!(force_recreate: false, force_auto_recreate: false)
-      exec_on_containers { |container| container.recreate!(force_recreate: force_recreate, force_auto_recreate: force_auto_recreate) }
+    def recreate!(container_names: [], force_recreate: false, delete: false)
+      current = container_names_final = filter_container_names(container_names)
+
+      # FIXME: make this suck less
+      while true
+        current = deps = containers_affected(current).uniq
+        break if deps.empty?
+        container_names_final += deps
+      end
+
+      serial_processor(container_names_final.uniq) do |container|
+        Actions::Recreate.new(container, force_recreate: force_recreate, delete: delete).execute!
+      end
+    end
+
+    def purge!
+      serial_processor(filter_container_names) { |container| Actions::Purge.new(container).execute! }
     end
 
     def valid?
@@ -71,13 +87,56 @@ module Percheron
       attr_reader :config, :stack_name
 
       def stack_config
-        @stack_config ||= config.stacks[stack_name] || Hashie::Mash.new({})
+        @stack_config ||= (config.stacks[stack_name] || Hashie::Mash.new({}))
       end
 
-      def exec_on_containers
-        containers.each do |container_name, container|
+      def filter_container_names(container_names=[])
+        stack_config.containers.map do |container_config|
+          if container_names.empty? || container_names.include?(container_config.name)
+            container_config.name
+          end
+        end.compact
+      end
+
+      def exec_on_containers(container_names)
+        filter_containers(container_names).each { |_, container| yield(container) }
+      end
+
+      def serial_processor(container_names)
+        exec_on_containers(container_names) do |container|
           yield(container)
+          container_names.delete(container.name)
         end
       end
+
+      def containers_affected(container_names)
+        deps = []
+        container_names.each do |container_name|
+          filter_containers.each do |_, container|
+            deps << container.name if container.dependant_container_names.include?(container_name)
+          end
+        end
+        deps
+      end
+
+      def containers_and_their_dependants(container_names)
+        all_containers = filter_containers
+         container_names.inject({}) do |all, container_name|
+          all[container_name] = all_containers[container_name].dependant_container_names
+          all
+        end
+      end
+
+      def dependant_containers(container_names)
+        container_names = filter_container_names(container_names)
+
+        wip_list = []
+        containers_and_their_dependants(container_names).each do |container_name, dependant_container_names|
+          wip_list += dependant_container_names unless dependant_container_names.empty?
+          wip_list << container_name
+        end
+        wip_list.uniq
+      end
+
   end
 end
