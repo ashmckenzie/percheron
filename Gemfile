@@ -3,10 +3,10 @@ source 'https://rubygems.org'
 gemspec
 
 group :test do
-  gem 'codeclimate-test-reporter', '~> 0.1', require: nil
+  gem 'codeclimate-test-reporter', '~> 0.1', require: false
 end
 
 group :development do
-  gem 'pry-byebug', '~> 3.0'
-  gem 'awesome_print', '~> 1.0'
+  gem 'pry-byebug', '~> 3.0',     require: false
+  gem 'awesome_print', '~> 1.0',  require: false
 end
