@@ -11,8 +11,10 @@ module Percheron
 
       def execute!
         create_or_recreate!
-        start!                        unless container.running?
-        execute_post_start_scripts!   unless container.post_start_scripts.empty?
+        unless container.running?
+          start!
+          execute_post_start_scripts! unless container.post_start_scripts.empty?
+        end
         container
       end
 

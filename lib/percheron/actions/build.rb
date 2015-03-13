@@ -29,8 +29,7 @@ module Percheron
 
         def build!
           in_working_directory(base_dir) do
-            execute_pre_build_scripts!
-
+            execute_pre_build_scripts!  unless container.pre_build_scripts.empty?
             $logger.info "Building '#{container.image_name}'"
             Docker::Image.build_from_dir(base_dir, build_opts) do |out|
               $logger.debug '%s' % [ out.strip ]

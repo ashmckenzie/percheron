@@ -64,7 +64,7 @@ module Percheron
           build_image!
           insert_scripts!
           create_container!(opts.fetch(:create, {}))
-          execute_post_create_scripts!
+          execute_post_create_scripts! unless container.post_create_scripts.empty?
           set_dockerfile_md5!
         end
 
