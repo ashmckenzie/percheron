@@ -10,10 +10,10 @@ require 'percheron/cli'
 $metastore = Metastore::Cabinet.new(File.join(ENV['HOME'], '.percheron', 'metastore.yaml'))
 $logger = Logger.new(STDOUT)
 
-logger_level = Logger::WARN
-
-if ENV['VERBOSE'] == 'true'
   logger_level = Logger::INFO
+
+if ENV['QUIET'] == 'true'
+  logger_level = Logger::WARN
 end
 
 if ENV['DEBUG'] == 'true' || ENV['DOCKER_DEBUG'] == 'true'
