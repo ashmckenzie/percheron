@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Percheron::Config do
 
-  let(:config_file) { './spec/fixtures/.percheron_valid.yml' }
+  let(:config_file) { './spec/support/.percheron_valid.yml' }
 
   subject { described_class.new(config_file) }
 

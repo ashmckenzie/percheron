@@ -16,11 +16,11 @@ describe Percheron::Validators::Config do
 
     context 'when config file is defined' do
 
-      let(:config_file_name) { './spec/fixtures/.percheron_valid.yml' }
+      let(:config_file_name) { './spec/support/.percheron_valid.yml' }
       let(:config_file) { Pathname.new(config_file_name).expand_path }
 
       context 'and does not exist on disk' do
-        let(:config_file_name) { './spec/fixtures/.percheron_missing.yml' }
+        let(:config_file_name) { './spec/support/.percheron_missing.yml' }
 
         it 'raises exception' do
           expect{ subject.valid? }.to raise_error(Percheron::Errors::ConfigFileInvalid, /Config file '.+#{config_file_name}' does not exist/)
@@ -28,7 +28,7 @@ describe Percheron::Validators::Config do
       end
 
       context 'and is empty' do
-        let(:config_file_name) { './spec/fixtures/.percheron_empty.yml' }
+        let(:config_file_name) { './spec/support/.percheron_empty.yml' }
 
         it 'raises exception' do
           expect{ subject.valid? }.to raise_error(Percheron::Errors::ConfigFileInvalid, /Config file '.+#{config_file_name}' is empty/)
@@ -36,7 +36,7 @@ describe Percheron::Validators::Config do
       end
 
       context 'and is invalid' do
-        let(:config_file_name) { './spec/fixtures/.percheron_invalid_docker.yml' }
+        let(:config_file_name) { './spec/support/.percheron_invalid_docker.yml' }
 
         it 'raises exception' do
           expect{ subject.valid? }.to raise_error(Percheron::Errors::ConfigFileInvalid, /Config file '.+#{config_file_name}' is invalid/)

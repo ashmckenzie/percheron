@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Percheron::DockerConnection do
 
-  let(:config) { Percheron::Config.new('./spec/fixtures/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.new('./spec/support/.percheron_valid.yml') }
 
   let(:expected_url) { 'https://127.0.0.1:2376' }
 
