@@ -29,13 +29,19 @@ module Percheron
 
       def stop_containers!(containers)
         exec_on_containers!(containers) do |container|
-          Stop.new(container).execute! if container.running?
+          if container.running?
+            $logger.debug "Stopping '#{container.name}' container"
+            Stop.new(container).execute!
+          end
         end
       end
 
       def start_containers!(containers)
         exec_on_containers!(containers) do |container|
-          Start.new(container, container.dependant_containers.values).execute! unless container.running?
+          unless container.running?
+            $logger.debug "Starting '#{container.name}' container"
+            Start.new(container, container.dependant_containers.values).execute!
+          end
         end
       end
 

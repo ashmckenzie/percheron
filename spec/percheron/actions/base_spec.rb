@@ -16,18 +16,21 @@ describe Percheron::Actions::Base do
 
   end
 
+  let(:logger) { double('Logger').as_null_object }
   let(:config) { Percheron::Config.new('./spec/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:container) { Percheron::Container.new(config, stack, 'debian') }
   let(:dependant_containers) { container.dependant_containers }
 
   before do
+    $logger = logger
     Timecop.freeze(Time.local(1990))
     allow(container).to receive(:dependant_containers).and_return(dependant_containers)
   end
 
   after do
     Timecop.return
+    $logger = nil
   end
 
   subject { Percheron::Actions::BaseClass.new(container) }
