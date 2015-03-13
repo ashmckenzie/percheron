@@ -16,6 +16,7 @@ require 'percheron/formatters'
 require 'percheron/validators'
 require 'percheron/stack'
 require 'percheron/container'
+require 'percheron/actions'
 require 'percheron/docker_connection'
 
 module Percheron
