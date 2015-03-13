@@ -6,6 +6,7 @@ require 'naught'
 require 'semantic'
 require 'metastore'
 
+require 'percheron/oh_dear'
 require 'percheron/core_extensions'
 require 'percheron/version'
 require 'percheron/config'
