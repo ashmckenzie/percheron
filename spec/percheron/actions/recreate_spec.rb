@@ -35,7 +35,7 @@ describe Percheron::Actions::Recreate do
         let(:stored_dockerfile_md5) { nil }
 
         it 'logs Docker Container does not need to be recreated' do
-          expect(logger).to receive(:debug).with("Container 'debian' does not need to be recreated")
+          expect(logger).to receive(:info).with("Container 'debian' does not need to be recreated")
           subject.execute!
         end
       end
