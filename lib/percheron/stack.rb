@@ -40,32 +40,24 @@ module Percheron
     end
 
     def stop!(container_names: [])
-      container_names = dependant_containers(container_names).reverse
-      serial_processor(container_names) { |container| Actions::Stop.new(container).execute! }
+      container_names = dependant_containers_for(container_names).reverse
+      exec_on_dependant_containers_for(container_names) { |container| Actions::Stop.new(container).execute! }
     end
 
     def start!(container_names: [])
-      container_names = dependant_containers(container_names)
-      serial_processor(container_names) do |container|
-        Actions::Start.new(container, container.dependant_containers.values).execute!
-        $logger.info ''
-      end
+      container_names = dependant_containers_for(container_names)
+      exec_on_dependant_containers_for(container_names) { |container| Actions::Start.new(container, container.dependant_containers.values).execute! }
+
     end
 
     def restart!(container_names: [])
-      container_names = dependant_containers(container_names)
-      serial_processor(container_names) do |container|
-        Actions::Restart.new(container).execute!
-        $logger.info ''
-      end
+      container_names = dependant_containers_for(container_names)
+      exec_on_dependant_containers_for(container_names) { |container| Actions::Restart.new(container).execute! }
     end
 
     def create!(container_names: [])
-      container_names = dependant_containers(container_names)
-      serial_processor(container_names) do |container|
-        Actions::Create.new(container).execute!
-        $logger.info ''
-      end
+      container_names = dependant_containers_for(container_names)
+      exec_on_dependant_containers_for(container_names) { |container| Actions::Create.new(container).execute! }
     end
 
     def recreate!(container_names: [], force_recreate: false, delete: false)
@@ -78,10 +70,7 @@ module Percheron
         container_names_final += deps
       end
 
-      serial_processor(container_names_final.uniq) do |container|
-        Actions::Recreate.new(container, force_recreate: force_recreate, delete: delete).execute!
-        $logger.info ''
-      end
+      exec_on_dependant_containers_for(container_names_final.uniq) { |container| Actions::Recreate.new(container, force_recreate: force_recreate, delete: delete).execute! }
     end
 
     def purge!
@@ -115,6 +104,13 @@ module Percheron
         filter_containers(container_names).each { |_, container| yield(container) }
       end
 
+      def exec_on_dependant_containers_for(container_names)
+        serial_processor(container_names) do |container|
+          yield(container)
+          $logger.info ''
+        end
+      end
+
       def serial_processor(container_names)
         exec_on_containers(container_names) do |container|
           yield(container)
@@ -140,7 +136,7 @@ module Percheron
         end
       end
 
-      def dependant_containers(container_names)
+      def dependant_containers_for(container_names)
         container_names = filter_container_names(container_names)
 
         wip_list = []
