@@ -46,17 +46,26 @@ module Percheron
 
     def start!(container_names: [])
       container_names = dependant_containers(container_names)
-      serial_processor(container_names) { |container| Actions::Start.new(container, container.dependant_containers.values).execute! }
+      serial_processor(container_names) do |container|
+        Actions::Start.new(container, container.dependant_containers.values).execute!
+        $logger.info ''
+      end
     end
 
     def restart!(container_names: [])
-      container_names = dependant_containers(container_names).reverse
-      serial_processor(container_names) { |container| Actions::Restart.new(container).execute! }
+      container_names = dependant_containers(container_names)
+      serial_processor(container_names) do |container|
+        Actions::Restart.new(container).execute!
+        $logger.info ''
+      end
     end
 
     def create!(container_names: [])
       container_names = dependant_containers(container_names)
-      serial_processor(container_names) { |container| Actions::Create.new(container).execute! }
+      serial_processor(container_names) do |container|
+        Actions::Create.new(container).execute!
+        $logger.info ''
+      end
     end
 
     def recreate!(container_names: [], force_recreate: false, delete: false)
@@ -71,11 +80,15 @@ module Percheron
 
       serial_processor(container_names_final.uniq) do |container|
         Actions::Recreate.new(container, force_recreate: force_recreate, delete: delete).execute!
+        $logger.info ''
       end
     end
 
     def purge!
-      serial_processor(filter_container_names) { |container| Actions::Purge.new(container).execute! }
+      serial_processor(filter_container_names) do |container|
+        Actions::Purge.new(container).execute!
+        $logger.info ''
+      end
     end
 
     def valid?
