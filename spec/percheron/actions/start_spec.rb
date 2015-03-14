@@ -24,7 +24,6 @@ describe Percheron::Actions::Start do
   describe '#execute!' do
 
     let(:create_double) { double('Percheron::Actions::Create') }
-    let(:recreate_double) { double('Percheron::Actions::Recreate') }
 
     before do
       expect(container).to receive(:running?).and_return(container_running)
@@ -59,16 +58,6 @@ describe Percheron::Actions::Start do
 
       context 'when the container does exist' do
         let(:container_exists) { true }
-
-        before do
-          expect(Percheron::Actions::Recreate).to receive(:new).with(container).and_return(recreate_double)
-          allow(recreate_double).to receive(:execute!)
-        end
-
-        it 'should ask Actions::Recreate to execute' do
-          expect(recreate_double).to receive(:execute!)
-          subject.execute!
-        end
 
         include_examples 'an Actions::Start'
       end
