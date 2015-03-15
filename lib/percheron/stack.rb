@@ -104,8 +104,7 @@ module Percheron
 
       def exec_on_dependant_containers_for(container_names)
         serial_processor(container_names) do |container|
-          yield(container)
-          $logger.info ''
+          $logger.info '' if yield(container)
         end
       end
 
