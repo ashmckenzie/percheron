@@ -11,8 +11,9 @@ module Percheron
       end
 
       def execute!
-        rename!
-        container
+        results = []
+        results << rename!
+        results.compact.empty? ? nil : container
       end
 
       private

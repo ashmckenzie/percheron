@@ -10,12 +10,13 @@ module Percheron
       end
 
       def execute!(opts={})
+        results = []
         if recreate? || !container.exists?
-          create!(opts)
-          container
+          results << create!(opts)
         else
           $logger.debug "Container '#{container.name}' already exists"
         end
+        results.compact.empty? ? nil : container
       end
 
       private
@@ -61,7 +62,7 @@ module Percheron
 
         def create!(opts)
           $logger.debug "Container '#{container.name}' does not exist, creating"
-          build_image!
+          build_image! unless container.image_exists?
           insert_scripts!
           create_container!(opts.fetch(:create, {}))
           execute_post_create_scripts! unless container.post_create_scripts.empty?
@@ -69,39 +70,27 @@ module Percheron
         end
 
         def build_image!
-          unless container.image_exists?
-            $logger.info "Creating '#{container.image_name}' image"
-            Build.new(container).execute!
-          end
+          Build.new(container).execute!
+        end
+
+        def insert_scripts!
+          insert_files!(container.post_create_scripts)
+          insert_files!(container.post_start_scripts)
+        end
+
+        def create_container!(opts)
+          options = base_options.merge(host_config_options).merge(opts)
+          $logger.info "Creating '%s' container" % options['name']
+          Docker::Container.create(options)
+        end
+
+        def execute_post_create_scripts!
+          Exec.new(container, container.dependant_containers.values, container.post_create_scripts, 'POST create').execute!
         end
 
         def set_dockerfile_md5!
           $logger.info "Setting MD5 for '#{container.name}' container to #{container.current_dockerfile_md5}"
           $metastore.set("#{container.metastore_key}.dockerfile_md5", container.current_dockerfile_md5)
-        end
-
-        def create_container!(opts)
-          options = base_options.merge(host_config_options).merge(opts)
-
-          $logger.info "Creating '%s' container" % options['name']
-          Docker::Container.create(options)
-        end
-
-        def insert_scripts!
-          insert_post_create_scripts!
-          insert_post_start_scripts!
-        end
-
-        def insert_post_create_scripts!
-          insert_files!(container.post_create_scripts)
-        end
-
-        def insert_post_start_scripts!
-          insert_files!(container.post_start_scripts)
-        end
-
-        def execute_post_create_scripts!
-          Exec.new(container, container.dependant_containers.values, container.post_create_scripts, 'POST create').execute!
         end
 
     end

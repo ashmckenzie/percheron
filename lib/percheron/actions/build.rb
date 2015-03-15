@@ -10,8 +10,9 @@ module Percheron
       end
 
       def execute!
-        build!
-        container
+        results = []
+        results << build!
+        results.compact.empty? ? nil : container
       end
 
       private
@@ -30,7 +31,7 @@ module Percheron
         def build!
           in_working_directory(base_dir) do
             execute_pre_build_scripts!  unless container.pre_build_scripts.empty?
-            $logger.info "Building '#{container.image_name}'"
+            $logger.info "Building '#{container.image_name}' image"
             Docker::Image.build_from_dir(base_dir, build_opts) do |out|
               $logger.debug '%s' % [ out.strip ]
             end

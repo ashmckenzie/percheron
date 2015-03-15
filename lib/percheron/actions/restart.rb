@@ -9,9 +9,10 @@ module Percheron
       end
 
       def execute!
-        stop!
-        start!
-        container
+        results = []
+        results << stop!
+        results << start!
+        results.compact.empty? ? nil : container
       end
 
       private

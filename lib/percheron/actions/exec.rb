@@ -12,11 +12,12 @@ module Percheron
       end
 
       def execute!
+        results = []
         $logger.debug "Executing #{description} scripts '#{scripts.inspect}' on '#{container.name}'"
         started_dependant_containers = start_containers!(dependant_containers)
-        execute_scripts_on_running_container!
-        stop_containers!(started_dependant_containers)
-        container
+        results << execute_scripts_on_running_container!
+        results << stop_containers!(started_dependant_containers)
+        results.compact.empty? ? nil : container
       end
 
       private

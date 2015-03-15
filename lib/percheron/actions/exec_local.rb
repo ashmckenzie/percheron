@@ -13,8 +13,9 @@ module Percheron
       end
 
       def execute!
-        $logger.debug "Executing #{description} scripts '#{scripts.inspect}' locally"
-        execute_scripts!
+        results = []
+        results << execute_scripts!
+        results.compact.empty? ? nil : container
       end
 
       private
@@ -22,6 +23,7 @@ module Percheron
         attr_reader :container, :scripts, :description
 
         def execute_scripts!
+          $logger.debug "Executing #{description} scripts '#{scripts.inspect}' locally"
           scripts.each do |script|
             in_working_directory(base_dir) do
               execute_command!('/bin/bash -x %s 2>&1' % Pathname.new(File.expand_path(script)))

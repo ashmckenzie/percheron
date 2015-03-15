@@ -10,12 +10,13 @@ module Percheron
       end
 
       def execute!
-        create! unless container.exists?
+        results = []
+        results << create! unless container.exists?
         unless container.running?
-          start!
-          execute_post_start_scripts! unless container.post_start_scripts.empty?
+          results << start!
+          results << execute_post_start_scripts! unless container.post_start_scripts.empty?
         end
-        container
+        results.compact.empty? ? nil : container
       end
 
       private

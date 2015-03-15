@@ -9,10 +9,11 @@ module Percheron
       end
 
       def execute!
-        stop!
-        delete_container! if container.exists?
-        delete_image!     if container.image_exists?
-        container
+        results = []
+        results << stop!
+        results << delete_container! if container.exists?
+        results << delete_image!     if container.image_exists?
+        results.compact.empty? ? nil : container
       end
 
       private

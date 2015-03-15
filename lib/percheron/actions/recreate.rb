@@ -11,9 +11,9 @@ module Percheron
       end
 
       def execute!
+        results = []
         if recreate?
-          recreate!
-          container
+          results << recreate!
         else
           unless dockerfile_md5s_match?
             $logger.warn "Container '#{container.name}' MD5's do not match, consider recreating (bump the version!)"
@@ -21,6 +21,7 @@ module Percheron
             $logger.info "Container '#{container.name}' does not need to be recreated"
           end
         end
+        results.compact.empty? ? nil : container
       end
 
       private
