@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = [ 'Ash McKenzie' ]
   spec.email         = [ 'ash@the-rebellion.net' ]
 
-  spec.summary       = %q{Organise your Docker containers with muscle and intelligence}
+  spec.summary       = 'Organise your Docker containers with muscle and intelligence'
   spec.homepage      = 'https://github.com/ashmckenzie/percheron'
   spec.license       = 'MIT'
 
@@ -33,4 +33,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-rspec', '~> 4.5'
   spec.add_development_dependency 'simplecov', '~> 0.9'
   spec.add_development_dependency 'timecop', '~> 0.7'
+  spec.add_development_dependency 'rubocop', '~> 0.29.0'
 end

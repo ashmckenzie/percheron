@@ -1,0 +1,20 @@
+Style/SpaceInsideBrackets:
+  Enabled: false
+
+Style/EmptyLinesAroundClassBody:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/IndentationConsistency:
+  Enabled: false
+
+Style/FormatString:
+  Enabled: false
+
+Metrics/LineLength:
+  Enabled: false
+
+Style/GlobalVars:
+  Enabled: false
