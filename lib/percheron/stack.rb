@@ -73,11 +73,9 @@ module Percheron
       exec_on_dependant_containers_for(container_names_final.uniq) { |container| Actions::Recreate.new(container, force_recreate: force_recreate, delete: delete).execute! }
     end
 
-    def purge!
-      serial_processor(filter_container_names) do |container|
-        Actions::Purge.new(container).execute!
-        $logger.info ''
-      end
+    def purge!(container_names: [])
+      container_names = filter_container_names(container_names)
+      exec_on_dependant_containers_for(container_names) { |container| Actions::Purge.new(container).execute! }
     end
 
     def valid?

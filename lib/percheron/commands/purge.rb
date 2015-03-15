@@ -2,10 +2,11 @@ module Percheron
   module Commands
     class Purge < Abstract
 
-      parameter('STACK_NAME', 'stack name', required: false)
+      default_parameters!
 
       def execute
-        Percheron::Stack.new(config, stack_name).purge!
+        opts = { container_names: container_names }
+        stack.purge!(opts)
       end
     end
   end
