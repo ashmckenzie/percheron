@@ -36,11 +36,11 @@ module Percheron
         end
       end
 
-      def start_containers!(containers)
+      def start_containers!(containers, exec_scripts: true)
         exec_on_containers!(containers) do |container|
           unless container.running?
             $logger.debug "Starting '#{container.name}' container"
-            Start.new(container, container.dependant_containers.values).execute!
+            Start.new(container, dependant_containers: container.dependant_containers.values, exec_scripts: exec_scripts).execute!
           end
         end
       end

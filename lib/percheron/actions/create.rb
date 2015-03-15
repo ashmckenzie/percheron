@@ -61,7 +61,6 @@ module Percheron
         end
 
         def create!(opts)
-          $logger.debug "Container '#{container.name}' does not exist, creating"
           build_image! unless container.image_exists?
           insert_scripts!
           create_container!(opts.fetch(:create, {}))

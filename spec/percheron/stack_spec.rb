@@ -114,7 +114,7 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Start') }
 
       it 'asks each Container to start' do
-        expect(klass).to receive(:new).with(container, dependant_containers).and_return(action_double).twice
+        expect(klass).to receive(:new).with(container, dependant_containers: dependant_containers).and_return(action_double).twice
         subject.start!
       end
     end

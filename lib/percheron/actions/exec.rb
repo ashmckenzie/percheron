@@ -26,7 +26,7 @@ module Percheron
 
         def execute_scripts_on_running_container!
           container_running = container.running?
-          Start.new(container).execute! unless container_running
+          Start.new(container, exec_scripts: false).execute! unless container_running
           execute_scripts!
           Stop.new(container).execute!  unless container_running
         end

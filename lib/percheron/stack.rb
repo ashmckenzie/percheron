@@ -46,8 +46,7 @@ module Percheron
 
     def start!(container_names: [])
       container_names = dependant_containers_for(container_names)
-      exec_on_dependant_containers_for(container_names) { |container| Actions::Start.new(container, container.dependant_containers.values).execute! }
-
+      exec_on_dependant_containers_for(container_names) { |container| Actions::Start.new(container, dependant_containers: container.dependant_containers.values).execute! }
     end
 
     def restart!(container_names: [])

@@ -15,7 +15,7 @@ describe Percheron::Actions::Restart do
       expect(Percheron::Actions::Stop).to receive(:new).with(container).and_return(stop_action)
       expect(stop_action).to receive(:execute!)
 
-      expect(Percheron::Actions::Start).to receive(:new).with(container, dependant_containers).and_return(start_action)
+      expect(Percheron::Actions::Start).to receive(:new).with(container, dependant_containers: dependant_containers).and_return(start_action)
       expect(start_action).to receive(:execute!)
 
       subject.execute!

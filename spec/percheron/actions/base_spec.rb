@@ -87,7 +87,7 @@ describe Percheron::Actions::Base do
 
     it 'starts containers and returns affected' do
       expect(container).to receive(:running?).and_return(false)
-      expect(Percheron::Actions::Start).to receive(:new).with(container, dependant_containers.values).and_return(start_action)
+      expect(Percheron::Actions::Start).to receive(:new).with(container, dependant_containers: dependant_containers.values, exec_scripts: true).and_return(start_action)
       expect(start_action).to receive(:execute!).and_return(container)
 
       expect(subject.start_containers!([ container ])).to eql([ container ])

@@ -35,7 +35,7 @@ describe Percheron::Actions::Exec do
     it 'executes scripts' do
       expect(subject).to receive(:start_containers!).with(dependant_containers).and_return(started_containers)
 
-      expect(Percheron::Actions::Start).to receive(:new).with(container).and_return(start_action)
+      expect(Percheron::Actions::Start).to receive(:new).with(container, exec_scripts: false).and_return(start_action)
       expect(start_action).to receive(:execute!).and_return(started_containers)
 
       expect(docker_container).to receive(:exec).with(["/bin/bash", "-x", "/tmp/test.sh", "2>&1"]).and_yield(:stdout, 'output from test.sh')

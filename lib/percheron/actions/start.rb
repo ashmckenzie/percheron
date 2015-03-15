@@ -4,9 +4,10 @@ module Percheron
 
       include Base
 
-      def initialize(container, dependant_containers=[])
+      def initialize(container, dependant_containers: [], exec_scripts: true)
         @container = container
         @dependant_containers = dependant_containers
+        @exec_scripts = exec_scripts
       end
 
       def execute!
@@ -14,16 +15,21 @@ module Percheron
         results << create! unless container.exists?
         unless container.running?
           results << start!
-          results << execute_post_start_scripts! unless container.post_start_scripts.empty?
+          results << execute_post_start_scripts! if exec_scripts?
         end
         results.compact.empty? ? nil : container
       end
 
       private
 
-        attr_reader :container, :dependant_containers
+        attr_reader :container, :dependant_containers, :exec_scripts
+
+        def exec_scripts?
+          !container.post_start_scripts.empty? && exec_scripts
+        end
 
         def create!
+          $logger.info "Creating '#{container.name}' container as it doesn't exist"
           Create.new(container).execute!
         end
 

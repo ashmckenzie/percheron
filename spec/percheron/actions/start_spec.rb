@@ -11,7 +11,7 @@ describe Percheron::Actions::Start do
   let(:container) { Percheron::Container.new(config, stack, 'debian') }
   let(:dependant_containers) { container.dependant_containers.values }
 
-  subject { described_class.new(container, dependant_containers) }
+  subject { described_class.new(container, dependant_containers: dependant_containers) }
 
   before do
     $logger = logger

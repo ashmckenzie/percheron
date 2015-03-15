@@ -24,7 +24,7 @@ module Percheron
         end
 
         def start!
-          Start.new(container, container.dependant_containers.values).execute!
+          Start.new(container, dependant_containers: container.dependant_containers.values).execute!
         end
 
     end
