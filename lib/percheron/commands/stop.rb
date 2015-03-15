@@ -6,7 +6,7 @@ module Percheron
 
       def execute
         opts = { container_names: container_names }
-        Percheron::Stack.new(config, stack_name).stop!(opts)
+        stack.stop!(opts)
       end
     end
   end

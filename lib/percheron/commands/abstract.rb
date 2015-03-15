@@ -18,6 +18,10 @@ module Percheron
         end
       end
 
+      def stack
+        Percheron::Stack.new(config, stack_name)
+      end
+
       def default_config_file
         ENV.fetch('PERCHERON_CONFIG', DEFAULT_CONFIG_FILE)
       end

@@ -14,7 +14,7 @@ module Percheron
           delete: delete?
         }
 
-        Percheron::Stack.new(config, stack_name).recreate!(opts)
+        stack.recreate!(opts)
       end
     end
   end
