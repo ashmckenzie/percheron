@@ -11,10 +11,7 @@ $metastore = Metastore::Cabinet.new(File.join(ENV['HOME'], '.percheron', 'metast
 $logger = Logger.new(STDOUT)
 
 logger_level = Logger::INFO
-
-if ENV['QUIET'] == 'true'
-  logger_level = Logger::WARN
-end
+logger_level = Logger::WARN if ENV['QUIET'] == 'true'
 
 if ENV['DEBUG'] == 'true' || ENV['DOCKER_DEBUG'] == 'true'
   require 'pry-byebug'

@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 describe Percheron::DockerConnection do
-
   let(:config) { Percheron::Config.new('./spec/support/.percheron_valid.yml') }
-
   let(:expected_url) { 'https://127.0.0.1:2376' }
 
   subject { described_class.new(config) }
@@ -14,7 +12,7 @@ describe Percheron::DockerConnection do
 
   describe '#setup!' do
     context "when ENV['DOCKER_CERT_PATH'] is defined" do
-      let(:expected_options) { {:client_cert=>"/tmp/cert.pem", :client_key=>"/tmp/key.pem", :ssl_ca_file=>"/tmp/ca.pem", :scheme=>"https", :connect_timeout=>10} }
+      let(:expected_options) { { client_cert: '/tmp/cert.pem', client_key: '/tmp/key.pem', ssl_ca_file: '/tmp/ca.pem', scheme: 'https', connect_timeout: 10 } }
 
       before do
         ENV['DOCKER_CERT_PATH'] = '/tmp'
@@ -32,7 +30,7 @@ describe Percheron::DockerConnection do
     end
 
     context "when ENV['DOCKER_CERT_PATH'] is not defined" do
-      let(:expected_options) { {:connect_timeout=>10} }
+      let(:expected_options) { { connect_timeout: 10 } }
 
       it 'sets Docker url' do
         subject.setup!
@@ -45,5 +43,4 @@ describe Percheron::DockerConnection do
       end
     end
   end
-
 end

@@ -8,7 +8,7 @@ module Percheron
     def initialize(config, stack_name)
       @config = config
       @stack_name = stack_name
-      valid?
+      # valid?
       self
     end
 
@@ -63,7 +63,7 @@ module Percheron
       current = container_names_final = filter_container_names(container_names)
 
       # FIXME: make this suck less
-      while true
+      loop do
         current = deps = containers_affected(current).uniq
         break if deps.empty?
         container_names_final += deps

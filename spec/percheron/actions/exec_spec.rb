@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Percheron::Actions::Exec do
-
   let(:logger) { double('Logger').as_null_object }
   let(:stop_action) { double('Percheron::Actions::Stop') }
   let(:start_action) { double('Percheron::Actions::Start') }
@@ -26,7 +25,6 @@ describe Percheron::Actions::Exec do
   end
 
   describe '#execute!' do
-
     before do
       expect(container).to receive(:running?).and_return(false)
       expect(container).to receive(:docker_container).and_return(docker_container)

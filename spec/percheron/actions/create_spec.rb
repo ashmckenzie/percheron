@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Percheron::Actions::Create do
-
   let(:logger) { double('Logger').as_null_object }
   let(:metastore) { double('Metastore::Cabinet') }
   let(:build_double) { double('Percheron::Actions::Build') }

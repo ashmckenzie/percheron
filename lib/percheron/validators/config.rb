@@ -10,7 +10,7 @@ module Percheron
         message = rules.return { |rule| send(rule) }
 
         if message
-          raise Errors::ConfigFileInvalid.new(message)
+          fail Errors::ConfigFileInvalid, message
         else
           true
         end

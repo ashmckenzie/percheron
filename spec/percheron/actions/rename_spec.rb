@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Percheron::Actions::Rename do
-
   let(:logger) { double('Logger').as_null_object }
   let(:docker_container1) { double('Docker::Container') }
   let(:docker_container2) { double('Docker::Container') }

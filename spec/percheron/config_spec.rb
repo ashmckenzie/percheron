@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Percheron::Config do
-
   let(:config_file) { './spec/support/.percheron_valid.yml' }
 
   subject { described_class.new(config_file) }
@@ -27,5 +26,4 @@ describe Percheron::Config do
       expect(subject.valid?).to be(true)
     end
   end
-
 end

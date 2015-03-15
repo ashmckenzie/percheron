@@ -10,7 +10,7 @@ module Percheron
         message = rules.return { |rule| send(rule) }
 
         if message
-          raise Errors::ContainerInvalid.new(formatted_message(message))
+          fail Errors::ContainerInvalid, formatted_message(message)
         else
           true
         end
@@ -24,7 +24,7 @@ module Percheron
           if container.name
             "Container config for '%s' is invalid: %s" % [ container.name, message ]
           else
-            "Container config is invalid: %s" % [ message ]
+            "Container config is invalid: #{message}"
           end
         end
 
@@ -37,18 +37,18 @@ module Percheron
         end
 
         def validate_name
-          'Name is invalid' if container.name.nil? || !container.name.to_s.match(/[\w\d]{3,}/)
+          'Container name is invalid' if container.name.nil? || !container.name.to_s.match(/[\w\d]{3,}/)
         end
 
         def validate_version
           container.version
           nil
         rescue ArgumentError
-          'Version is invalid'
+          'Container version is invalid'
         end
 
         def validate_dockerfile
-          'Dockerfile is invalid' if container.dockerfile.nil? || !File.exist?(container.dockerfile)
+          'Container Dockerfile is invalid' if container.dockerfile.nil? || !File.exist?(container.dockerfile)
         end
     end
   end

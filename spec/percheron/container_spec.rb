@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Percheron::Container do
-
   let(:extra_data) { {} }
   let(:docker_container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
   let(:dependant_docker_container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
@@ -72,7 +71,7 @@ describe Percheron::Container do
 
     describe '#exposed_ports' do
       it 'returns a hash of exposed ports' do
-        expect(subject.exposed_ports).to eql({ '9999' => {} })
+        expect(subject.exposed_ports).to eql('9999' => {})
       end
     end
 

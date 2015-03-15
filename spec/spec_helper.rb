@@ -10,7 +10,7 @@ SimpleCov.start
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
-Dir["./spec/support/**/*.rb"].sort.each { |f| require f}
+Dir['./spec/support/**/*.rb'].sort.each { |f| require(f) }
 
 RSpec.configure do |config|
   config.filter_run_excluding broken: true

@@ -9,7 +9,7 @@ module Percheron
 
     def initialize(file)
       @file = Pathname.new(file).expand_path
-      valid?
+      # valid?
       docker_setup!
       self
     end

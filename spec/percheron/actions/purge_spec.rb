@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Percheron::Actions::Purge do
-
   let(:logger) { double('Logger').as_null_object }
   let(:container) { double('Percheron::Container').as_null_object }
 
@@ -32,6 +31,5 @@ describe Percheron::Actions::Purge do
 
       subject.execute!
     end
-
   end
 end

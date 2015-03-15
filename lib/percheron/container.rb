@@ -15,7 +15,7 @@ module Percheron
       @config = config
       @stack = stack
       @container_name = container_name
-      valid?
+      # valid?
       self
     end
 

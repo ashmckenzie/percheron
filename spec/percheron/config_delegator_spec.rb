@@ -1,11 +1,9 @@
 require 'spec_helper'
 
 describe Percheron::ConfigDelegator do
-
   let(:config) { {} }
   let(:test_class) do
     Class.new do
-
       extend Percheron::ConfigDelegator
 
       def_config_item_with_default :config, 'blah', :key1, :test2
@@ -30,12 +28,11 @@ describe Percheron::ConfigDelegator do
     end
 
     context 'when config is defined' do
-      let(:config) { { key1: 'value1'} }
+      let(:config) { { key1: 'value1' } }
 
       it 'returns the correct value' do
         expect(subject.key1).to eql('value1')
       end
     end
   end
-
 end

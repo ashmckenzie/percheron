@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Percheron::Actions::Restart do
   let(:dependant_container) { double('Perheron::Container') }
   let(:dependant_containers) { [ dependant_container ] }
-  let(:container) { double('Perheron::Container', name: 'debian', dependant_containers: { 'dependant_debian' => dependant_container }, dependant_container_names: %w{dependant_debian}) }
+  let(:container) { double('Perheron::Container', name: 'debian', dependant_containers: { 'dependant_debian' => dependant_container }, dependant_container_names: %w(dependant_debian)) }
 
   let(:stop_action) { double('Percheron::Actions::Stop') }
   let(:start_action) { double('Percheron::Actions::Start') }

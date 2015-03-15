@@ -1,11 +1,9 @@
 require 'spec_helper'
 
 describe Percheron::Actions::Start do
-
   let(:docker_container) { double('Docker::Container') }
   let(:logger) { double('Logger').as_null_object }
   let(:exec_action) { double('Percheron::Actions::Exec') }
-
   let(:config) { Percheron::Config.new('./spec/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:container) { Percheron::Container.new(config, stack, 'debian') }
@@ -22,7 +20,6 @@ describe Percheron::Actions::Start do
   end
 
   describe '#execute!' do
-
     let(:create_double) { double('Percheron::Actions::Create') }
 
     before do

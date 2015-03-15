@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Percheron::Validators::Stack do
-
   let(:config_file_name) { './spec/support/.percheron_valid.yml' }
   let(:config) { Percheron::Config.new(config_file_name) }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
@@ -13,7 +12,7 @@ describe Percheron::Validators::Stack do
       let(:config_file_name) { './spec/support/.percheron_invalid_stacks.yml' }
 
       it 'raises exception' do
-        expect{ subject.valid? }.to raise_error(Percheron::Errors::StackInvalid, 'Name is invalid')
+        expect { subject.valid? }.to raise_error(Percheron::Errors::StackInvalid, 'Stack name is invalid')
       end
     end
 
@@ -23,5 +22,4 @@ describe Percheron::Validators::Stack do
       end
     end
   end
-
 end

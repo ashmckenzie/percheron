@@ -5,6 +5,7 @@ module Percheron
       default_parameters!
 
       def execute
+        super
         opts = { container_names: container_names }
         stack.purge!(opts)
       end

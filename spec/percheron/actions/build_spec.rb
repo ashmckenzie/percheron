@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Percheron::Actions::Build do
-
   let(:logger) { double('Logger').as_null_object }
   let(:exec_local_action) { double('Percheron::Actions::ExecLocal') }
 

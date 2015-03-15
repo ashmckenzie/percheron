@@ -1,12 +1,11 @@
 require 'spec_helper'
 
 describe Percheron::Stack do
-
   let(:logger) { double('Logger').as_null_object }
   let(:config) { Percheron::Config.new('./spec/support/.percheron_valid.yml') }
   let(:dependant_container) { double('Perheron::Container') }
   let(:dependant_containers) { [ dependant_container ] }
-  let(:container) { double('Perheron::Container', name: 'debian', dependant_containers: { 'dependant_debian' => dependant_container }, dependant_container_names: %w{dependant_debian}) }
+  let(:container) { double('Perheron::Container', name: 'debian', dependant_containers: { 'dependant_debian' => dependant_container }, dependant_container_names: %w(dependant_debian)) }
 
   subject { described_class.new(config, 'debian_jessie') }
 
@@ -34,12 +33,6 @@ describe Percheron::Stack do
     end
 
     context 'with a stack_name provided' do
-      context 'that does not exist' do
-        it 'returns an empty Hash' do
-          expect{ described_class.get(config, 'does_not_exist') }.to raise_error(Percheron::Errors::StackInvalid, 'Name is invalid')
-        end
-      end
-
       context 'that does exist' do
         it 'returns a Hash of Stacks' do
           expect(described_class.get(config, 'debian_jessie')).to be_a(Hash)
@@ -99,7 +92,7 @@ describe Percheron::Stack do
 
     describe '#stop!' do
       let(:klass) { Percheron::Actions::Stop }
-      let(:container_names) { %w{debian dependant_debian} }
+      let(:container_names) { %w(debian dependant_debian) }
       let(:action_double) { double('Percheron::Actions::Stop') }
 
       it 'asks each Container to stop' do
@@ -110,7 +103,7 @@ describe Percheron::Stack do
 
     describe '#start!' do
       let(:klass) { Percheron::Actions::Start }
-      let(:container_names) { %w{dependant_debian debian} }
+      let(:container_names) { %w(dependant_debian debian) }
       let(:action_double) { double('Percheron::Actions::Start') }
 
       it 'asks each Container to start' do
@@ -121,7 +114,7 @@ describe Percheron::Stack do
 
     describe '#restart!' do
       let(:klass) { Percheron::Actions::Restart }
-      let(:container_names) { %w{debian dependant_debian} }
+      let(:container_names) { %w(debian dependant_debian) }
       let(:action_double) { double('Percheron::Actions::Restart') }
 
       it 'asks each Container to restart' do
@@ -132,7 +125,7 @@ describe Percheron::Stack do
 
     describe '#create!' do
       let(:klass) { Percheron::Actions::Create }
-      let(:container_names) { %w{dependant_debian debian} }
+      let(:container_names) { %w(dependant_debian debian) }
       let(:action_double) { double('Percheron::Actions::Create') }
 
       it 'asks each Container to create' do
@@ -143,7 +136,7 @@ describe Percheron::Stack do
 
     describe '#purge!' do
       let(:klass) { Percheron::Actions::Purge }
-      let(:container_names) { %w{dependant_debian debian} }
+      let(:container_names) { %w(dependant_debian debian) }
       let(:action_double) { double('Percheron::Actions::Purge') }
 
       it 'asks each Container to purge' do
@@ -154,7 +147,7 @@ describe Percheron::Stack do
 
     describe '#recreate!' do
       let(:klass) { Percheron::Actions::Recreate }
-      let(:container_names) { %w{dependant_debian debian} }
+      let(:container_names) { %w(dependant_debian debian) }
       let(:action_double) { double('Percheron::Actions::Recreate') }
 
       context 'with force_recreate not defined' do
@@ -192,5 +185,4 @@ describe Percheron::Stack do
       expect(subject.valid?).to be(true)
     end
   end
-
 end

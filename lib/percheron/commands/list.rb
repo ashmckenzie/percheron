@@ -5,7 +5,8 @@ module Percheron
       parameter('STACK_NAME', 'stack name', required: false)
 
       def execute
-        Stack.get(config, stack_name).each do |stack_name, stack|
+        super
+        Stack.get(config, stack_name).each do |_, stack|
           puts
           puts Percheron::Formatters::Stack::Table.new(stack).generate
         end

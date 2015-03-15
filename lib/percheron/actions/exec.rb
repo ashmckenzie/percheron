@@ -13,7 +13,7 @@ module Percheron
 
       def execute!
         results = []
-        $logger.debug "Executing #{description} scripts '#{scripts.inspect}' on '#{container.name}'"
+        $logger.debug "Executing #{description} scripts '#{scripts.inspect}' on '#{container.name}' container"
         started_dependant_containers = start_containers!(dependant_containers)
         results << execute_scripts_on_running_container!
         results << stop_containers!(started_dependant_containers)

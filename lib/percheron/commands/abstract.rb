@@ -18,6 +18,12 @@ module Percheron
         end
       end
 
+      def execute
+        stack.valid?
+      rescue => e
+        signal_usage_error(e.message)
+      end
+
       def stack
         Percheron::Stack.new(config, stack_name)
       end

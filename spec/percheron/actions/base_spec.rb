@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 describe Percheron::Actions::Base do
-
   class Percheron::Actions::BaseClass
-
     include Percheron::Actions::Base
 
     def initialize(container)

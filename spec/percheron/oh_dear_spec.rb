@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Percheron::OhDear do
-
   let(:exception) { StandardError.new('oh my') }
 
   subject { described_class.new(exception) }
@@ -11,5 +10,4 @@ describe Percheron::OhDear do
       expect(subject.generate).to match(/#<StandardError: oh my>/)
     end
   end
-
 end

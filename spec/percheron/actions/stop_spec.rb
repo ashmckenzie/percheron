@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 describe Percheron::Actions::Stop do
-
   let(:logger) { double('Logger').as_null_object }
-
   let(:config) { Percheron::Config.new('./spec/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:container) { Percheron::Container.new(config, stack, 'debian') }
