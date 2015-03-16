@@ -28,6 +28,12 @@ module Percheron
           Docker::Container.get(rename_current_new_name)
         end
 
+        def old_container_exists?
+          old_container.nil? ? false : true
+        rescue Docker::Error::NotFoundError
+          false
+        end
+
         def temporary_container
           Docker::Container.get(temporary_name)
         end
@@ -37,7 +43,7 @@ module Percheron
           stop_containers!([ container ])   if container_running
           rename_containers!
           start_containers!([ container ])  if container_running
-          remove_old!
+          remove_old!                       if old_container_exists?
         end
 
         def rename_containers!

@@ -15,11 +15,7 @@ module Percheron
         if recreate?
           results << recreate!
         else
-          unless dockerfile_md5s_match?
-            $logger.warn "Container '#{container.name}' MD5's do not match, consider recreating (bump the version!)"
-          else
-            $logger.info "Container '#{container.name}' does not need to be recreated"
-          end
+          inform!
         end
         results.compact.empty? ? nil : container
       end
@@ -40,7 +36,7 @@ module Percheron
         end
 
         def temporary_container_exists?
-          !!Docker::Container.get(temporary_name)
+          Docker::Container.get(temporary_name).nil? ? false : true
         rescue Docker::Error::NotFoundError
           false
         end
@@ -57,15 +53,23 @@ module Percheron
           stored_dockerfile_md5 == container.current_dockerfile_md5
         end
 
+        def inform!
+          if dockerfile_md5s_match?
+            $logger.info "Container '#{container.name}' does not need to be recreated"
+          else
+            $logger.warn "Container '#{container.name}' MD5's do not match, consider recreating (bump the version!)"
+          end
+        end
+
         def recreate!
           $logger.debug "Container '#{container.name}' exists and will be recreated"
 
-          unless temporary_container_exists?
-            delete_container_and_image! if delete?
+          if temporary_container_exists?
+            $logger.debug "Not recreating '#{container.name}' container because temporary container '#{temporary_name}' already exists"
+          else
+            delete_container_and_image! if delete? && container.exists?
             create_container!
             rename_container!
-          else
-            $logger.debug "Not recreating '#{container.name}' container because temporary container '#{temporary_name}' already exists"
           end
         end
 
@@ -81,7 +85,7 @@ module Percheron
         end
 
         def delete_image!
-          $logger.info "Deleting '#{container.name}' image"
+          $logger.info "Deleting '#{container.image_name}' image"
           container.image.remove
         end
 

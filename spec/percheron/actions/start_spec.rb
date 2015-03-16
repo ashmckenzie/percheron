@@ -24,7 +24,7 @@ describe Percheron::Actions::Start do
 
     before do
       expect(container).to receive(:running?).and_return(container_running)
-      allow(Percheron::Actions::Exec).to receive(:new).with(container, dependant_containers, ["./post_start_script2.sh"], 'POST start').and_return(exec_action)
+      allow(Percheron::Actions::Exec).to receive(:new).with(container, dependant_containers, ['./post_start_script2.sh'], 'POST start').and_return(exec_action)
       allow(exec_action).to receive(:execute!)
     end
 

@@ -11,7 +11,7 @@ describe Percheron::Actions::Create do
   let(:container) { Percheron::Container.new(config, stack, 'debian') }
   let(:dependant_containers) { container.dependant_containers }
 
-  let(:debian_create_options) { {"name"=>"debian", "Image"=>"debian:1.0.0", "Hostname"=>"debian", "Env"=>[], "ExposedPorts"=>{"9999"=>{}}, "HostConfig"=>{"PortBindings"=>{"9999"=>[{"HostPort"=>"9999"}]}, "Links"=>["dependant_debian:dependant_debian"], "Binds"=>["/outside/container/path:/inside/container/path"]}} }
+  let(:debian_create_options) { { 'name' => 'debian', 'Image' => 'debian:1.0.0', 'Hostname' => 'debian', 'Env' => [], 'ExposedPorts' => { '9999' => {} }, 'HostConfig' => { 'PortBindings' => { '9999' => [ { 'HostPort' => '9999' } ] }, 'Links' => [ 'dependant_debian:dependant_debian' ], 'Binds' => [ '/outside/container/path:/inside/container/path' ] } } }
 
   subject { described_class.new(container) }
 
@@ -35,11 +35,11 @@ describe Percheron::Actions::Create do
 
       before do
         expect(container).to receive(:image_exists?).and_return(image_exists)
-        expect(subject).to receive(:insert_files!).with(["./post_create_script2.sh"])
-        expect(subject).to receive(:insert_files!).with(["./post_start_script2.sh"])
+        expect(subject).to receive(:insert_files!).with(['./post_create_script2.sh'])
+        expect(subject).to receive(:insert_files!).with(['./post_start_script2.sh'])
         expect(Docker::Container).to receive(:create).with(debian_create_options)
         expect(metastore).to receive(:set).with('stacks.debian_jessie.containers.debian.dockerfile_md5', '0b03152a88e90de1c5466d6484b8ce5b')
-        expect(Percheron::Actions::Exec).to receive(:new).with(container, dependant_containers.values, ["./post_create_script2.sh"], 'POST create').and_return(exec_action)
+        expect(Percheron::Actions::Exec).to receive(:new).with(container, dependant_containers.values, ['./post_create_script2.sh'], 'POST create').and_return(exec_action)
         expect(exec_action).to receive(:execute!)
       end
 

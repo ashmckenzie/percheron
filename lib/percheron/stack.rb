@@ -1,6 +1,5 @@
 module Percheron
   class Stack
-
     extend Forwardable
 
     def_delegators :stack_config, :name, :description
@@ -12,17 +11,16 @@ module Percheron
       self
     end
 
-    def self.get(config, stack_name=nil)
-      if stack_name
-        stack = new(config, stack_name)
+    def self.get(config, name = nil)
+      if name
+        stack = new(config, name)
         stack ? { stack.name => stack } : {}
       else
-        all = {}
-        config.stacks.each do |stack_name, _|
+        config.stacks.each_with_object({}) do |stack_config, all|
+          stack_name, _ = stack_config
           stack = new(config, stack_name)
           all[stack.name] = stack
         end
-        all
       end
     end
 
@@ -31,12 +29,9 @@ module Percheron
     end
 
     # FIXME: YUCK
-    def filter_containers(container_names=[])
+    def filter_containers(container_names = [])
       container_names = !container_names.empty? ? container_names : filter_container_names
-      container_names.inject({}) do |all, container_name|
-        all[container_name] = Container.new(config, self, container_name)
-        all
-      end
+      container_names.each_with_object({}) { |container_name, all| all[container_name] = Container.new(config, self, container_name) }
     end
 
     def stop!(container_names: [])
@@ -89,11 +84,9 @@ module Percheron
         @stack_config ||= (config.stacks[stack_name] || Hashie::Mash.new({}))
       end
 
-      def filter_container_names(container_names=[])
+      def filter_container_names(container_names = [])
         stack_config.containers.map do |container_config|
-          if container_names.empty? || container_names.include?(container_config.name)
-            container_config.name
-          end
+          container_config.name if container_names.empty? || container_names.include?(container_config.name)
         end.compact
       end
 
@@ -102,9 +95,7 @@ module Percheron
       end
 
       def exec_on_dependant_containers_for(container_names)
-        serial_processor(container_names) do |container|
-          $logger.info '' if yield(container)
-        end
+        serial_processor(container_names) { |container| $logger.info '' if yield(container) }
       end
 
       def serial_processor(container_names)
@@ -117,24 +108,18 @@ module Percheron
       def containers_affected(container_names)
         deps = []
         container_names.each do |container_name|
-          filter_containers.each do |_, container|
-            deps << container.name if container.dependant_container_names.include?(container_name)
-          end
+          filter_containers.each { |_, container| deps << container.name if container.dependant_container_names.include?(container_name) }
         end
         deps
       end
 
       def containers_and_their_dependants(container_names)
         all_containers = filter_containers
-         container_names.inject({}) do |all, container_name|
-          all[container_name] = all_containers[container_name].dependant_container_names
-          all
-        end
+        container_names.each_with_object({}) { |container_name, all| all[container_name] = all_containers[container_name].dependant_container_names }
       end
 
       def dependant_containers_for(container_names)
         container_names = filter_container_names(container_names)
-
         wip_list = []
         containers_and_their_dependants(container_names).each do |container_name, dependant_container_names|
           wip_list += dependant_container_names unless dependant_container_names.empty?
@@ -142,6 +127,5 @@ module Percheron
         end
         wip_list.uniq
       end
-
   end
 end

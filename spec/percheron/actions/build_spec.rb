@@ -9,7 +9,7 @@ describe Percheron::Actions::Build do
   let(:container) { Percheron::Container.new(config, stack, 'debian') }
   let(:dependant_containers) { container.dependant_containers }
 
-  let(:expected_opts) { {"dockerfile"=>"Dockerfile", "t"=>"debian:1.0.0", "forcerm"=>true, "nocache"=>false} }
+  let(:expected_opts) { { 'dockerfile' => 'Dockerfile', 't' => 'debian:1.0.0', 'forcerm' => true, 'nocache' => false } }
 
   subject { described_class.new(container) }
 
@@ -27,7 +27,7 @@ describe Percheron::Actions::Build do
 
     before do
       allow(Docker::Image).to receive(:build_from_dir).with(container.dockerfile.dirname.to_s, expected_opts).and_yield(out)
-      allow(Percheron::Actions::ExecLocal).to receive(:new).with(container, ["./pre_build_script2.sh"], 'PRE build').and_return(exec_local_action)
+      allow(Percheron::Actions::ExecLocal).to receive(:new).with(container, ['./pre_build_script2.sh'], 'PRE build').and_return(exec_local_action)
       allow(exec_local_action).to receive(:execute!)
     end
 

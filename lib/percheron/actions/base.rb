@@ -1,7 +1,6 @@
 module Percheron
   module Actions
     module Base
-
       def base_dir
         container.dockerfile.dirname.to_s
       end
@@ -19,12 +18,13 @@ module Percheron
       end
 
       def insert_files!(files)
-        files.each do |file|
-          file = Pathname.new(File.expand_path(file, base_dir))
-          container.image.insert_local('localPath' => file.to_s, 'outputPath' => "/tmp/#{file.basename}").tap do |new_image|
-            new_image.tag(repo: container.name, tag: container.version.to_s, force: true)
-          end
-        end
+        files.each { |file| insert_file!(file) }
+      end
+
+      def insert_file!(file)
+        file = Pathname.new(File.expand_path(file, base_dir))
+        new_image = container.image.insert_local('localPath' => file.to_s, 'outputPath' => "/tmp/#{file.basename}")
+        new_image.tag(repo: container.name, tag: container.version.to_s, force: true)
       end
 
       def stop_containers!(containers)
@@ -46,9 +46,8 @@ module Percheron
       end
 
       def exec_on_containers!(containers)
-        containers.inject([]) do |all, container|
+        containers.each_with_object([]) do |container, all|
           all << container if yield(container)
-          all
         end.compact
       end
     end

@@ -9,7 +9,7 @@ module Percheron
         @recreate = recreate
       end
 
-      def execute!(opts={})
+      def execute!(opts = {})
         results = []
         if recreate? || !container.exists?
           results << create!(opts)
@@ -29,12 +29,7 @@ module Percheron
             'Image'         => container.image_name,
             'Hostname'      => container.name,
             'Env'           => container.env,
-            'ExposedPorts'  => container.exposed_ports,
-            'HostConfig'    => {
-              'PortBindings'  => port_bindings,
-              'Links'         => container.links,
-              'Binds'         => container.volumes
-            }
+            'ExposedPorts'  => container.exposed_ports
           }
         end
 
@@ -49,10 +44,9 @@ module Percheron
         end
 
         def port_bindings
-          container.ports.inject({}) do |all, p|
+          container.ports.each_with_object({}) do |p, all|
             destination, source = p.split(':')
             all[source] = [ { 'HostPort' => destination } ]
-            all
           end
         end
 

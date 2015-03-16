@@ -12,7 +12,7 @@ describe Percheron::DockerConnection do
 
   describe '#setup!' do
     context "when ENV['DOCKER_CERT_PATH'] is defined" do
-      let(:expected_options) { { client_cert: '/tmp/cert.pem', client_key: '/tmp/key.pem', ssl_ca_file: '/tmp/ca.pem', scheme: 'https', connect_timeout: 10 } }
+      let(:expected_options) { { client_cert: '/tmp/cert.pem', client_key: '/tmp/key.pem', ssl_ca_file: '/tmp/ca.pem', scheme: 'https', read_timeout: 300 } }
 
       before do
         ENV['DOCKER_CERT_PATH'] = '/tmp'
@@ -30,7 +30,7 @@ describe Percheron::DockerConnection do
     end
 
     context "when ENV['DOCKER_CERT_PATH'] is not defined" do
-      let(:expected_options) { { connect_timeout: 10 } }
+      let(:expected_options) { { read_timeout: 300 } }
 
       it 'sets Docker url' do
         subject.setup!

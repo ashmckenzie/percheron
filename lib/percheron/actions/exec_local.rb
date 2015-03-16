@@ -33,8 +33,8 @@ module Percheron
 
         def execute_command!(command)
           $logger.info "Executing #{description} '#{command}' locally"
-          Open3.popen2e(command) do |stdin, stdout_stderr, wait_thr|
-            while line = stdout_stderr.gets
+          Open3.popen2e(command) do |_, stdout_stderr, _|
+            while (line = stdout_stderr.gets)
               $logger.debug line.strip
             end
           end

@@ -57,7 +57,7 @@ describe Percheron::Actions::Recreate do
           expect(Docker::Container).to receive(:get).with('debian_wip').and_raise(Docker::Error::NotFoundError)
 
           expect(Percheron::Actions::Create).to receive(:new).with(container, recreate: true).and_return(create_action)
-          expect(create_action).to receive(:execute!).with({ create: { "name" => "debian_wip" } })
+          expect(create_action).to receive(:execute!).with(create: { 'name' => 'debian_wip' })
 
           expect(Percheron::Actions::Rename).to receive(:new).with(container, 'debian_wip', 'debian').and_return(rename_action)
           expect(rename_action).to receive(:execute!)
@@ -77,6 +77,7 @@ describe Percheron::Actions::Recreate do
           let(:docker_image) { double('Docker::Image') }
 
           it 'deletes the Docker Image and Container' do
+            expect(container).to receive(:exists?).and_return(true)
             expect(subject).to receive(:stop_containers!).with([ container ])
 
             expect(container).to receive(:docker_container).and_return(docker_container)

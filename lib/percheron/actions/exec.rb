@@ -12,17 +12,22 @@ module Percheron
       end
 
       def execute!
-        results = []
         $logger.debug "Executing #{description} scripts '#{scripts.inspect}' on '#{container.name}' container"
-        started_dependant_containers = start_containers!(dependant_containers)
-        results << execute_scripts_on_running_container!
-        results << stop_containers!(started_dependant_containers)
+        results = exec!
         results.compact.empty? ? nil : container
       end
 
       private
 
         attr_reader :container, :dependant_containers, :scripts, :description
+
+        def exec!
+          results = []
+          started_dependant_containers = start_containers!(dependant_containers)
+          results << execute_scripts_on_running_container!
+          results << stop_containers!(started_dependant_containers)
+          results
+        end
 
         def execute_scripts_on_running_container!
           container_running = container.running?

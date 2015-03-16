@@ -42,13 +42,12 @@ module Percheron
     end
 
     def dockerfile
-      container_config.dockerfile ? Pathname.new(File.expand_path(container_config.dockerfile, config.file_base_path)): nil
+      container_config.dockerfile ? Pathname.new(File.expand_path(container_config.dockerfile, config.file_base_path)) : nil
     end
 
     def exposed_ports
-      ports.inject({}) do |all, p|
+      ports.each_with_object({}) do |p, all|
         all[p.split(':')[1]] = {}
-        all
       end
     end
 
@@ -65,9 +64,8 @@ module Percheron
     end
 
     def dependant_containers
-      dependant_container_names.inject({}) do |all, container_name|
+      dependant_container_names.each_with_object({}) do |container_name, all|
         all[container_name] = stack.filter_containers[container_name]
-        all
       end
     end
 
@@ -92,7 +90,7 @@ module Percheron
     end
 
     def image_exists?
-      !!image
+      image.nil? ? false : true
     end
 
     def dependant_containers?

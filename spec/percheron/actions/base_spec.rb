@@ -1,17 +1,20 @@
 require 'spec_helper'
 
 describe Percheron::Actions::Base do
-  class Percheron::Actions::BaseClass
-    include Percheron::Actions::Base
+  module Percheron
+    module Actions
+      class BaseClass
+        include Percheron::Actions::Base
 
-    def initialize(container)
-      @container = container
+        def initialize(container)
+          @container = container
+        end
+
+        private
+
+          attr_reader :container
+      end
     end
-
-    private
-
-      attr_reader :container
-
   end
 
   let(:logger) { double('Logger').as_null_object }
@@ -61,8 +64,8 @@ describe Percheron::Actions::Base do
 
     it 'inserts files into Docker Image' do
       expect(container).to receive(:image).and_return(docker_image)
-      expect(docker_image).to receive(:insert_local).with({"localPath"=>"/tmp/blah.sh", "outputPath"=>"/tmp/blah.sh"}).and_return(docker_image_new)
-      expect(docker_image_new).to receive(:tag).with({:repo=>"debian", :tag=>"1.0.0", :force=>true})
+      expect(docker_image).to receive(:insert_local).with('localPath' => '/tmp/blah.sh', 'outputPath' => '/tmp/blah.sh').and_return(docker_image_new)
+      expect(docker_image_new).to receive(:tag).with(repo: 'debian', tag: '1.0.0', force: true)
 
       subject.insert_files!([ '/tmp/blah.sh' ])
     end

@@ -31,7 +31,7 @@ module Percheron
       end
 
       def base_docker_options
-        { connect_timeout: config.docker.timeout || 60 }
+        { read_timeout: config.docker.read_timeout || 300 }
       end
 
       def extra_docker_opts

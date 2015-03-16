@@ -6,7 +6,16 @@ module Percheron
     end
 
     def generate
-      <<-EOS
+      template
+    end
+
+    private
+
+      attr_reader :exception
+
+      # rubocop:disable Metrics/MethodLength
+      def template
+        <<-EOS
 
 OH DEAR, we are terribly sorry.. something unexpected occurred :(
 
@@ -27,12 +36,9 @@ Trace
 
 Please copy the detail between the --snip--'s above and raise a ticket - https://github.com/ashmckenzie/percheron/issues/new?labels=bug
 
-      EOS
-    end
-
-    private
-
-      attr_reader :exception
+EOS
+      end
+      # rubocop:enable Metrics/MethodLength
 
       def exception_message
         exception.inspect

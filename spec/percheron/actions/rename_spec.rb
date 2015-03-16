@@ -24,17 +24,38 @@ describe Percheron::Actions::Rename do
   describe '#execute!' do
     before do
       expect(Docker::Container).to receive(:get).with('temporary_name').and_return(docker_container2)
-      expect(Docker::Container).to receive(:get).with('container_name_19900101000000').and_return(docker_container3)
     end
 
-    it 'renames the Docker Container' do
-      expect(subject).to receive(:stop_containers!).with([ container ])
-      expect(docker_container1).to receive(:rename).with('container_name_19900101000000')
-      expect(docker_container2).to receive(:rename).with('new_name')
-      expect(subject).to receive(:start_containers!).with([ container ])
-      expect(docker_container3).to receive(:remove)
+    context 'when old container does not exist' do
+      before do
+        expect(Docker::Container).to receive(:get).with('container_name_19900101000000').and_raise(Docker::Error::NotFoundError)
+      end
 
-      subject.execute!
+      it 'renames the Docker Container' do
+        expect(subject).to receive(:stop_containers!).with([ container ])
+        expect(docker_container1).to receive(:rename).with('container_name_19900101000000')
+        expect(docker_container2).to receive(:rename).with('new_name')
+        expect(subject).to receive(:start_containers!).with([ container ])
+        expect(docker_container3).to_not receive(:remove)
+
+        subject.execute!
+      end
+    end
+
+    context 'when old container does exist' do
+      before do
+        expect(Docker::Container).to receive(:get).with('container_name_19900101000000').and_return(docker_container3).twice
+      end
+
+      it 'renames the Docker Container' do
+        expect(subject).to receive(:stop_containers!).with([ container ])
+        expect(docker_container1).to receive(:rename).with('container_name_19900101000000')
+        expect(docker_container2).to receive(:rename).with('new_name')
+        expect(subject).to receive(:start_containers!).with([ container ])
+        expect(docker_container3).to receive(:remove)
+
+        subject.execute!
+      end
     end
   end
 end
