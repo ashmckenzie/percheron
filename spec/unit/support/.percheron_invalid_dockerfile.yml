@@ -1,0 +1,21 @@
+---
+docker:
+  host: "https://127.0.0.1:2376"
+  read_timeout: 300
+
+stacks:
+  -
+    name: debian_jessie
+    containers:
+      -
+        name: debian
+        version: 1.0.0
+        dockerfile: ./Dockerfile.non-existent
+        pre_build_scripts:
+          - ./pre_build_script2.sh
+        post_start_scripts:
+          - ./post_start_script2.sh
+        ports:
+          - '9999:9999'
+        volumes:
+          - '/outside/container/path:/inside/container/path'
