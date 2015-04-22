@@ -1,0 +1,3 @@
+--abc-glob ./lib/**/*.rb
+--style-glob ./lib/**/*.rb
+--no-doc

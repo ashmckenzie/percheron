@@ -6,5 +6,6 @@ branches:
     - master
     - wip
 script:
+  - bundle exec cane
   - bundle exec rubocop
   - bundle exec rake spec:unit
