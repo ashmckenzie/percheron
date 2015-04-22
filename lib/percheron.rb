@@ -5,6 +5,7 @@ require 'docker'
 require 'naught'
 require 'semantic'
 require 'metastore'
+require 'liquid'
 
 require 'percheron/oh_dear'
 require 'percheron/core_extensions'
