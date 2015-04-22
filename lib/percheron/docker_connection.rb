@@ -23,6 +23,7 @@ module Percheron
       end
 
       def set_options!
+        Excon.defaults[:ssl_verify_peer] = config.docker.fetch('ssl_verify_peer', true)
         Docker.options = docker_options
       end
 
@@ -31,7 +32,10 @@ module Percheron
       end
 
       def base_docker_options
-        { read_timeout: config.docker.read_timeout || 300 }
+        {
+          connect_timeout: config.docker.connect_timeout || 5,
+          read_timeout:    config.docker.read_timeout || 300
+        }
       end
 
       def extra_docker_opts
