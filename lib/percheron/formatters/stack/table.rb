@@ -8,34 +8,46 @@ module Percheron
         end
 
         def generate
-          Terminal::Table.new(
-            title:    stack.name,
-            headings: headings,
-            rows:     rows
-          )
+          Terminal::Table.new(title: title, headings: headings, rows: rows)
         end
 
         private
 
           attr_reader :stack
 
+          def title
+            stack.name
+          end
+
           def headings
             [
-              'Container name',
+              'Container',
               'ID',
-              'Version',
-              'Running?'
+              'Running?',
+              'Ports',
+              'Volumes',
+              'Version'
             ]
           end
 
           def rows
-            stack.filter_containers.map do |container_name, container|
+            stack.containers.map do |_, container|
               [
-                container_name,
+                container.name,
                 container.id,
-                container.built_version,
-                container.running?
+                startable(container),
+                container.ports.join(', '),
+                container.volumes.join(', '),
+                (container.built_version == '0.0.0') ? '' : container.built_version
               ]
+            end
+          end
+
+          def startable(container)
+            if container.startable?
+              container.running? ? 'yes' : '-'
+            else
+              'n/a'
             end
           end
       end
