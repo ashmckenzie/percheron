@@ -1,0 +1,38 @@
+---
+docker:
+  host: "https://boot2docker:2376"
+  ssl_verify_peer: false
+
+stacks:
+  -
+    name: percheron-test
+    containers:
+      -
+        name: base
+        version: 9.9.9
+        dockerfile: ./Dockerfile.base
+        startable: false
+
+      -
+        name: app1
+        version: 9.9.9
+        dockerfile: ./Dockerfile.app1
+        dependant_container_names:
+          - base
+
+      -
+        name: app2
+        version: 9.9.9
+        dockerfile: ./Dockerfile.app1
+        dependant_container_names:
+          - base
+        post_start_scripts:
+          - ./post_start.sh
+        ports:
+          - 1234:1234
+
+      -
+        name: app3
+        version: 9.9.9
+        docker_image: busybox:ubuntu-14.04
+        start_args: [ 'sh', '-c', "while true; do date ; echo 'hello from percheron'; done" ]
