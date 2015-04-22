@@ -31,25 +31,35 @@ module Percheron
         def rules
           [
             :validate_name,
-            :validate_version,
-            :validate_dockerfile
+            :validate_dockerfile_and_image_name,
+            :validate_dockerfile,
+            :validate_image,
+            :validate_version
           ]
         end
 
         def validate_name
-          'Container name is invalid' if container.name.nil? || !container.name.to_s.match(/[\w\d]{3,}/)
+          'Container name is invalid' if container.name.nil? || !container.name.to_s.match(/[\w]{3,}/)
+        end
+
+        def validate_dockerfile_and_image_name
+          'Container Dockerfile OR image name not provided' if container.dockerfile.nil? && container.docker_image.nil?
+        end
+
+        def validate_dockerfile
+          'Container Dockerfile is invalid' if !container.dockerfile.nil? && !File.exist?(container.dockerfile)
+        end
+
+        def validate_image
+          'Container Docker image is invalid' if !container.docker_image.nil? && !container.docker_image.match(/^.+:.+$/)
         end
 
         def validate_version
-          container.version
-          nil
+          container.version ? nil : fail(ArgumentError)
         rescue ArgumentError
           'Container version is invalid'
         end
 
-        def validate_dockerfile
-          'Container Dockerfile is invalid' if container.dockerfile.nil? || !File.exist?(container.dockerfile)
-        end
     end
   end
 end
