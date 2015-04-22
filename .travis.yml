@@ -5,6 +5,6 @@ branches:
   only:
     - master
     - wip
-script: 
+script:
   - bundle exec rubocop
-  - bundle exec rake spec
+  - bundle exec rake spec:unit

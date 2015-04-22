@@ -33,5 +33,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-rspec', '~> 4.5'
   spec.add_development_dependency 'simplecov', '~> 0.9'
   spec.add_development_dependency 'timecop', '~> 0.7'
-  spec.add_development_dependency 'rubocop', '~> 0.29.0'
+  spec.add_development_dependency 'rubocop', '~> 0.30.0'
 end
