@@ -30,9 +30,18 @@ Or install it yourself as:
 $ gem install percheron
 ```
 
+## Requirements
+
+* Docker 1.6.x
+
 ## Usage
 
-WIP, not ready yet :)
+TODO
+
+## Examples
+
+* Rails - https://github.com/ashmckenzie/percheron-rails#quickstart
+* Torrent - https://github.com/ashmckenzie/percheron-torrent#quickstart
 
 ## Contributing
 
