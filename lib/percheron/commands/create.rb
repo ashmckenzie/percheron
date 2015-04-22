@@ -6,8 +6,7 @@ module Percheron
 
       def execute
         super
-        opts = { container_names: container_names }
-        stack.create!(opts)
+        stack.create!(container_names: container_names, start: start?)
       end
     end
   end

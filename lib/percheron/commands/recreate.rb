@@ -4,19 +4,11 @@ module Percheron
 
       default_parameters!
 
-      option '--force', :flag, 'Force recreation', default: false
-      option '--delete', :flag, 'Delete container + image before recreation', default: false
+      option '--start', :flag, 'Start container', default: false
 
       def execute
         super
-
-        opts = {
-          container_names: container_names,
-          force_recreate: force?,
-          delete: delete?
-        }
-
-        stack.recreate!(opts)
+        stack.recreate!(container_names: container_names, start: start?)
       end
     end
   end
