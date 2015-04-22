@@ -3,25 +3,10 @@
 lib = File.expand_path('../../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require 'logger'
 require 'percheron'
 require 'percheron/commands'
-
-$metastore = Metastore::Cabinet.new(File.join(ENV['HOME'], '.percheron', 'metastore.yaml'))
-$logger = Logger.new(STDOUT)
-
-logger_level = Logger::INFO
-logger_level = Logger::WARN if ENV['QUIET'] == 'true'
-
-if ENV['DEBUG'] == 'true' || ENV['DOCKER_DEBUG'] == 'true'
-  require 'pry-byebug'
-  require 'awesome_print'
-  logger_level = Logger::DEBUG
-
-  Docker.logger = $logger if ENV['DOCKER_DEBUG'] == 'true'
-end
-
-$logger.level = logger_level
+require 'percheron/logger'
+require 'percheron/metastore'
 
 begin
   Percheron::Commands::Main.run
