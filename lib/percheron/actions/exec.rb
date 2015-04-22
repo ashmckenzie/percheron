@@ -12,7 +12,7 @@ module Percheron
       end
 
       def execute!
-        $logger.debug "Executing #{description} scripts '#{scripts.inspect}' on '#{container.name}' container"
+        $logger.debug "Executing #{description} scripts #{scripts.inspect} on '#{container.name}' container"
         results = exec!
         results.compact.empty? ? nil : container
       end
@@ -33,23 +33,48 @@ module Percheron
           container_running = container.running?
           Start.new(container, exec_scripts: false).execute! unless container_running
           execute_scripts!
+          commit_and_tag_new_image!
           Stop.new(container).execute!  unless container_running
+        end
+
+        # FIXME
+        def commit_and_tag_new_image!
+          new_image = container.docker_container.commit
+          new_image.tag(repo: container.image_repo, tag: container.version.to_s, force: true)
         end
 
         def execute_scripts!
           scripts.each do |script|
             in_working_directory(base_dir) do
               file = Pathname.new(File.expand_path(script, base_dir))
-              execute_command!('/bin/bash -x /tmp/%s 2>&1' % file.basename)
+              execute_command!('/bin/sh /tmp/%s 2>&1' % file.basename)
             end
           end
         end
 
         def execute_command!(command)
-          $logger.info "Executing #{description} '#{command}' for '#{container.name}' container"
-          container.docker_container.exec(command.split(' ')) do |device, out|
-            $logger.debug '%s: %s' % [ device, out.strip ]
+          $logger.info "Executing #{description} script '#{command}' for '#{container.name}' container"
+          container.docker_container.exec(command.split(' ')) do |stream, out|
+            $logger.debug '%s: %s' % [ stream, out.strip ]
           end
+        end
+
+        def stop_containers!(containers)
+          exec_on_containers!(containers) do |container|
+            Stop.new(container).execute! if container.running?
+          end
+        end
+
+        def start_containers!(containers, exec_scripts: true)
+          exec_on_containers!(containers) do |container|
+            Start.new(container, dependant_containers: container.startable_dependant_containers.values, exec_scripts: exec_scripts).execute! unless container.running?
+          end
+        end
+
+        def exec_on_containers!(containers)
+          containers.each_with_object([]) do |container, all|
+            all << container if yield(container)
+          end.compact
         end
 
     end

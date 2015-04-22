@@ -4,32 +4,44 @@ module Percheron
 
       include Base
 
-      def initialize(container, recreate: false)
+      def initialize(container, start: false, cmd: false, exec_scripts: true)
         @container = container
-        @recreate = recreate
+        @start = start
+        @exec_scripts = exec_scripts
+        @cmd = cmd
+        @container_image_existed = container.image_exists?
       end
 
-      def execute!(opts = {})
+      def execute!
         results = []
-        if recreate? || !container.exists?
-          results << create!(opts)
-        else
+        if container.exists?
           $logger.debug "Container '#{container.name}' already exists"
+        else
+          results << create!
         end
         results.compact.empty? ? nil : container
       end
 
       private
 
-        attr_reader :container, :recreate
+        attr_reader :container, :start, :exec_scripts, :container_image_existed
+        alias_method :start?, :start
+        alias_method :exec_scripts?, :exec_scripts
+        alias_method :container_image_existed?, :container_image_existed
+
+        def cmd
+          @cmd ||= (@cmd || container.start_args)
+        end
 
         def base_options
           {
-            'name'          => container.name,
+            'name'          => container.full_name,
             'Image'         => container.image_name,
-            'Hostname'      => container.name,
+            'Hostname'      => container.hostname,
             'Env'           => container.env,
-            'ExposedPorts'  => container.exposed_ports
+            'ExposedPorts'  => container.exposed_ports,
+            'Cmd'           => cmd,
+            'Labels'        => container.labels
           }
         end
 
@@ -38,9 +50,14 @@ module Percheron
             'HostConfig'    => {
               'PortBindings'  => port_bindings,
               'Links'         => container.links,
-              'Binds'         => container.volumes
+              'Binds'         => container.volumes,
+              'Dns'           => container.dns
             }
           }
+        end
+
+        def options
+          @options ||= base_options.merge(host_config_options)
         end
 
         def port_bindings
@@ -50,42 +67,56 @@ module Percheron
           end
         end
 
-        def recreate?
-          recreate
-        end
-
-        def create!(opts)
-          build_image! unless container.image_exists?
+        def create!
+          container.buildable? ? build_image! : pull_image!
+          return unless container.startable?
           insert_scripts!
-          create_container!(opts.fetch(:create, {}))
-          execute_post_create_scripts! unless container.post_create_scripts.empty?
-          set_dockerfile_md5!
+          create_container!
+          update_dockerfile_md5!
+          start!
         end
 
         def build_image!
-          Build.new(container).execute!
+          Build.new(container).execute! unless container.image_exists?
         end
 
-        def insert_scripts!
-          insert_files!(container.post_create_scripts)
-          insert_files!(container.post_start_scripts)
+        # FIXME: move this
+        def pull_image!
+          return nil if container.image_exists?
+          $logger.info "Pulling '#{container.image_name}' image"
+          Docker::Image.create(fromImage: container.image_name) do |out|
+            $logger.debug JSON.parse(out)
+          end
         end
 
-        def create_container!(opts)
-          options = base_options.merge(host_config_options).merge(opts)
-          $logger.info "Creating '%s' container" % options['name']
+        def create_container!
+          $logger.info "Creating '#{container.name}' container"
           Docker::Container.create(options)
         end
 
-        def execute_post_create_scripts!
-          Exec.new(container, container.dependant_containers.values, container.post_create_scripts, 'POST create').execute!
+        def start!
+          return nil if !container.startable? || !start?
+          Start.new(container).execute!
         end
 
-        def set_dockerfile_md5!
-          $logger.info "Setting MD5 for '#{container.name}' container to #{container.current_dockerfile_md5}"
-          $metastore.set("#{container.metastore_key}.dockerfile_md5", container.current_dockerfile_md5)
+        def update_dockerfile_md5!
+          container.update_dockerfile_md5!
         end
 
+        def insert_scripts!
+          return nil if container_image_existed?
+          insert_files!(container.post_start_scripts)
+        end
+
+        def insert_files!(files)
+          files.each { |file| insert_file!(file) }
+        end
+
+        def insert_file!(file)
+          file = Pathname.new(File.expand_path(file, base_dir))
+          new_image = container.image.insert_local('localPath' => file.to_s, 'outputPath' => "/tmp/#{file.basename}")
+          new_image.tag(repo: container.image_repo, tag: container.version.to_s, force: true)
+        end
     end
   end
 end

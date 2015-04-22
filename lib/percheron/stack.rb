@@ -1,3 +1,5 @@
+require 'highline/import'
+
 module Percheron
   class Stack
     extend Forwardable
@@ -7,69 +9,75 @@ module Percheron
     def initialize(config, stack_name)
       @config = config
       @stack_name = stack_name
-      # valid?
       self
     end
 
     def self.get(config, name = nil)
-      if name
-        stack = new(config, name)
-        stack ? { stack.name => stack } : {}
-      else
-        config.stacks.each_with_object({}) do |stack_config, all|
-          stack_name, _ = stack_config
-          stack = new(config, stack_name)
-          all[stack.name] = stack
-        end
+      stacks = name.nil? ? config.stacks : { name => config.stacks[name] }
+      stacks.each_with_object({}) do |stack_config, all|
+        stack_name, _ = stack_config
+        stack = new(config, stack_name)
+        all[stack.name] = stack
       end
     end
 
     def container_configs
-      stack_config.containers.to_hash_by_key(:name)
+      stack_config.containers
     end
 
-    # FIXME: YUCK
-    def filter_containers(container_names = [])
+    def containers(container_names = [])
       container_names = !container_names.empty? ? container_names : filter_container_names
-      container_names.each_with_object({}) { |container_name, all| all[container_name] = Container.new(config, self, container_name) }
+      container_names.each_with_object({}) { |container_name, all| all[container_name] = container_from_name(container_name) }
+    end
+
+    def shell!(container_name, shell: Percheron::Actions::Shell::DEFAULT_SHELL)
+      Actions::Shell.new(container_from_name(container_name), shell: shell).execute!
+    end
+
+    def logs!(container_name, follow: false)
+      Actions::Logs.new(container_from_name(container_name), follow: follow).execute!
     end
 
     def stop!(container_names: [])
-      container_names = dependant_containers_for(container_names).reverse
+      container_names = filter_container_names(container_names).reverse
       exec_on_dependant_containers_for(container_names) { |container| Actions::Stop.new(container).execute! }
+      nil
     end
 
-    def start!(container_names: [])
+    def start!(container_names: [])  # FIXME: bug when non-startable container specified, all containers started
       container_names = dependant_containers_for(container_names)
-      exec_on_dependant_containers_for(container_names) { |container| Actions::Start.new(container, dependant_containers: container.dependant_containers.values).execute! }
+      exec_on_dependant_containers_for(container_names) { |container| Actions::Start.new(container, dependant_containers: container.startable_dependant_containers.values).execute! }
+      nil
     end
 
     def restart!(container_names: [])
-      container_names = dependant_containers_for(container_names)
+      container_names = filter_container_names(container_names)
       exec_on_dependant_containers_for(container_names) { |container| Actions::Restart.new(container).execute! }
+      nil
     end
 
-    def create!(container_names: [])
+    def build!(container_names: [])
       container_names = dependant_containers_for(container_names)
-      exec_on_dependant_containers_for(container_names) { |container| Actions::Create.new(container).execute! }
+      exec_on_dependant_containers_for(container_names) { |container| Actions::Build.new(container).execute! }
+      nil
     end
 
-    def recreate!(container_names: [], force_recreate: false, delete: false)
-      current = container_names_final = filter_container_names(container_names)
+    def create!(container_names: [],  start: false)
+      container_names = dependant_containers_for(container_names)
+      exec_on_dependant_containers_for(container_names) { |container| Actions::Create.new(container, start: start).execute! }
+      nil
+    end
 
-      # FIXME: make this suck less
-      loop do
-        current = deps = containers_affected(current).uniq
-        break if deps.empty?
-        container_names_final += deps
-      end
-
-      exec_on_dependant_containers_for(container_names_final.uniq) { |container| Actions::Recreate.new(container, force_recreate: force_recreate, delete: delete).execute! }
+    def recreate!(container_names: [], start: false)
+      container_names = filter_container_names(container_names)
+      exec_on_dependant_containers_for(container_names) { |container| Actions::Recreate.new(container, start: start).execute! }
+      nil
     end
 
     def purge!(container_names: [])
-      container_names = filter_container_names(container_names)
-      exec_on_dependant_containers_for(container_names) { |container| Actions::Purge.new(container).execute! }
+      container_names = filter_container_names(container_names).reverse
+      exec_on_dependant_containers_for(container_names) { |container| Actions::Purge.new(container).execute! }  # FIXME: Don't delete containers that are not buildable
+      nil
     end
 
     def valid?
@@ -85,47 +93,42 @@ module Percheron
       end
 
       def filter_container_names(container_names = [])
-        stack_config.containers.map do |container_config|
-          container_config.name if container_names.empty? || container_names.include?(container_config.name)
+        stack_config.fetch('containers', {}).map do |container_name, container_config|
+          container_config.name if container_names.empty? || container_names.include?(container_name) ||
+                                   (container_config.pseudo_name && container_names.include?(container_config.pseudo_name))  # FIXME: yuck
         end.compact
       end
 
-      def exec_on_containers(container_names)
-        filter_containers(container_names).each { |_, container| yield(container) }
-      end
-
       def exec_on_dependant_containers_for(container_names)
-        serial_processor(container_names) { |container| $logger.info '' if yield(container) }
-      end
-
-      def serial_processor(container_names)
         exec_on_containers(container_names) do |container|
+          $logger.debug "Processing '#{container.name}' container"
           yield(container)
-          container_names.delete(container.name)
+          container_names.delete(container.full_name)
         end
       end
 
-      def containers_affected(container_names)
-        deps = []
-        container_names.each do |container_name|
-          filter_containers.each { |_, container| deps << container.name if container.dependant_container_names.include?(container_name) }
-        end
-        deps
-      end
-
-      def containers_and_their_dependants(container_names)
-        all_containers = filter_containers
-        container_names.each_with_object({}) { |container_name, all| all[container_name] = all_containers[container_name].dependant_container_names }
+      def exec_on_containers(container_names)
+        containers(container_names).each { |_, container| yield(container) }
       end
 
       def dependant_containers_for(container_names)
         container_names = filter_container_names(container_names)
-        wip_list = []
-        containers_and_their_dependants(container_names).each do |container_name, dependant_container_names|
-          wip_list += dependant_container_names unless dependant_container_names.empty?
-          wip_list << container_name
+        list = []
+        all_containers_and_their_dependants(container_names).each do |container_name, dependant_container_names|
+          list += dependant_container_names unless dependant_container_names.empty?
+          list << container_name
         end
-        wip_list.uniq
+        list.uniq
+      end
+
+      def all_containers_and_their_dependants(container_names)
+        all_containers = containers
+        containers = container_names.each_with_object({}) { |container_name, all| all[container_name] = all_containers[container_name].dependant_container_names }
+        containers.sort { |x, y| x[1].length <=> y[1].length } # FIXME
+      end
+
+      def container_from_name(container_name)
+        Container.new(self, container_name, config.file_base_path)
       end
   end
 end
