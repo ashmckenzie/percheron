@@ -4,6 +4,8 @@ module Percheron
 
       default_parameters!
 
+      option '--start', :flag, 'Start container', default: false
+
       def execute
         super
         stack.create!(container_names: container_names, start: start?)
