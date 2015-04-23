@@ -2,9 +2,7 @@ module Percheron
   module Commands
     class Create < Abstract
 
-      default_parameters!
-
-      option('--start', :flag, 'Start container', default: false)
+      default_create_parameters!
 
       def execute
         super

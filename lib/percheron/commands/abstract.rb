@@ -18,6 +18,11 @@ module Percheron
         end
       end
 
+      def self.default_create_parameters!
+        default_parameters!
+        option('--start', :flag, 'Start container', default: false)
+      end
+
       def execute
         stack.valid?
       rescue => e
