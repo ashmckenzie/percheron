@@ -41,6 +41,7 @@ TODO
 
 * Rails - https://github.com/ashmckenzie/percheron-rails#quickstart
 * Torrent - https://github.com/ashmckenzie/percheron-torrent#quickstart
+* SaltStack - https://github.com/ashmckenzie/percheron-saltstack#quickstart
 
 ## Testing
 
