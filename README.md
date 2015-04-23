@@ -49,13 +49,13 @@ TODO
 All (cane, RuboCop, unit and integration):
 
 ```shell
-bundle exec test
+bundle exec rake test
 ```
 
 Style (cane and RuboCop):
 
 ```shell
-bundle exec test:style
+bundle exec rake test:style
 ```
 
 ## Contributing
