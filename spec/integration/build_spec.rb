@@ -1,0 +1,46 @@
+require 'integration/spec_helper'
+
+describe 'percheron' do
+  before do
+    $logger = double('Logger').as_null_object
+    $metastore = double('Metastore').as_null_object
+  end
+
+  before(:all) do
+    Dir.chdir('./spec/integration/support')
+    cleanup!
+  end
+
+  after do
+    $logger = $metastore = nil
+    cleanup!
+  end
+
+  describe 'build' do
+    context 'for just the base container' do
+      it 'builds an image' do
+        Percheron::Commands::Build.run(Dir.pwd, %w(percheron-test base))
+        output = Docker::Image.get('percheron-test_base:9.9.9').json
+        expect(output['Author']).to eql('ash@the-rebellion.net')
+      end
+    end
+
+    context 'for just the app1 container' do
+      it 'builds an image' do
+        Percheron::Commands::Build.run(Dir.pwd, %w(percheron-test app1))
+        output = Docker::Image.get('percheron-test_app1:9.9.9').json
+        expect(output['Config']['Cmd']).to eql([ 'sh', '-c', "while true; do date ; echo 'hello from percheron'; done" ])
+      end
+    end
+
+    context 'for all containers' do
+      it 'builds base and app1 images' do
+        Percheron::Commands::Build.run(Dir.pwd, %w(percheron-test))
+        base_output = Docker::Image.get('percheron-test_base:9.9.9').json
+        app1_output = Docker::Image.get('percheron-test_app1:9.9.9').json
+        expect(base_output['Author']).to eql('ash@the-rebellion.net')
+        expect(app1_output['Config']['Cmd']).to eql([ 'sh', '-c', "while true; do date ; echo 'hello from percheron'; done" ])
+      end
+    end
+  end
+end
