@@ -26,3 +26,6 @@ Style/RegexpLiteral:
 Metrics/ClassLength:
   CountComments: false
   Max: 150
+
+Style/SpaceAroundEqualsInParameterDefault:
+  Enabled: false
