@@ -93,9 +93,8 @@ module Percheron
     end
 
     def dockerfile
-      if container_config.dockerfile
-        Pathname.new(File.expand_path(container_config.dockerfile, config_file_base_path))
-      end
+      return nil unless container_config.dockerfile
+      Pathname.new(File.expand_path(container_config.dockerfile, config_file_base_path))
     end
 
     def exposed_ports

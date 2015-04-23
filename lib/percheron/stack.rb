@@ -111,18 +111,18 @@ module Percheron
         @stack_config ||= (config.stacks[stack_name] || Hashie::Mash.new({}))
       end
 
+      # FIXME: yuck
+      # rubocop:disable Style/Next
       def filter_container_names(container_names = [])
         stack_config.fetch('containers', {}).map do |container_name, container_config|
-          # FIXME: yuck
           if container_names.empty? || container_names.include?(container_name) ||
-             (
-               container_config.pseudo_name &&
-               container_names.include?(container_config.pseudo_name)
-             )
+             (container_config.pseudo_name &&
+               container_names.include?(container_config.pseudo_name))
             container_config.name
           end
         end.compact
       end
+      # rubocop:enable Style/Next
 
       def exec_on_dependant_containers_for(container_names)
         exec_on_containers(container_names) do |container|

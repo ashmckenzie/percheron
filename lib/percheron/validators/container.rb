@@ -38,6 +38,7 @@ module Percheron
           ]
         end
 
+        # rubocop:disable Style/GuardClause
         def validate_name
           if container.name.nil? || !container.name.to_s.match(/[\w]{3,}/)
             'Container name is invalid'
@@ -61,6 +62,7 @@ module Percheron
             'Container Docker image is invalid'
           end
         end
+        # rubocop:enable Style/GuardClause
 
         def validate_version
           container.version ? nil : fail(ArgumentError)

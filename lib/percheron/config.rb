@@ -35,6 +35,7 @@ module Percheron
 
       attr_reader :file
 
+      # rubocop:disable Metrics/MethodLength
       def process_stacks!   # FIXME: bugs here :(
         stacks_by_name = contents.stacks.to_hash_by_key(:name)
         scanned = scan_container_configs(stacks_by_name)
@@ -49,6 +50,7 @@ module Percheron
           stack.containers = stack_containers
         end
       end
+      # rubocop:enable Metrics/MethodLength
 
       def merge(all, container_config, scanned)  # FIXME: poor name
         all.merge!(expand_container_config(container_config, scanned[container_config.name]))
