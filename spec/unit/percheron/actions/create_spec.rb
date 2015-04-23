@@ -48,7 +48,7 @@ describe Percheron::Actions::Create do
             'Env' => [],
             'ExposedPorts' => {},
             'Cmd' => [],
-            'Labels' => { version: '1.0.0', created_by: 'Percheron 0.6.4' },
+            'Labels' => { version: '1.0.0', created_by: /Percheron \d+\.\d+\.\d+/ },
             'HostConfig' => {
               'PortBindings' => {},
               'Links' => [],
@@ -80,7 +80,7 @@ describe Percheron::Actions::Create do
               '9999' => {}
             },
             'Cmd' => [],
-            'Labels' => { version: '1.0.0', created_by: 'Percheron 0.6.4' },
+            'Labels' => { version: '1.0.0', created_by: /Percheron \d+\.\d+\.\d+/ },
             'HostConfig' => {
               'PortBindings' => {
                 '9999' => [ { 'HostPort' => '9999' } ]
