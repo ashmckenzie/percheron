@@ -34,7 +34,9 @@ Trace
 
 --snip--
 
-Please copy the detail between the --snip--'s above and raise a ticket - https://github.com/ashmckenzie/percheron/issues/new?labels=bug
+Please copy the detail between the --snip--'s above and raise a ticket please :)
+
+https://github.com/ashmckenzie/percheron/issues/new?labels=bug
 
 EOS
       end

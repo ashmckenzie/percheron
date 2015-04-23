@@ -114,7 +114,8 @@ module Percheron
 
         def insert_file!(file)
           file = Pathname.new(File.expand_path(file, base_dir))
-          new_image = container.image.insert_local('localPath' => file.to_s, 'outputPath' => "/tmp/#{file.basename}")
+          opts = { 'localPath' => file.to_s, 'outputPath' => "/tmp/#{file.basename}" }
+          new_image = container.image.insert_local(opts)
           new_image.tag(repo: container.image_repo, tag: container.version.to_s, force: true)
         end
     end

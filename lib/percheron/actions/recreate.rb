@@ -30,7 +30,8 @@ module Percheron
         end
 
         def inform!
-          $logger.info "Container '#{container.name}' does not need to be recreated - No Dockerfile changes or version bump" if container.dockerfile_md5s_match?
+          return nil unless container.dockerfile_md5s_match?
+          $logger.info "Container '#{container.name}' - No Dockerfile changes or version bump"
         end
 
         def recreate!

@@ -25,8 +25,10 @@ describe Percheron::Actions::Logs do
 
     context 'with follow option set' do
       let(:options) { { follow: true } }
+      let(:stream) { :stdout }
+      let(:chunk) { 'hello' }
       it 'displays and follows the logs' do
-        expect(container.docker_container).to receive(:streaming_logs).with(stdout: true, stderr: true, timestamps: true, tail: 100, follow: true)
+        expect(container.docker_container).to receive(:streaming_logs).with(stdout: true, stderr: true, timestamps: true, tail: 100, follow: true).and_yield(stream, chunk)
         subject.execute!
       end
 

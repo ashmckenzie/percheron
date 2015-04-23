@@ -41,7 +41,8 @@ module Percheron
         end
 
         def execute_post_start_scripts!
-          Exec.new(container, dependant_containers, container.post_start_scripts, 'POST start').execute! if exec_scripts?
+          scripts = container.post_start_scripts
+          Exec.new(container, dependant_containers, scripts, 'POST start').execute! if exec_scripts?
         end
 
     end

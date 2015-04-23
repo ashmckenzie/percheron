@@ -39,19 +39,27 @@ module Percheron
         end
 
         def validate_name
-          'Container name is invalid' if container.name.nil? || !container.name.to_s.match(/[\w]{3,}/)
+          if container.name.nil? || !container.name.to_s.match(/[\w]{3,}/)
+            'Container name is invalid'
+          end
         end
 
         def validate_dockerfile_and_image_name
-          'Container Dockerfile OR image name not provided' if container.dockerfile.nil? && container.docker_image.nil?
+          if container.dockerfile.nil? && container.docker_image.nil?
+            'Container Dockerfile OR image name not provided'
+          end
         end
 
         def validate_dockerfile
-          'Container Dockerfile is invalid' if !container.dockerfile.nil? && !File.exist?(container.dockerfile)
+          if !container.dockerfile.nil? && !File.exist?(container.dockerfile)
+            'Container Dockerfile is invalid'
+          end
         end
 
         def validate_image
-          'Container Docker image is invalid' if !container.docker_image.nil? && !container.docker_image.match(/^.+:.+$/)
+          if !container.docker_image.nil? && !container.docker_image.match(/^.+:.+$/)
+            'Container Docker image is invalid'
+          end
         end
 
         def validate_version

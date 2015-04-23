@@ -12,7 +12,7 @@ module Percheron
       end
 
       def execute!
-        $logger.debug "Executing #{description} scripts #{scripts.inspect} on '#{container.name}' container"
+        $logger.debug "Executing #{description} #{scripts.inspect} on '#{container.name}' container"
         results = exec!
         results.compact.empty? ? nil : container
       end
@@ -53,7 +53,7 @@ module Percheron
         end
 
         def execute_command!(command)
-          $logger.info "Executing #{description} script '#{command}' for '#{container.name}' container"
+          $logger.info "Executing #{description} '#{command}' for '#{container.name}' container"
           container.docker_container.exec(command.split(' ')) do |stream, out|
             $logger.debug '%s: %s' % [ stream, out.strip ]
           end
@@ -65,9 +65,11 @@ module Percheron
           end
         end
 
-        def start_containers!(containers, exec_scripts: true)
+        def start_containers!(containers, scripts: true)
           exec_on_containers!(containers) do |container|
-            Start.new(container, dependant_containers: container.startable_dependant_containers.values, exec_scripts: exec_scripts).execute! unless container.running?
+            next if container.running?
+            containers = container.startable_dependant_containers.values
+            Start.new(container, dependant_containers: containers, exec_scripts: scripts).execute!
           end
         end
 

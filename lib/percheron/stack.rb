@@ -27,7 +27,9 @@ module Percheron
 
     def containers(container_names = [])
       container_names = !container_names.empty? ? container_names : filter_container_names
-      container_names.each_with_object({}) { |container_name, all| all[container_name] = container_from_name(container_name) }
+      container_names.each_with_object({}) do |container_name, all|
+        all[container_name] = container_from_name(container_name)
+      end
     end
 
     def shell!(container_name, shell: Percheron::Actions::Shell::DEFAULT_SHELL)
@@ -40,43 +42,60 @@ module Percheron
 
     def stop!(container_names: [])
       container_names = filter_container_names(container_names).reverse
-      exec_on_dependant_containers_for(container_names) { |container| Actions::Stop.new(container).execute! }
+      exec_on_dependant_containers_for(container_names) do |container|
+        Actions::Stop.new(container).execute!
+      end
       nil
     end
 
-    def start!(container_names: [])  # FIXME: bug when non-startable container specified, all containers started
+    # FIXME: bug when non-startable container specified, all containers started
+    def start!(container_names: [])
       container_names = dependant_containers_for(container_names)
-      exec_on_dependant_containers_for(container_names) { |container| Actions::Start.new(container, dependant_containers: container.startable_dependant_containers.values).execute! }
+      exec_on_dependant_containers_for(container_names) do |container|
+        dependant_containers = container.startable_dependant_containers.values
+        Actions::Start.new(container, dependant_containers: dependant_containers).execute!
+      end
       nil
     end
 
     def restart!(container_names: [])
       container_names = filter_container_names(container_names)
-      exec_on_dependant_containers_for(container_names) { |container| Actions::Restart.new(container).execute! }
+      exec_on_dependant_containers_for(container_names) do |container|
+        Actions::Restart.new(container).execute!
+      end
       nil
     end
 
     def build!(container_names: [])
       container_names = dependant_containers_for(container_names)
-      exec_on_dependant_containers_for(container_names) { |container| Actions::Build.new(container).execute! }
+      exec_on_dependant_containers_for(container_names) do |container|
+        Actions::Build.new(container).execute!
+      end
       nil
     end
 
     def create!(container_names: [],  start: false)
       container_names = dependant_containers_for(container_names)
-      exec_on_dependant_containers_for(container_names) { |container| Actions::Create.new(container, start: start).execute! }
+      exec_on_dependant_containers_for(container_names) do |container|
+        Actions::Create.new(container, start: start).execute!
+      end
       nil
     end
 
     def recreate!(container_names: [], start: false)
       container_names = filter_container_names(container_names)
-      exec_on_dependant_containers_for(container_names) { |container| Actions::Recreate.new(container, start: start).execute! }
+      exec_on_dependant_containers_for(container_names) do |container|
+        Actions::Recreate.new(container, start: start).execute!
+      end
       nil
     end
 
     def purge!(container_names: [])
       container_names = filter_container_names(container_names).reverse
-      exec_on_dependant_containers_for(container_names) { |container| Actions::Purge.new(container).execute! }  # FIXME: Don't delete containers that are not buildable
+      exec_on_dependant_containers_for(container_names) do |container|
+        # FIXME: Don't delete containers that are not buildable
+        Actions::Purge.new(container).execute!
+      end
       nil
     end
 
@@ -94,8 +113,14 @@ module Percheron
 
       def filter_container_names(container_names = [])
         stack_config.fetch('containers', {}).map do |container_name, container_config|
-          container_config.name if container_names.empty? || container_names.include?(container_name) ||
-                                   (container_config.pseudo_name && container_names.include?(container_config.pseudo_name))  # FIXME: yuck
+          # FIXME: yuck
+          if container_names.empty? || container_names.include?(container_name) ||
+             (
+               container_config.pseudo_name &&
+               container_names.include?(container_config.pseudo_name)
+             )
+            container_config.name
+          end
         end.compact
       end
 
@@ -112,18 +137,21 @@ module Percheron
       end
 
       def dependant_containers_for(container_names)
-        container_names = filter_container_names(container_names)
         list = []
-        all_containers_and_their_dependants(container_names).each do |container_name, dependant_container_names|
+        container_names = filter_container_names(container_names)
+        containers = all_containers_and_dependants(container_names)
+        containers.each do |container_name, dependant_container_names|
           list += dependant_container_names unless dependant_container_names.empty?
           list << container_name
         end
         list.uniq
       end
 
-      def all_containers_and_their_dependants(container_names)
+      def all_containers_and_dependants(container_names)
         all_containers = containers
-        containers = container_names.each_with_object({}) { |container_name, all| all[container_name] = all_containers[container_name].dependant_container_names }
+        containers = container_names.each_with_object({}) do |container_name, all|
+          all[container_name] = all_containers[container_name].dependant_container_names
+        end
         containers.sort { |x, y| x[1].length <=> y[1].length } # FIXME
       end
 

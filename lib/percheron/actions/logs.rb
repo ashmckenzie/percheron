@@ -29,7 +29,10 @@ module Percheron
 
         def display_logs!
           if follow?
-            container.docker_container.streaming_logs(options.merge(follow: true)) { |stream, chunk| puts "#{stream}: #{chunk}" }
+            opts = options.merge(follow: true)
+            container.docker_container.streaming_logs(opts) do |stream, chunk|
+              puts "#{stream}: #{chunk}"
+            end
           else
             puts container.docker_container.logs(options)
           end

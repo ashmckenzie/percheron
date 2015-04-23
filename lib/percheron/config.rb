@@ -40,7 +40,11 @@ module Percheron
         scanned = scan_container_configs(stacks_by_name)
         stacks_by_name.each do |_, stack|
           stack_containers = stack.containers.each_with_object({}) do |container_config, all|
-            scanned[container_config.name] ? merge(all, container_config, scanned) : replace_scanned(all, container_config, scanned)
+            if scanned[container_config.name]
+              merge(all, container_config, scanned)
+            else
+              replace_scanned(all, container_config, scanned)
+            end
           end
           stack.containers = stack_containers
         end
@@ -51,8 +55,9 @@ module Percheron
       end
 
       def replace_scanned(all, container_config, scanned)  # FIXME: poor name
-        unless (scanned_match = container_config.fetch(:dependant_container_names, []) & scanned.keys).empty?
-          container_config.dependant_container_names = scanned_match.map { |v| scanned[v] }.flatten
+        match = container_config.fetch(:dependant_container_names, [])
+        unless (match & scanned.keys).empty?
+          container_config.dependant_container_names = match.map { |v| scanned[v] }.flatten
         end
         all[container_config.name] = container_config
       end
@@ -61,8 +66,9 @@ module Percheron
         all = {}
         stacks_by_name.each do |_, stack|
           stack.containers.each do |container_config|
-            if container_config.fetch(:instances, 1) > 1
-              all[container_config.name] = 1.upto(container_config.instances).map { |number| "#{container_config.name}#{number}" }
+            next if container_config.fetch(:instances, 1) == 1
+            all[container_config.name] = 1.upto(container_config.instances).map do |number|
+              "#{container_config.name}#{number}"
             end
           end
         end

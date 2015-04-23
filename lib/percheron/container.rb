@@ -5,7 +5,9 @@ module Percheron
     extend ConfigDelegator
 
     def_delegators :container_config, :name, :pseudo_name, :docker_image
-    def_config_item_with_default :container_config, [], :env, :ports, :volumes, :dependant_container_names, :pre_build_scripts, :post_start_scripts, :start_args
+    def_config_item_with_default :container_config, [], :env, :ports, :volumes,
+                                 :dependant_container_names, :pre_build_scripts,
+                                 :post_start_scripts, :start_args
     def_config_item_with_default :container_config, %w(127.0.0.1 8.8.8.8), :dns
     def_config_item_with_default :container_config, true, :startable
 
@@ -19,7 +21,9 @@ module Percheron
     end
 
     def dependant_containers
-      dependant_container_names.each_with_object({}) { |container_name, all| all[container_name] = stack.containers[container_name] }
+      dependant_container_names.each_with_object({}) do |container_name, all|
+        all[container_name] = stack.containers[container_name]
+      end
     end
 
     def startable_dependant_containers
@@ -89,7 +93,9 @@ module Percheron
     end
 
     def dockerfile
-      container_config.dockerfile ? Pathname.new(File.expand_path(container_config.dockerfile, config_file_base_path)) : nil
+      if container_config.dockerfile
+        Pathname.new(File.expand_path(container_config.dockerfile, config_file_base_path))
+      end
     end
 
     def exposed_ports
@@ -97,7 +103,9 @@ module Percheron
     end
 
     def links
-      startable_dependant_containers.map { |_, container| '%s:%s' % [ container.full_name, container.name ] }
+      startable_dependant_containers.map do |_, container|
+        '%s:%s' % [ container.full_name, container.name ]
+      end
     end
 
     def docker_container
