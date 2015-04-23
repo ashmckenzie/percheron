@@ -1,3 +1,4 @@
 --abc-glob ./lib/**/*.rb
 --style-glob ./lib/**/*.rb
+--style-measure 100
 --no-doc
