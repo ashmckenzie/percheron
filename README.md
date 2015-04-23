@@ -30,6 +30,7 @@ $ gem install percheron
 
 ## Requirements
 
+* Ruby 2.x
 * Docker 1.6.x
 
 ## Usage
@@ -40,6 +41,14 @@ TODO
 
 * Rails - https://github.com/ashmckenzie/percheron-rails#quickstart
 * Torrent - https://github.com/ashmckenzie/percheron-torrent#quickstart
+
+## Testing
+
+All (cane, RuboCop, unit and integration):
+
+```shell
+bundle exec test
+```
 
 ## Contributing
 
