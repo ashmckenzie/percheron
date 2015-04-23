@@ -41,11 +41,7 @@ module Percheron
     end
 
     def stop!(container_names: [])
-      container_names = filter_container_names(container_names).reverse
-      exec_on_dependant_containers_for(container_names) do |container|
-        Actions::Stop.new(container).execute!
-      end
-      nil
+      execute!(Actions::Stop, filter_container_names(container_names).reverse)
     end
 
     # FIXME: bug when non-startable container specified, all containers started
@@ -59,11 +55,7 @@ module Percheron
     end
 
     def restart!(container_names: [])
-      container_names = filter_container_names(container_names)
-      exec_on_dependant_containers_for(container_names) do |container|
-        Actions::Restart.new(container).execute!
-      end
-      nil
+      execute!(Actions::Restart, filter_container_names(container_names))
     end
 
     def build!(container_names: [])
@@ -75,26 +67,24 @@ module Percheron
     end
 
     def create!(container_names: [],  start: false)
-      container_names = dependant_containers_for(container_names)
-      exec_on_dependant_containers_for(container_names) do |container|
-        Actions::Create.new(container, start: start).execute!
-      end
-      nil
+      execute!(Actions::Create, dependant_containers_for(container_names), start: start)
     end
 
     def recreate!(container_names: [], start: false)
-      container_names = filter_container_names(container_names)
-      exec_on_dependant_containers_for(container_names) do |container|
-        Actions::Recreate.new(container, start: start).execute!
-      end
-      nil
+      execute!(Actions::Recreate, filter_container_names(container_names), start: start)
     end
 
     def purge!(container_names: [])
-      container_names = filter_container_names(container_names).reverse
+      execute!(Actions::Purge, filter_container_names(container_names).reverse)
+    end
+
+    def execute!(klass, container_names, args=nil)
       exec_on_dependant_containers_for(container_names) do |container|
-        # FIXME: Don't delete containers that are not buildable
-        Actions::Purge.new(container).execute!
+        if args
+          klass.new(container, args).execute!
+        else
+          klass.new(container).execute!
+        end
       end
       nil
     end
