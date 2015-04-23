@@ -8,6 +8,16 @@
 
 Organise your Docker containers with muscle and intelligence.
 
+## Features
+
+* Single, easy to write `.percheron.yml` controls everything
+* Supports building, creating and starting of containers and their dependancies
+* Supports building using a Dockerfile or pulling a Docker image from Docker Hub
+* Build 'base' images as a dependancy and then build from there
+* Support for pre-build and post-start scripts when generating images and starting containers
+* Version control of building images and containers
+* Written in Ruby :)
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -43,6 +53,11 @@ TODO
 * [Rails](https://github.com/ashmckenzie/percheron-rails#quickstart) - Rails 4.2, PostgreSQL, redis, HAProxy and postfix
 * [Torrent](https://github.com/ashmckenzie/percheron-torrent#quickstart) - Tracker (chihaya), seeder (aria2) and three peers (aria2)
 * [SaltStack](https://github.com/ashmckenzie/percheron-saltstack#quickstart) - SaltStack v2015.2.0rc2 with master and minion
+
+## Supported platforms
+
+* Linux
+* MacOS 10.9+
 
 ## Testing
 
