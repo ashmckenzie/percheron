@@ -50,6 +50,13 @@ All (cane, RuboCop, unit and integration):
 bundle exec test
 ```
 
+Style (cane and RuboCop):
+
+```shell
+bundle exec test:style
+```
+
+
 ## Contributing
 
 1. Fork it ( https://github.com/ashmckenzie/percheron/fork )
