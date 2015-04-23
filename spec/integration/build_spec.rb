@@ -7,7 +7,7 @@ describe 'percheron' do
   end
 
   before(:all) do
-    Dir.chdir('./spec/integration/support')
+    Dir.chdir(File.expand_path('../support', __FILE__))
     cleanup!
   end
 
