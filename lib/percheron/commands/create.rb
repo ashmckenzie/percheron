@@ -4,7 +4,7 @@ module Percheron
 
       default_parameters!
 
-      option '--start', :flag, 'Start container', default: false
+      option('--start', :flag, 'Start container', default: false)
 
       def execute
         super
