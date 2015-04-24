@@ -8,17 +8,16 @@ module Percheron
 
       def valid?
         message = rules.return { |rule| send(rule) }
-
-        if message
-          fail Errors::ConfigFileInvalid, message
-        else
-          true
-        end
+        message ? fail(Errors::ConfigFileInvalid, formatted_message(message)) : true
       end
 
       private
 
         attr_reader :config_file
+
+        def formatted_message(message)
+          "Config is invalid: #{message}"
+        end
 
         def rules
           [
@@ -34,24 +33,21 @@ module Percheron
         end
 
         def validate_config_file_defined
-          'Config file is not defined' if config_file.nil?
+          'Is not defined' if config_file.nil?
         end
 
         def validate_config_file_existence
-          "#{base_message} does not exist" unless config_file.exist?
+          'Does not exist' unless config_file.exist?
         end
 
         def validate_config_file_not_empty
-          "#{base_message} is empty" if config_file_contents.empty?
+          'Is empty' if config_file_contents.empty?
         end
 
         def validate_config_file_contents
-          "#{base_message} is invalid" unless config_file_contents.docker
+          'Is invalid' unless config_file_contents.docker
         end
 
-        def base_message
-          "Config file '#{config_file}'"
-        end
     end
   end
 end

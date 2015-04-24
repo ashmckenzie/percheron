@@ -12,7 +12,7 @@ describe Percheron::Validators::Stack do
       let(:config_file_name) { './spec/unit/support/.percheron_invalid_stacks.yml' }
 
       it 'raises exception' do
-        expect { subject.valid? }.to raise_error(Percheron::Errors::StackInvalid, 'Stack name is invalid')
+        expect { subject.valid? }.to raise_error(Percheron::Errors::StackInvalid, 'Stack is invalid: Name is invalid')
       end
     end
 
