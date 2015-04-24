@@ -10,7 +10,7 @@ module Percheron
       def execute
         super
         stack.shell!(container_name, shell: shell)
-      rescue Errors::DockerClientNotInstalled, Errors::DockerClientInsufficientVersion => e
+      rescue Errors::DockerClientInvalid => e
         signal_usage_error(e.message)
       end
     end
