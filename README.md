@@ -18,6 +18,11 @@ Organise your Docker containers with muscle and intelligence.
 * Version control of building images and containers
 * Written in Ruby :)
 
+## Supported platforms
+
+* Linux
+* MacOS 10.9+
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -53,11 +58,6 @@ TODO
 * [Rails](https://github.com/ashmckenzie/percheron-rails#quickstart) - Rails 4.2, PostgreSQL, redis, HAProxy and postfix
 * [Torrent](https://github.com/ashmckenzie/percheron-torrent#quickstart) - Tracker (chihaya), seeder (aria2) and three peers (aria2)
 * [SaltStack](https://github.com/ashmckenzie/percheron-saltstack#quickstart) - SaltStack v2015.2.0rc2 with master and minion
-
-## Supported platforms
-
-* Linux
-* MacOS 10.9+
 
 ## Testing
 
