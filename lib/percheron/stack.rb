@@ -74,8 +74,8 @@ module Percheron
       execute!(Actions::Recreate, filter_container_names(container_names), start: start)
     end
 
-    def purge!(container_names: [])
-      execute!(Actions::Purge, filter_container_names(container_names).reverse)
+    def purge!(container_names: [], force: false)
+      execute!(Actions::Purge, filter_container_names(container_names).reverse, force: force)
     end
 
     def execute!(klass, container_names, args=nil)

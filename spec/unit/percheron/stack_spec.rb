@@ -216,9 +216,9 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Purge') }
 
       it 'asks each Container to purge' do
-        expect(klass).to receive(:new).with(dependant_container).and_return(action_double)
-        expect(klass).to receive(:new).with(external_container).and_return(action_double)
-        expect(klass).to receive(:new).with(container).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_container, force: false).and_return(action_double)
+        expect(klass).to receive(:new).with(external_container, force: false).and_return(action_double)
+        expect(klass).to receive(:new).with(container, force: false).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(3).times
         subject.purge!
       end

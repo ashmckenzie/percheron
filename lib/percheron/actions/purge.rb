@@ -4,9 +4,9 @@ module Percheron
 
       include Base
 
-      def initialize(container, delete_image: true)
+      def initialize(container, force: false)
         @container = container
-        @delete_image = delete_image
+        @force = force
       end
 
       def execute!
@@ -19,20 +19,20 @@ module Percheron
 
       private
 
-        attr_reader :container, :delete_image
+        attr_reader :container, :force
 
         def stop!
           Stop.new(container).execute!
         end
 
         def delete_image?
-          delete_image && container.image_exists? && container.buildable?
+          container.image_exists? && container.buildable?
         end
 
         def delete_container!
           return nil unless container.exists?
           $logger.info "Deleting '#{container.name}' container"
-          container.docker_container.remove
+          container.docker_container.remove(force: force)
         rescue Docker::Error::ConflictError => e
           $logger.error "Unable to delete '%s' container - %s" % [ container.name, e.inspect ]
         end
@@ -40,7 +40,7 @@ module Percheron
         def delete_image!
           return nil unless delete_image?
           $logger.info "Deleting '#{container.image_name}' image"
-          container.image.remove
+          container.image.remove(force: force)
         rescue Docker::Error::ConflictError => e
           $logger.error "Unable to delete '%s' image - %s" % [ container.image_name, e.inspect ]
         end
