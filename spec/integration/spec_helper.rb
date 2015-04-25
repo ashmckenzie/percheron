@@ -1,6 +1,11 @@
 require 'awesome_print'
-require 'pry-byebug'
 require 'timecop'
+
+begin
+  require 'pry-byebug'
+rescue LoadError
+  $stderr.puts('pry-debug not installed.')
+end
 
 require 'codeclimate-test-reporter'
 CodeClimate::TestReporter.start
