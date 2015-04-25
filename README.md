@@ -53,6 +53,10 @@ $ gem install percheron
 
 TODO
 
+## Demo
+
+[![asciicast](https://asciinema.org/a/19216.png)](https://asciinema.org/a/19216)
+
 ## Debugging
 
 To debug Percheron, set the `DEBUG=true` environment variable.
