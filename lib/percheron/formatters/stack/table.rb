@@ -24,24 +24,28 @@ module Percheron
               'Container',
               'ID',
               'Running?',
+              'IP',
               'Ports',
               'Volumes',
               'Version'
             ]
           end
 
+          # rubocop:disable Metrics/MethodLength
           def rows
             stack.containers.map do |_, container|
               [
                 container.name,
                 container.id,
                 startable(container),
+                container.ip,
                 container.ports.join(', '),
                 container.volumes.join(', '),
                 (container.built_version == '0.0.0') ? '' : container.built_version
               ]
             end
           end
+          # rubocop:enable Metrics/MethodLength
 
           def startable(container)
             if container.startable?

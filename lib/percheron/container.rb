@@ -117,6 +117,10 @@ module Percheron
       { version: version.to_s, created_by: "Percheron #{Percheron::VERSION}" }
     end
 
+    def ip
+      exists? ? info.NetworkSettings.IPAddress : 'n/a'
+    end
+
     def update_dockerfile_md5!
       md5 = current_dockerfile_md5
       $logger.info "Setting MD5 for '#{name}' container to #{md5}"
