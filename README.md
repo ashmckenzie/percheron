@@ -53,9 +53,16 @@ $ gem install percheron
 
 TODO
 
+## Debugging
+
+To debug Percheron, set the `DEBUG=true` environment variable.
+
+To debug Percheron and Docker, set the `DOCKER_DEBUG=true` environment variable.
+
 ## Examples
 
 * [Rails](https://github.com/ashmckenzie/percheron-rails#quickstart) - Rails 4.2, PostgreSQL, redis, HAProxy and postfix
+* [Redis](https://github.com/ashmckenzie/percheron-redis#quickstart) - Redis cluster + sentinel, master, two slaves and tools
 * [Torrent](https://github.com/ashmckenzie/percheron-torrent#quickstart) - Tracker (chihaya), seeder (aria2) and three peers (aria2)
 * [SaltStack](https://github.com/ashmckenzie/percheron-saltstack#quickstart) - SaltStack v2015.2.0rc2 with master and minion
 
