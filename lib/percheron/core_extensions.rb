@@ -24,4 +24,4 @@ module Percheron
   end
 end
 
-Array.include(Percheron::CoreExtensions::Array::Extras)
+Array.send(:include, Percheron::CoreExtensions::Array::Extras)
