@@ -12,14 +12,17 @@ module Percheron
       end
 
       def execute!
-        Validators::DockerClient.new.validate_docker_client_available!
         $logger.debug "Executing #{shell} on '#{container.name}' container"
-        exec!
+        exec! if valid?
       end
 
       private
 
         attr_reader :container, :shell
+
+        def valid?
+          Validators::DockerClient.new.valid?
+        end
 
         def exec!
           system('%s exec -ti %s %s' % [ DOCKER_CLIENT, container.full_name, shell ])
