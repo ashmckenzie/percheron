@@ -39,15 +39,16 @@ module Percheron
       end
 
       def extra_docker_opts
-        if cert_path
-          {
-            client_cert:  File.join(cert_path, 'cert.pem'),
-            client_key:   File.join(cert_path, 'key.pem'),
-            ssl_ca_file:  File.join(cert_path, 'ca.pem')
-          }
-        else
-          {}
-        end
+        return {} unless cert_path
+        {
+          client_cert:  cert_path_for('cert.pem'),
+          client_key:   cert_path_for('key.pem'),
+          ssl_ca_file:  cert_path_for('ca.pem')
+        }
+      end
+
+      def cert_path_for(file)
+        File.join(cert_path, file)
       end
 
   end
