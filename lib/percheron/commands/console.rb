@@ -12,6 +12,7 @@ module Percheron
 
       private
 
+        # FIXME: Dupe?
         def list
           Stack.get(config, stack_name).each do |_, stack|
             puts("\n", Percheron::Formatters::Stack::Table.new(stack).generate)
@@ -58,6 +59,8 @@ module Percheron
           stack.restart!(container_names: [ *container_names ])
           nil
         end
+
+        alias_method :status, :list
     end
   end
 end
