@@ -1,4 +1,4 @@
-require 'queue_with_timeout'
+require 'thread'
 
 module Percheron
   module Formatters
@@ -7,7 +7,7 @@ module Percheron
 
         def initialize(stack)
           @stack = stack
-          @queue = QueueWithTimeout.new
+          @queue = Queue.new
         end
 
         def generate
