@@ -21,7 +21,7 @@ describe Percheron::Actions::Shell do
     end
 
     it 'calls docker exec' do
-      expect(subject).to receive(:system).with('docker exec -ti stack-container /bin/sh')
+      expect(subject).to receive(:system).with("docker exec -ti stack-container sh -c '/bin/sh'")
       subject.execute!
     end
   end

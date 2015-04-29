@@ -32,8 +32,8 @@ module Percheron
       end
     end
 
-    def shell!(container_name, shell: Percheron::Actions::Shell::DEFAULT_SHELL)
-      Actions::Shell.new(container_from_name(container_name), shell: shell).execute!
+    def shell!(container_name, command: Percheron::Actions::Shell::DEFAULT_COMMAND)
+      Actions::Shell.new(container_from_name(container_name), command: command).execute!
     end
 
     def logs!(container_name, follow: false)

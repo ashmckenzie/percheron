@@ -129,7 +129,7 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Shell') }
 
       it 'executes a shell on a given Container' do
-        expect(klass).to receive(:new).with(container, shell: '/bin/sh').and_return(action_double)
+        expect(klass).to receive(:new).with(container, command: '/bin/sh').and_return(action_double)
         expect(action_double).to receive(:execute!)
         subject.shell!('debian')
       end
