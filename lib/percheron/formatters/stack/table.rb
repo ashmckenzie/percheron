@@ -35,24 +35,22 @@ module Percheron
           end
 
           def rows
-            resp = {}
-            queue_jobs(resp)
+            queue_jobs
             process_queue!
-            sort_rows(resp)
           end
 
-          def queue_jobs(resp)
-            stack.containers.map do |_, container|
-              queue << Thread.new { resp[Time.now.to_f] = row_for(container) }
-            end
+          def queue_jobs
+            stack.containers.map { |_, container| queue << row_for(container) }
           end
 
-          def process_queue!
-            queue.length.times { queue.pop.join }
-          end
-
-          def sort_rows(resp)
-            resp.sort.map { |_, row| row.flatten }
+          def process_queue!#
+            resp = []
+            4.times.map do
+              Thread.new do
+                queue.size.times { resp << queue.pop(true) }
+              end
+            end.map(&:join)
+            resp
           end
 
           def row_for(container)
