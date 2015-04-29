@@ -43,7 +43,7 @@ module Percheron
             stack.containers.map { |_, container| queue << row_for(container) }
           end
 
-          def process_queue!#
+          def process_queue!
             resp = []
             4.times.map do
               Thread.new do
