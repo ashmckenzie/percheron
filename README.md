@@ -51,7 +51,50 @@ $ gem install percheron
 
 ## Usage
 
-TODO
+1) Install percheron
+
+```bash
+gem install percheron
+```
+
+2) Create a `.percheron.yml` file describing your stack:
+
+```yaml
+---
+docker:
+  host: "https://boot2docker:2376"
+  ssl_verify_peer: false
+
+stacks:
+  - name: consul
+    containers:
+
+      - name: master
+        version: 1.0.0
+        docker_image: progrium/consul:latest
+        start_args: "-server -bootstrap -ui-dir /ui"
+        ports:
+          - "8500:8500"
+
+      - name: agent
+        version: 1.0.0
+        docker_image: progrium/consul:latest
+        start_args: "-server -join master"
+        dependant_container_names:
+          - master
+```
+
+3) Start it up!
+
+```bash
+percheron start demo
+```
+
+4) Bring up the consul UI
+
+```bash
+open http://boot2docker:8500/ui
+```
 
 ## Demo
 
@@ -59,9 +102,13 @@ TODO
 
 ## Debugging
 
-To debug Percheron, set the `DEBUG=true` environment variable.
+To perform debugging you will need to install the `pry-byebug` gem:
 
-To debug Percheron and Docker, set the `DOCKER_DEBUG=true` environment variable.
+```bash
+gem install pry-byebug
+```
+
+To debug Percheron, set the `DEBUG=true` environment variable.  To debug Percheron and Docker, set the `DOCKER_DEBUG=true` environment variable.
 
 ## Examples
 
