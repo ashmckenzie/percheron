@@ -103,7 +103,7 @@ dig @boot2docker -p 8600 master.node.consul +short
 
 ## Demo
 
-[![asciicast](https://asciinema.org/a/19216.png)](https://asciinema.org/a/19216)
+[![asciicast](https://asciinema.org/a/bs09umip9wdozy26ylbd7d26o.png)](https://asciinema.org/a/bs09umip9wdozy26ylbd7d26o)
 
 ## Debugging
 
