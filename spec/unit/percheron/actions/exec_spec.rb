@@ -5,17 +5,17 @@ describe Percheron::Actions::Exec do
   let(:stop_action) { double('Percheron::Actions::Stop') }
   let(:start_action1) { double('Percheron::Actions::Start') }
   let(:start_action2) { double('Percheron::Actions::Start') }
-  let(:docker_container) { double('Docker::Container').as_null_object }
+  let(:container) { double('Docker::Container').as_null_object }
   let(:docker_image) { double('Docker::Image') }
 
   let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
-  let(:container) { Percheron::Container.new(stack, 'debian', config.file_base_path) }
-  let(:dependant_containers) { container.dependant_containers.values }
-  let(:dependant_container) { dependant_containers.first }
+  let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
+  let(:dependant_units) { unit.dependant_units.values }
+  let(:dependant_unit) { dependant_units.first }
   let(:scripts) { [ '/tmp/test.sh' ] }
 
-  subject { described_class.new(container, dependant_containers, scripts, 'TEST') }
+  subject { described_class.new(unit, dependant_units, scripts, 'TEST') }
 
   before do
     $logger = logger
@@ -27,16 +27,16 @@ describe Percheron::Actions::Exec do
 
   describe '#execute!' do
     before do
-      expect(container).to receive(:running?).twice.and_return(false)
-      expect(container).to receive(:docker_container).and_return(docker_container).twice
+      expect(unit).to receive(:running?).twice.and_return(false)
+      expect(unit).to receive(:container).and_return(container).twice
     end
 
     it 'executes scripts' do
-      expect(Percheron::Actions::Start).to receive(:new).with(dependant_container, dependant_containers: [], exec_scripts: true).and_return(start_action1)
-      expect(Percheron::Actions::Start).to receive(:new).with(container, exec_scripts: false).and_return(start_action2)
-      expect(start_action1).to receive(:execute!).and_return(dependant_container)
-      expect(start_action2).to receive(:execute!).and_return(container)
-      expect(docker_container).to receive(:exec).with(['/bin/sh', '/tmp/test.sh', '2>&1']).and_yield(:stdout, 'output from test.sh')
+      expect(Percheron::Actions::Start).to receive(:new).with(dependant_unit, dependant_units: [], exec_scripts: true).and_return(start_action1)
+      expect(Percheron::Actions::Start).to receive(:new).with(unit, exec_scripts: false).and_return(start_action2)
+      expect(start_action1).to receive(:execute!).and_return(dependant_unit)
+      expect(start_action2).to receive(:execute!).and_return(unit)
+      expect(container).to receive(:exec).with(['/bin/sh', '/tmp/test.sh', '2>&1']).and_yield(:stdout, 'output from test.sh')
       subject.execute!
     end
   end

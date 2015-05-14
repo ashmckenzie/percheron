@@ -5,12 +5,6 @@ describe Percheron::Config do
 
   subject { described_class.new(config_file) }
 
-  describe '.load!' do
-    it 'returns an instance of Config' do
-      expect(described_class.load!(config_file)).to be_instance_of(Percheron::Config)
-    end
-  end
-
   describe '#stacks' do
     it 'returns a Hash of stack configs' do
       expect(subject.stacks).to be_a(Hash)

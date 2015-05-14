@@ -4,7 +4,7 @@ require 'timecop'
 begin
   require 'pry-byebug'
 rescue LoadError
-  $stderr.puts('pry-debug not installed.')
+  $stderr.puts('pry-byebug not installed.')
 end
 
 require 'codeclimate-test-reporter'
@@ -26,7 +26,9 @@ require 'percheron/commands'
 require 'percheron/logger'
 
 begin
-  Percheron::Config.load!('./spec/integration/support/.percheron.yml')
+  Percheron::Config.new('./spec/integration/support/.percheron.yml').tap do |c|
+    Percheron::Connection.load!(c)
+  end
   Docker.version
 rescue Excon::Errors::SocketError, Docker::Error::TimeoutError
   puts 'ERROR: Docker does not appear to be running?'
@@ -34,11 +36,11 @@ rescue Excon::Errors::SocketError, Docker::Error::TimeoutError
 end
 
 def cleanup!
-  cleanup_containers!
+  cleanup_units!
   cleanup_images!
 end
 
-def cleanup_containers!
+def cleanup_units!
   %w(percheron-test_base percheron-test_app1 percheron-test_app2 percheron-test_app3 ).each do |name|
     begin
       Docker::Container.get(name).tap { |c| c.stop! && c.remove(force: true) }

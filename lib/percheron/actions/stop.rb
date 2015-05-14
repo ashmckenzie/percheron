@@ -4,23 +4,23 @@ module Percheron
 
       include Base
 
-      def initialize(container)
-        @container = container
+      def initialize(unit)
+        @unit = unit
       end
 
       def execute!
         results = []
-        results << stop! if container.running?
-        results.compact.empty? ? nil : container
+        results << stop! if unit.running?
+        results.compact.empty? ? nil : unit
       end
 
       private
 
-        attr_reader :container
+        attr_reader :unit
 
         def stop!
-          $logger.info "Stopping '#{container.name}' container"
-          container.docker_container.stop!
+          $logger.info "Stopping '#{unit.name}' unit"
+          unit.container.stop!
         end
 
     end

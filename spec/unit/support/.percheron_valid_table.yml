@@ -6,7 +6,7 @@ docker:
 stacks:
   -
     name: debian_jessie
-    containers:
+    units:
       -
         name: dependant_debian
         version: 1.1.0
@@ -32,7 +32,7 @@ stacks:
           - '9999:9999'
         volumes:
           - '/outside/container/path:/inside/container/path'
-        dependant_container_names:
+        dependant_unit_names:
           - base
           - dependant_debian
 

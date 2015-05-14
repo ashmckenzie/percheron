@@ -6,8 +6,8 @@ module Percheron
       DEFAULT_COMMAND = '/bin/sh'
       DOCKER_CLIENT = 'docker'
 
-      def initialize(container, command: DEFAULT_COMMAND)
-        @container = container
+      def initialize(unit, command: DEFAULT_COMMAND)
+        @unit = unit
         @command = command
       end
 
@@ -17,7 +17,7 @@ module Percheron
 
       private
 
-        attr_reader :container
+        attr_reader :unit
 
         def valid?
           Validators::DockerClient.new.valid?
@@ -28,8 +28,8 @@ module Percheron
         end
 
         def exec!
-          cmd = '%s exec -ti %s %s' % [ DOCKER_CLIENT, container.full_name, command ]
-          $logger.debug "Executing '#{cmd}' on '#{container.name}' container"
+          cmd = '%s exec -ti %s %s' % [ DOCKER_CLIENT, unit.full_name, command ]
+          $logger.debug %(Executing "#{cmd}" on '#{unit.name}' unit)
           system(cmd)
         end
     end

@@ -2,7 +2,7 @@ module Percheron
   module Commands
     class Console < Abstract
 
-      parameter('STACK_NAME', 'stack name', required: false)
+      parameter('STACK_NAME', 'stack name', required: true)
 
       def execute
         super
@@ -12,55 +12,45 @@ module Percheron
 
       private
 
-        # FIXME: Dupe?
-        def list
-          Stack.get(config, stack_name).each do |_, stack|
-            puts("\n", Percheron::Formatters::Stack::Table.new(stack).generate)
-          end
+        def logs(unit_name, follow: false)
+          stack.logs!(unit_name, follow: follow)
           nil
         end
 
-        def logs(container_name, follow: false)
-          stack.logs!(container_name, follow: follow)
+        def shell(unit_name)
+          stack.shell!(unit_name)
           nil
         end
 
-        def shell(container_name)
-          stack.shell!(container_name)
+        def purge(unit_names)
+          stack.purge!(unit_names: [ *unit_names ])
           nil
         end
 
-        def purge(container_names)
-          stack.purge!(container_names: [ *container_names ])
+        def create(unit_names, start: false)
+          stack.create!(unit_names: [ *unit_names ], start: start)
           nil
         end
 
-        def create(container_names, start: false)
-          stack.create!(container_names: [ *container_names ], start: start)
+        def recreate(unit_names, start: false)
+          stack.create!(unit_names: [ *unit_names ], start: start)
           nil
         end
 
-        def recreate(container_names, start: false)
-          stack.create!(container_names: [ *container_names ], start: start)
+        def start(unit_names)
+          stack.start!(unit_names: [ *unit_names ])
           nil
         end
 
-        def start(container_names)
-          stack.start!(container_names: [ *container_names ])
+        def stop(unit_names)
+          stack.stop!(unit_names: [ *unit_names ])
           nil
         end
 
-        def stop(container_names)
-          stack.stop!(container_names: [ *container_names ])
+        def restart(unit_names)
+          stack.restart!(unit_names: [ *unit_names ])
           nil
         end
-
-        def restart(container_names)
-          stack.restart!(container_names: [ *container_names ])
-          nil
-        end
-
-        alias_method :status, :list
     end
   end
 end

@@ -4,11 +4,11 @@ describe Percheron::Actions::ExecLocal do
   let(:logger) { double('Logger').as_null_object }
   let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
-  let(:container) { Percheron::Container.new(stack, 'debian', config.file_base_path) }
+  let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
   let(:scripts) { [ '/tmp/test.sh' ] }
   let(:output) { double('stdout_stderr') }
 
-  subject { described_class.new(container, scripts, 'TEST') }
+  subject { described_class.new(unit, scripts, 'TEST') }
 
   before do
     $logger = logger

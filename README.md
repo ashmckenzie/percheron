@@ -67,20 +67,18 @@ docker:
 
 stacks:
   - name: consul
-    containers:
-
+    units:
       - name: master
         version: 1.0.0
         docker_image: progrium/consul:latest
         start_args: "-server -bootstrap -ui-dir /ui"
         ports:
           - "8500:8500"
-
       - name: agent
         version: 1.0.0
         docker_image: progrium/consul:latest
         start_args: "-server -join master"
-        dependant_container_names:
+        dependant_unit_names:
           - master
 ```
 

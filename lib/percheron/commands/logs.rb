@@ -3,12 +3,12 @@ module Percheron
     class Logs < Abstract
 
       parameter('STACK_NAME', 'stack name', required: true)
-      parameter('CONTAINER_NAME', 'container name', required: true)
+      parameter('UNIT_NAME', 'unit name', required: true)
       option('--follow', :flag, 'follow the logs', default: false)
 
       def execute
         super
-        stack.logs!(container_name, follow: follow?)
+        stack.logs!(unit_name, follow: follow?)
       end
     end
   end

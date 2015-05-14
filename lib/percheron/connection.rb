@@ -1,8 +1,28 @@
-module Percheron
-  class DockerConnection
+require 'singleton'
+require 'docker'
 
-    def initialize(config)
-      @config = config
+module Percheron
+  class Connection
+
+    include Singleton
+
+    # rubocop:disable Style/ClassVars
+    def self.load!(config)
+      @@config = config
+      instance.setup!
+      instance
+    end
+    # rubocop:enable Style/ClassVars
+
+    def self.perform(klass, method, *args)
+      instance.perform(klass, method, *args)
+    end
+
+    def perform(klass, method, *args)
+      klass.public_send(method, *args)
+    rescue => e
+      $logger.debug '%s.%s(%s) - %s' % [ klass, method, args, e.inspect ]
+      raise
     end
 
     def setup!
@@ -12,7 +32,9 @@ module Percheron
 
     private
 
-      attr_reader :config
+      def config
+        @@config
+      end
 
       def cert_path
         @cert_path ||= ENV['DOCKER_CERT_PATH'] ? File.expand_path(ENV['DOCKER_CERT_PATH']) : nil

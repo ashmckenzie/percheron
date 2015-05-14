@@ -4,8 +4,8 @@ module Percheron
 
       include Base
 
-      def initialize(container, start: false)
-        @container = container
+      def initialize(unit, start: false)
+        @unit = unit
         @start = start
       end
 
@@ -17,31 +17,31 @@ module Percheron
         else
           inform!
         end
-        results.compact.empty? ? nil : container
+        results.compact.empty? ? nil : unit
       end
 
       private
 
-        attr_reader :container, :start
+        attr_reader :unit, :start
         alias_method :start?, :start
 
         def recreate?
-          !container.versions_match? || !container.dockerfile_md5s_match?
+          !unit.versions_match? || !unit.dockerfile_md5s_match?
         end
 
         def inform!
-          return nil unless container.dockerfile_md5s_match?
-          $logger.info "Container '#{container.name}' - No Dockerfile changes or version bump"
+          return nil unless unit.dockerfile_md5s_match?
+          $logger.info "Container '#{unit.name}' - No Dockerfile changes or version bump"
         end
 
         def recreate!
-          $logger.debug "Container '#{container.name}' exists but will be recreated"
-          Purge.new(container).execute!
-          Create.new(container).execute!
+          $logger.debug "Container '#{unit.name}' exists but will be recreated"
+          Purge.new(unit).execute!
+          Create.new(unit).execute!
         end
 
         def start!
-          Start.new(container).execute! if start?
+          Start.new(unit).execute! if start?
         end
 
     end

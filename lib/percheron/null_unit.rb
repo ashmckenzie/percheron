@@ -1,6 +1,6 @@
 module Percheron
-  NullContainer = Naught.build do |config|
-    config.mimic Container
+  NullUnit = Naught.build do |config|
+    config.mimic Unit
 
     def info
       {}

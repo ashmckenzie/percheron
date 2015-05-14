@@ -1,23 +1,23 @@
 module Percheron
   module Validators
-    class Container
+    class Unit
 
-      def initialize(container)
-        @container = container
+      def initialize(unit)
+        @unit = unit
       end
 
       def valid?
         message = rules.return { |rule| send(rule) }
-        message ? fail(Errors::ContainerInvalid, formatted_message(message)) : true
+        message ? fail(Errors::UnitInvalid, formatted_message(message)) : true
       end
 
       private
 
-        attr_reader :container
+        attr_reader :unit
 
         def formatted_message(message)
-          if container.name
-            "Container config for '%s' is invalid: %s" % [ container.name, message ]
+          if unit.name
+            "Container config for '%s' is invalid: %s" % [ unit.name, message ]
           else
             "Container config is invalid: #{message}"
           end
@@ -35,32 +35,32 @@ module Percheron
 
         # rubocop:disable Style/GuardClause
         def validate_name
-          if container.name.nil? || !container.name.to_s.match(/[\w]{3,}/)
+          if unit.name.nil? || !unit.name.to_s.match(/[\w]{3,}/)
             'Name is invalid'
           end
         end
 
         def validate_dockerfile_and_image_name
-          if container.dockerfile.nil? && container.docker_image.nil?
+          if unit.dockerfile.nil? && unit.docker_image.nil?
             'Dockerfile OR image name not provided'
           end
         end
 
         def validate_dockerfile
-          if !container.dockerfile.nil? && !File.exist?(container.dockerfile)
+          if !unit.dockerfile.nil? && !File.exist?(unit.dockerfile)
             'Dockerfile is invalid'
           end
         end
 
         def validate_image
-          if !container.docker_image.nil? && !container.docker_image.match(/^.+:.+$/)
+          if !unit.docker_image.nil? && !unit.docker_image.match(/^.+:.+$/)
             'Docker image is invalid'
           end
         end
         # rubocop:enable Style/GuardClause
 
         def validate_version
-          container.version ? nil : fail(ArgumentError)
+          unit.version ? nil : fail(ArgumentError)
         rescue ArgumentError
           'Version is invalid'
         end

@@ -4,13 +4,13 @@ describe Percheron::Actions::Stop do
   let(:logger) { double('Logger').as_null_object }
   let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
-  let(:container) { Percheron::Container.new(stack, 'debian', config.file_base_path) }
+  let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
 
-  subject { described_class.new(container) }
+  subject { described_class.new(unit) }
 
   before do
     $logger = logger
-    expect(container).to receive(:running?).and_return(true)
+    expect(unit).to receive(:running?).and_return(true)
   end
 
   after do
@@ -18,14 +18,14 @@ describe Percheron::Actions::Stop do
   end
 
   describe '#execute!' do
-    let(:docker_container) { double('Docker::Container') }
+    let(:container) { double('Docker::Container') }
 
     before do
-      expect(container).to receive(:docker_container).and_return(docker_container)
+      expect(unit).to receive(:container).and_return(container)
     end
 
-    it 'stops the container' do
-      expect(docker_container).to receive(:stop!)
+    it 'stops the unit' do
+      expect(container).to receive(:stop!)
       subject.execute!
     end
   end

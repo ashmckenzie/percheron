@@ -1,6 +1,6 @@
 shared_examples 'an Actions::Start' do
-  it 'starts the container' do
-    expect(docker_container).to receive(:start!)
+  it 'starts the unit' do
+    expect(container).to receive(:start!)
     subject.execute!
   end
 

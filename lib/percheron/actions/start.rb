@@ -4,9 +4,9 @@ module Percheron
 
       include Base
 
-      def initialize(container, dependant_containers: [], cmd: false, exec_scripts: true)
-        @container = container
-        @dependant_containers = dependant_containers
+      def initialize(unit, dependant_units: [], cmd: false, exec_scripts: true)
+        @unit = unit
+        @dependant_units = dependant_units
         @cmd = cmd
         @exec_scripts = exec_scripts
       end
@@ -14,35 +14,35 @@ module Percheron
       def execute!
         results = []
         results << create!
-        unless container.running?
+        unless unit.running?
           results << start!
           results << execute_post_start_scripts!
         end
-        results.compact.empty? ? nil : container
+        results.compact.empty? ? nil : unit
       end
 
       private
 
-        attr_reader :container, :dependant_containers, :cmd, :exec_scripts
+        attr_reader :unit, :dependant_units, :cmd, :exec_scripts
 
         def exec_scripts?
-          !container.post_start_scripts.empty? && exec_scripts
+          !unit.post_start_scripts.empty? && exec_scripts
         end
 
         def create!
-          return nil if container.exists?
-          Create.new(container, cmd: cmd, exec_scripts: exec_scripts).execute!
+          return nil if unit.exists?
+          Create.new(unit, cmd: cmd, exec_scripts: exec_scripts).execute!
         end
 
         def start!
-          return nil if !container.startable? || container.running?
-          $logger.info "Starting '#{container.name}' container"
-          container.docker_container.start!
+          return nil if !unit.startable? || unit.running?
+          $logger.info "Starting '#{unit.name}' unit"
+          unit.container.start!
         end
 
         def execute_post_start_scripts!
-          scripts = container.post_start_scripts
-          Exec.new(container, dependant_containers, scripts, 'POST start').execute! if exec_scripts?
+          scripts = unit.post_start_scripts
+          Exec.new(unit, dependant_units, scripts, 'POST start').execute! if exec_scripts?
         end
 
     end

@@ -17,16 +17,16 @@ describe 'percheron' do
   end
 
   describe 'recreate' do
-    context 'for just the base container' do
-      it 'cannot recreate a container as not startable' do
+    context 'for just the base unit' do
+      it 'cannot recreate a unit as not startable' do
         Percheron::Commands::Create.run(Dir.pwd, %w(percheron-test base))
         Percheron::Commands::Recreate.run(Dir.pwd, %w(percheron-test base))
         expect { Docker::Container.get('percheron-test_base') }.to raise_error(Docker::Error::NotFoundError)
       end
     end
 
-    context 'for just the app1 container' do
-      it 'recreates a container' do
+    context 'for just the app1 unit' do
+      it 'recreates a unit' do
         Percheron::Commands::Create.run(Dir.pwd, %w(percheron-test app1))
         Percheron::Commands::Recreate.run(Dir.pwd, %w(percheron-test app1))
         output = Docker::Container.get('percheron-test_app1').json
@@ -34,8 +34,8 @@ describe 'percheron' do
       end
     end
 
-    context 'for all containers' do
-      it 'creates just the app1 container' do
+    context 'for all units' do
+      it 'creates just the app1 unit' do
         Percheron::Commands::Create.run(Dir.pwd, %w(percheron-test))
         Percheron::Commands::Recreate.run(Dir.pwd, %w(percheron-test))
         expect { Docker::Container.get('percheron-test_base') }.to raise_error(Docker::Error::NotFoundError)

@@ -4,11 +4,9 @@ docker:
   read_timeout: 300
 
 stacks:
-  -
-    name: debian_jessie
-    containers:
-      -
-        name: dependant_debian
+  - name: debian_jessie
+    units:
+      - name: dependant_debian
         version: 1.1.0
         dockerfile: ./Dockerfile
         pre_build_scripts:
@@ -20,8 +18,7 @@ stacks:
         volumes:
           - '/outside/container/path:/inside/container/path'
 
-      -
-        name: debian
+      - name: debian
         version: 1.0.0
         dockerfile: ./Dockerfile
         pre_build_scripts:
@@ -32,9 +29,14 @@ stacks:
           - '9999:9999'
         volumes:
           - '/outside/container/path:/inside/container/path'
-        dependant_container_names:
+        dependant_unit_names:
           - dependant_debian
 
       - name: debian_external
         version: 1.0.0
         docker_image: debian:jessie
+
+      - name: debian_pseudo
+        version: 1.0.0
+        instances: 2
+        dockerfile: ./Dockerfile

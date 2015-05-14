@@ -17,39 +17,39 @@ describe 'percheron' do
   end
 
   describe 'start' do
-    context 'for just the base container' do
-      it 'cannot create a container as not startable' do
+    context 'for just the base unit' do
+      it 'cannot create a unit as not startable' do
         Percheron::Commands::Start.run(Dir.pwd, %w(percheron-test base))
         expect { Docker::Container.get('percheron-test_base') }.to raise_error(Docker::Error::NotFoundError)
       end
     end
 
-    context 'for just the app1 container' do
-      it 'starts the container' do
+    context 'for just the app1 unit' do
+      it 'starts the unit' do
         Percheron::Commands::Start.run(Dir.pwd, %w(percheron-test app1))
         output = Docker::Container.get('percheron-test_app1').json
         expect(output['State']['Running']).to eql(true)
       end
     end
 
-    context 'for just the app2 container' do
-      it 'starts the container' do
+    context 'for just the app2 unit' do
+      it 'starts the unit' do
         Percheron::Commands::Start.run(Dir.pwd, %w(percheron-test app2))
         output = Docker::Container.get('percheron-test_app2').json
         expect(output['State']['Running']).to eql(true)
       end
     end
 
-    context 'for just the app3 container' do
-      it 'starts the container' do
+    context 'for just the app3 unit' do
+      it 'starts the unit' do
         Percheron::Commands::Start.run(Dir.pwd, %w(percheron-test app3))
         output = Docker::Container.get('percheron-test_app3').json
         expect(output['State']['Running']).to eql(true)
       end
     end
 
-    context 'for all containers' do
-      it 'starts just the app1 container' do
+    context 'for all units' do
+      it 'starts just the app1 unit' do
         Percheron::Commands::Start.run(Dir.pwd, %w(percheron-test))
         expect { Docker::Container.get('percheron-test_base') }.to raise_error(Docker::Error::NotFoundError)
         app1_output = Docker::Container.get('percheron-test_app1').json

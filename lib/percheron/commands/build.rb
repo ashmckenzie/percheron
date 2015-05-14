@@ -6,7 +6,7 @@ module Percheron
 
       def execute
         super
-        stack.build!(container_names: container_names)
+        stack.build!(unit_names: unit_names)
       end
     end
   end

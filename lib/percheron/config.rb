@@ -3,20 +3,19 @@ require 'yaml'
 module Percheron
   class Config
 
-    DEFAULT_CONFIG_FILE = '.percheron.yml'
-
     extend Forwardable
+
+    DEFAULT_CONFIG_FILE = '.percheron.yml'
 
     def_delegators :contents, :docker
 
-    def initialize(file)
+    def initialize(file = DEFAULT_CONFIG_FILE)
       @file = Pathname.new(file).expand_path
-      docker_setup!
       self
     end
 
     def stacks
-      process_stacks!
+      @stacks ||= process_stacks!
     end
 
     def file_base_path
@@ -27,77 +26,72 @@ module Percheron
       Validators::Config.new(file).valid?
     end
 
-    def self.load!(config_file = DEFAULT_CONFIG_FILE)
-      new(config_file)
-    end
-
     private
 
       attr_reader :file
 
-      # rubocop:disable Metrics/MethodLength
       def process_stacks!   # FIXME: bugs here :(
         stacks_by_name = contents.stacks.to_hash_by_key(:name)
-        scanned = scan_container_configs(stacks_by_name)
+        scanned = scan_unit_configs(stacks_by_name)
         stacks_by_name.each do |_, stack|
-          stack_containers = stack.containers.each_with_object({}) do |container_config, all|
-            if scanned[container_config.name]
-              merge(all, container_config, scanned)
-            else
-              replace_scanned(all, container_config, scanned)
-            end
+          stack_units = stack.fetch(:units, []).each_with_object({}) do |unit_config, all|
+            merge_or_replace(all, unit_config, scanned)
           end
-          stack.containers = stack_containers
+          $logger.warn "No units defined for '%s' stack" % stack.name if stack_units.empty?
+          stack.units = stack_units
         end
       end
-      # rubocop:enable Metrics/MethodLength
 
-      def merge(all, container_config, scanned)  # FIXME: poor name
-        all.merge!(expand_container_config(container_config, scanned[container_config.name]))
+      def merge_or_replace(all, config, scanned)
+        if scanned[config.name]
+          merge_scanned(all, config, scanned)
+        else
+          replace_scanned(all, config, scanned)
+        end
       end
 
-      def replace_scanned(all, container_config, scanned)  # FIXME: poor name
-        match = container_config.fetch(:dependant_container_names, [])
+      def merge_scanned(all, config, scanned)
+        all.merge!(expand_unit_config(config, scanned[config.name]))
+      end
+
+      def replace_scanned(all, config, scanned)
+        match = config.fetch(:dependant_unit_names, [])
         unless (match & scanned.keys).empty?
-          container_config.dependant_container_names = match.map { |v| scanned[v] }.flatten
+          config.dependant_unit_names = match.map { |v| scanned[v] }.flatten
         end
-        all[container_config.name] = container_config
+        all[config.name] = config
       end
 
-      def scan_container_configs(stacks_by_name)  # FIXME
+      def scan_unit_configs(stacks_by_name)  # FIXME
         all = {}
         stacks_by_name.each do |_, stack|
-          stack.containers.each do |container_config|
-            next if container_config.fetch(:instances, 1) == 1
-            all[container_config.name] = 1.upto(container_config.instances).map do |number|
-              "#{container_config.name}#{number}"
+          stack.fetch(:units, []).each do |unit_config|
+            next if unit_config.fetch(:instances, 1) == 1
+            all[unit_config.name] = 1.upto(unit_config.instances).map do |number|
+              "#{unit_config.name}#{number}"
             end
           end
         end
         all
       end
 
-      def expand_container_config(container_config, new_container_names)  # FIXME
-        new_container_names.each_with_object({}) do |new_name, all|
-          temp_container_config = container_config.dup
-          temp_container_config.delete(:instances)
-          temp_container_config.pseudo_name = container_config.name
-          temp_container_config.name = new_name
-          all[new_name] = eval_container_config(temp_container_config)
+      def expand_unit_config(unit_config, new_unit_names)  # FIXME
+        new_unit_names.each_with_object({}) do |new_name, all|
+          temp_unit_config = unit_config.dup
+          temp_unit_config.delete(:instances)
+          temp_unit_config.pseudo_name = unit_config.name
+          temp_unit_config.name = new_name
+          all[new_name] = eval_unit_config(temp_unit_config)
         end
       end
 
-      def eval_container_config(container_config)
-        template = Liquid::Template.parse(container_config.to_h.to_yaml.to_s)
-        YAML.load(template.render(container_config))
+      def eval_unit_config(unit_config)
+        template = Liquid::Template.parse(unit_config.to_h.to_yaml.to_s)
+        YAML.load(template.render(unit_config))
       end
 
       def contents
         Hashie::Mash.new(YAML.load_file(file))
-      end
-
-      def docker_setup!
-        Percheron::DockerConnection.new(self).setup!
       end
   end
 end

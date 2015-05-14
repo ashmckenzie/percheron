@@ -3,19 +3,19 @@ module Percheron
     class Logs
       include Base
 
-      def initialize(container, follow: false)
-        @container = container
+      def initialize(unit, follow: false)
+        @unit = unit
         @follow = follow
       end
 
       def execute!
-        $logger.debug "Showing logs on '#{container.name}' container"
+        $logger.debug "Showing logs on '#{unit.name}' unit"
         display_logs!
       end
 
       private
 
-        attr_reader :container, :follow
+        attr_reader :unit, :follow
         alias_method :follow?, :follow
 
         def options
@@ -30,11 +30,11 @@ module Percheron
         def display_logs!
           if follow?
             opts = options.merge(follow: true)
-            container.docker_container.streaming_logs(opts) do |stream, chunk|
+            unit.container.streaming_logs(opts) do |stream, chunk|
               puts "#{stream}: #{chunk}"
             end
           else
-            puts container.docker_container.logs(options)
+            puts unit.container.logs(options)
           end
         rescue Interrupt
           nil

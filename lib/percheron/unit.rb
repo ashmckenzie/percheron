@@ -1,41 +1,36 @@
 module Percheron
-  class Container
+  class Unit
 
     extend Forwardable
     extend ConfigDelegator
 
-    def_delegators :container_config, :name, :pseudo_name, :docker_image
-    def_config_item_with_default :container_config, [], :env, :ports, :volumes,
-                                 :dependant_container_names, :pre_build_scripts,
+    def_delegators :unit_config, :name, :pseudo_name, :docker_image
+    def_config_item_with_default :unit_config, [], :env, :ports, :volumes,
+                                 :dependant_unit_names, :pre_build_scripts,
                                  :post_start_scripts, :start_args
-    def_config_item_with_default :container_config, %w(127.0.0.1 8.8.8.8), :dns
-    def_config_item_with_default :container_config, true, :startable
+    def_config_item_with_default :unit_config, %w(127.0.0.1 8.8.8.8), :dns
+    def_config_item_with_default :unit_config, true, :startable
 
-    attr_reader :config_file_base_path
-
-    def initialize(stack, container_name, config_file_base_path)
+    def initialize(config, stack, unit_name)
+      @config = config
       @stack = stack
-      @container_name = container_name
-      @config_file_base_path = config_file_base_path
+      @unit_name = unit_name
+      @unit_config = stack.unit_configs[unit_name] || Hashie::Mash.new({}) # FIXME
       self
     end
 
-    def dependant_containers
-      dependant_container_names.each_with_object({}) do |container_name, all|
-        all[container_name] = stack.containers[container_name]
+    def dependant_units
+      dependant_unit_names.each_with_object({}) do |unit_name, all|
+        all[unit_name] = stack.units[unit_name]
       end
     end
 
-    def startable_dependant_containers
-      dependant_containers.select { |_, container| container.startable? }
+    def startable_dependant_units
+      dependant_units.select { |_, unit| unit.startable? }
     end
 
     def metastore_key
-      @metastore_key ||= 'stacks.%s.containers.%s' % [ stack.name, name ]
-    end
-
-    def container_config
-      @container_config ||= stack.container_configs[container_name] || Hashie::Mash.new({})
+      @metastore_key ||= '%s.units.%s' % [ stack.metastore_key, name ]
     end
 
     def id
@@ -43,18 +38,18 @@ module Percheron
     end
 
     def hostname
-      container_config.fetch('hostname', name)
+      unit_config.fetch('hostname', name)
     end
 
     def image_name
       '%s:%s' % [ image_repo, image_version.to_s ] if image_repo && image_version
     end
 
-    def image_repo  # FIXME
-      if pseudo?
+    def image_repo
+      if !buildable?
+        unit_config.docker_image.split(':')[0]
+      elsif pseudo?
         pseudo_full_name
-      elsif !buildable?
-        container_config.docker_image.split(':')[0]
       else
         full_name
       end
@@ -62,11 +57,11 @@ module Percheron
 
     def image_version
       if buildable?
-        version
-      elsif !container_config.docker_image.nil?
-        container_config.docker_image.split(':')[1]
+        unit_config.version
+      elsif !unit_config.docker_image.nil?
+        unit_config.docker_image.split(':')[1]
       else
-        fail Errors::ContainerInvalid, 'Cannot determine image version'
+        fail Errors::UnitInvalid, 'Cannot determine image version'
       end
     end
 
@@ -79,22 +74,17 @@ module Percheron
     end
 
     def image
-      Docker::Image.get(image_name)
+      Connection.perform(Docker::Image, :get, image_name)
     rescue Docker::Error::NotFoundError
       nil
     end
 
     def version
-      Semantic::Version.new(container_config.version)
+      @version ||= Semantic::Version.new(unit_config.version)
     end
 
     def built_version
-      Semantic::Version.new(built_image_version)
-    end
-
-    def dockerfile
-      return nil unless container_config.dockerfile
-      Pathname.new(File.expand_path(container_config.dockerfile, config_file_base_path))
+      @built_version ||= Semantic::Version.new(built_image_version)
     end
 
     def exposed_ports
@@ -102,15 +92,15 @@ module Percheron
     end
 
     def links
-      startable_dependant_containers.map do |_, container|
-        '%s:%s' % [ container.full_name, container.name ]
+      startable_dependant_units.map do |_, unit|
+        '%s:%s' % [ unit.full_name, unit.name ]
       end
     end
 
-    def docker_container
-      Docker::Container.get(full_name)
+    def container
+      Connection.perform(Docker::Container, :get, full_name)
     rescue Docker::Error::NotFoundError, Excon::Errors::SocketError
-      NullContainer.new
+      NullUnit.new
     end
 
     def labels
@@ -121,9 +111,14 @@ module Percheron
       exists? ? info.NetworkSettings.IPAddress : 'n/a'
     end
 
+    def dockerfile
+      return nil unless unit_config.dockerfile
+      Pathname.new(File.expand_path(unit_config.dockerfile, config.file_base_path))
+    end
+
     def update_dockerfile_md5!
       md5 = current_dockerfile_md5
-      $logger.info "Setting MD5 for '#{name}' container to #{md5}"
+      $logger.info "Setting MD5 for '#{name}' unit to #{md5}"
       $metastore.set("#{metastore_key}.dockerfile_md5", md5)
     end
 
@@ -148,18 +143,18 @@ module Percheron
     end
 
     def buildable?
-      !dockerfile.nil? && container_config.docker_image.nil?
+      !dockerfile.nil? && unit_config.docker_image.nil?
     end
 
     def valid?
-      Validators::Container.new(self).valid?
+      Validators::Unit.new(self).valid?
     end
 
     alias_method :startable?, :startable
 
     private
 
-      attr_reader :stack, :container_name
+      attr_reader :config, :stack, :unit_config, :unit_name
 
       def current_dockerfile_md5
         dockerfile ? Digest::MD5.file(dockerfile).hexdigest : Digest::MD5.hexdigest(image_name)
@@ -174,7 +169,7 @@ module Percheron
       end
 
       def info
-        Hashie::Mash.new(docker_container.info)
+        Hashie::Mash.new(container.info)
       end
 
       def pseudo?

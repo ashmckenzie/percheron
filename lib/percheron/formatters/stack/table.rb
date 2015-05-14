@@ -40,7 +40,7 @@ module Percheron
           end
 
           def queue_jobs
-            stack.containers.map { |_, container| queue << row_for(container) }
+            stack.units.map { |_, unit| queue << row_for(unit) }
           end
 
           def process_queue!
@@ -53,25 +53,25 @@ module Percheron
             resp
           end
 
-          def row_for(container)
+          def row_for(unit)
             [
-              container.name,
-              container.id,
-              startable(container),
-              container.ip,
-              container.ports.join(', '),
-              container.volumes.join(', '),
-              version(container)
+              unit.name,
+              unit.id,
+              startable(unit),
+              unit.ip,
+              unit.ports.join(', '),
+              unit.volumes.join(', '),
+              version(unit)
             ]
           end
 
-          def version(container)
-            (container.built_version == '0.0.0') ? '' : container.built_version
+          def version(unit)
+            (unit.built_version == '0.0.0') ? '' : unit.built_version
           end
 
-          def startable(container)
-            if container.startable?
-              container.running? ? 'yes' : '-'
+          def startable(unit)
+            if unit.startable?
+              unit.running? ? 'yes' : '-'
             else
               'n/a'
             end

@@ -4,43 +4,67 @@ describe Percheron::Stack do
   let(:logger) { double('Logger').as_null_object }
   let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
 
-  let(:dependant_container) do
+  let(:dependant_unit) do
     double(
-      'Perheron::Container',
+      'Perheron::Unit',
       name: 'dependant_debian',
       full_name: 'debian_jessie-dependant_debian',
-      dependant_container_names: [],
-      dependant_containers: {},
-      startable_dependant_containers: {},
+      dependant_unit_names: [],
+      dependant_units: {},
+      startable_dependant_units: {},
       startable?: true
     )
   end
 
-  let(:container) do
+  let(:unit) do
     double(
-      'Perheron::Container',
+      'Perheron::Unit',
       name: 'debian',
       full_name: 'debian_jessie-debian',
-      dependant_container_names: %w(dependant_debian),
-      dependant_containers: { 'dependant_debian' => dependant_container },
-      startable_dependant_containers: { 'dependant_debian' => dependant_container },
+      dependant_unit_names: %w(dependant_debian),
+      dependant_units: { 'dependant_debian' => dependant_unit },
+      startable_dependant_units: { 'dependant_debian' => dependant_unit },
       startable?: true
     )
   end
 
-  let(:external_container) do
+  let(:external_unit) do
     double(
-      'Perheron::Container',
+      'Perheron::Unit',
       name: 'debian_external',
       full_name: 'debian_jessie-debian_external',
-      dependant_container_names: [],
-      dependant_containers: {},
-      startable_dependant_containers: {},
+      dependant_unit_names: [],
+      dependant_units: {},
+      startable_dependant_units: {},
       startable?: true
     )
   end
 
-  let(:dependant_containers) { [ dependant_container ] }
+  let(:pseudo1_unit) do
+    double(
+      'Perheron::Unit',
+      name: 'debian_pseudo1',
+      full_name: 'debian_jessie-xxx',
+      dependant_unit_names: [],
+      dependant_units: {},
+      startable_dependant_units: {},
+      startable?: true
+    )
+  end
+
+  let(:pseudo2_unit) do
+    double(
+      'Perheron::Unit',
+      name: 'debian_pseudo2',
+      full_name: 'debian_jessie-xxx',
+      dependant_unit_names: [],
+      dependant_units: {},
+      startable_dependant_units: {},
+      startable?: true
+    )
+  end
+
+  let(:dependant_units) { [ dependant_unit ] }
 
   subject { described_class.new(config, 'debian_jessie') }
 
@@ -84,44 +108,46 @@ describe Percheron::Stack do
     end
   end
 
-  describe '#container_configs' do
+  describe '#unit_configs' do
     it 'returns a Hash of Container objects' do
-      expect(subject.container_configs).to be_a(Hash)
+      expect(subject.unit_configs).to be_a(Hash)
     end
 
     it 'is as Hash that contains two Hashie::Mash objects' do
-      expect(subject.container_configs.keys.count).to eql(3)
-      expect(subject.container_configs.values.collect(&:class).uniq.first).to eql(Hashie::Mash)
+      expect(subject.unit_configs.keys.count).to eql(5)
+      expect(subject.unit_configs.values.collect(&:class).uniq.first).to eql(Hashie::Mash)
     end
   end
 
-  describe '#containers' do
+  describe '#units' do
     it 'returns a Hash of Containers' do
-      expect(subject.containers).to be_a(Hash)
+      expect(subject.units).to be_a(Hash)
     end
 
-    context 'with no container names provided' do
-      it 'is as Hash that contains two Percheron::Container objects' do
-        containers = subject.containers
-        expect(containers.keys.count).to eql(3)
-        expect(containers.values.collect(&:class).uniq.first).to eql(Percheron::Container)
+    context 'with no unit names provided' do
+      it 'is as Hash that contains two Percheron::Unit objects' do
+        units = subject.units
+        expect(units.keys.count).to eql(5)
+        expect(units.values.collect(&:class).uniq.first).to eql(Percheron::Unit)
       end
     end
 
-    context 'with container names provided' do
-      it 'is as Hash that contains one Percheron::Container object' do
-        containers = subject.containers([ 'debian' ])
-        expect(containers.keys.count).to eql(1)
-        expect(containers.values.collect(&:class).uniq.first).to eql(Percheron::Container)
+    context 'with unit names provided' do
+      it 'is as Hash that contains one Percheron::Unit object' do
+        units = subject.units([ 'debian' ])
+        expect(units.keys.count).to eql(1)
+        expect(units.values.collect(&:class).uniq.first).to eql(Percheron::Unit)
       end
     end
   end
 
   describe 'actions' do
     before do
-      allow(Percheron::Container).to receive(:new).with(subject, 'debian', config.file_base_path).and_return(container)
-      allow(Percheron::Container).to receive(:new).with(subject, 'debian_external', config.file_base_path).and_return(external_container)
-      allow(Percheron::Container).to receive(:new).with(subject, 'dependant_debian', config.file_base_path).and_return(dependant_container)
+      allow(Percheron::Unit).to receive(:new).with(config, subject, 'debian').and_return(unit)
+      allow(Percheron::Unit).to receive(:new).with(config, subject, 'debian_external').and_return(external_unit)
+      allow(Percheron::Unit).to receive(:new).with(config, subject, 'dependant_debian').and_return(dependant_unit)
+      allow(Percheron::Unit).to receive(:new).with(config, subject, 'debian_pseudo1').and_return(pseudo1_unit)
+      allow(Percheron::Unit).to receive(:new).with(config, subject, 'debian_pseudo2').and_return(pseudo2_unit)
     end
 
     describe '#shell!' do
@@ -129,7 +155,7 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Shell') }
 
       it 'executes a shell on a given Container' do
-        expect(klass).to receive(:new).with(container, command: '/bin/sh').and_return(action_double)
+        expect(klass).to receive(:new).with(unit, command: '/bin/sh').and_return(action_double)
         expect(action_double).to receive(:execute!)
         subject.shell!('debian')
       end
@@ -140,7 +166,7 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Logs') }
 
       it 'displays the logs for a given Container' do
-        expect(klass).to receive(:new).with(container, follow: false).and_return(action_double)
+        expect(klass).to receive(:new).with(unit, follow: false).and_return(action_double)
         expect(action_double).to receive(:execute!)
         subject.logs!('debian')
       end
@@ -151,10 +177,12 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Stop') }
 
       it 'asks each Container to stop' do
-        expect(klass).to receive(:new).with(container).and_return(action_double)
-        expect(klass).to receive(:new).with(external_container).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_container).and_return(action_double)
-        expect(action_double).to receive(:execute!).exactly(3).times
+        expect(klass).to receive(:new).with(unit).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo2_unit).and_return(action_double)
+        expect(action_double).to receive(:execute!).exactly(5).times
         subject.stop!
       end
     end
@@ -164,10 +192,12 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Start') }
 
       it 'asks each Container to start' do
-        expect(klass).to receive(:new).with(dependant_container, dependant_containers: []).and_return(action_double)
-        expect(klass).to receive(:new).with(external_container, dependant_containers: []).and_return(action_double)
-        expect(klass).to receive(:new).with(container, dependant_containers: dependant_containers).and_return(action_double)
-        expect(action_double).to receive(:execute!).exactly(3).times
+        expect(klass).to receive(:new).with(pseudo2_unit, dependant_units: []).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit, dependant_units: []).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_unit, dependant_units: []).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit, dependant_units: []).and_return(action_double)
+        expect(klass).to receive(:new).with(unit, dependant_units: dependant_units).and_return(action_double)
+        expect(action_double).to receive(:execute!).exactly(5).times
         subject.start!
       end
     end
@@ -177,10 +207,12 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Restart') }
 
       it 'asks each Container to restart' do
-        expect(klass).to receive(:new).with(dependant_container).and_return(action_double)
-        expect(klass).to receive(:new).with(external_container).and_return(action_double)
-        expect(klass).to receive(:new).with(container).and_return(action_double)
-        expect(action_double).to receive(:execute!).exactly(3).times
+        expect(klass).to receive(:new).with(pseudo2_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(unit).and_return(action_double)
+        expect(action_double).to receive(:execute!).exactly(5).times
         subject.restart!
       end
     end
@@ -190,10 +222,12 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Build') }
 
       it 'asks each Container to build' do
-        expect(klass).to receive(:new).with(dependant_container).and_return(action_double)
-        expect(klass).to receive(:new).with(external_container).and_return(action_double)
-        expect(klass).to receive(:new).with(container).and_return(action_double)
-        expect(action_double).to receive(:execute!).exactly(3).times
+        expect(klass).to receive(:new).with(pseudo2_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(unit).and_return(action_double)
+        expect(action_double).to receive(:execute!).exactly(5).times
         subject.build!
       end
     end
@@ -203,10 +237,12 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Create') }
 
       it 'asks each Container to create' do
-        expect(klass).to receive(:new).with(dependant_container, start: false).and_return(action_double)
-        expect(klass).to receive(:new).with(external_container, start: false).and_return(action_double)
-        expect(klass).to receive(:new).with(container, start: false).and_return(action_double)
-        expect(action_double).to receive(:execute!).exactly(3).times
+        expect(klass).to receive(:new).with(pseudo2_unit, start: false).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit, start: false).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_unit, start: false).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit, start: false).and_return(action_double)
+        expect(klass).to receive(:new).with(unit, start: false).and_return(action_double)
+        expect(action_double).to receive(:execute!).exactly(5).times
         subject.create!
       end
     end
@@ -216,10 +252,12 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Purge') }
 
       it 'asks each Container to purge' do
-        expect(klass).to receive(:new).with(dependant_container, force: false).and_return(action_double)
-        expect(klass).to receive(:new).with(external_container, force: false).and_return(action_double)
-        expect(klass).to receive(:new).with(container, force: false).and_return(action_double)
-        expect(action_double).to receive(:execute!).exactly(3).times
+        expect(klass).to receive(:new).with(pseudo2_unit, force: false).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit, force: false).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_unit, force: false).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit, force: false).and_return(action_double)
+        expect(klass).to receive(:new).with(unit, force: false).and_return(action_double)
+        expect(action_double).to receive(:execute!).exactly(5).times
         subject.purge!
       end
     end
@@ -229,10 +267,12 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Recreate') }
 
       it 'asks each Container to recreate' do
-        expect(klass).to receive(:new).with(dependant_container, start: false).and_return(action_double)
-        expect(klass).to receive(:new).with(external_container, start: false).and_return(action_double)
-        expect(klass).to receive(:new).with(container, start: false).and_return(action_double)
-        expect(action_double).to receive(:execute!).exactly(3).times
+        expect(klass).to receive(:new).with(pseudo2_unit, start: false).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit, start: false).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_unit, start: false).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit, start: false).and_return(action_double)
+        expect(klass).to receive(:new).with(unit, start: false).and_return(action_double)
+        expect(action_double).to receive(:execute!).exactly(5).times
         subject.recreate!
       end
     end

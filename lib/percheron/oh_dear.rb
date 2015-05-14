@@ -17,7 +17,7 @@ module Percheron
       def template
         <<-EOS
 
-OH DEAR, we are terribly sorry.. something unexpected occurred :(
+We are terribly sorry.. something unexpected occurred :(
 
 --snip--
 

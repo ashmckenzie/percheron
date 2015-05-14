@@ -1,10 +1,11 @@
+require 'climate_control'
 require 'awesome_print'
 require 'timecop'
 
 begin
   require 'pry-byebug'
 rescue LoadError
-  $stderr.puts('pry-debug not installed.')
+  $stderr.puts('pry-byebug not installed.')
 end
 
 require 'codeclimate-test-reporter'
@@ -22,3 +23,7 @@ RSpec.configure do |config|
 end
 
 require 'percheron'
+
+def with_modified_env(options, &block)
+  ClimateControl.modify(options, &block)
+end

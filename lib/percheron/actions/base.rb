@@ -2,7 +2,7 @@ module Percheron
   module Actions
     module Base
       def base_dir
-        container.dockerfile.dirname.to_s
+        unit.dockerfile.dirname.to_s
       end
 
       def in_working_directory(new_dir)

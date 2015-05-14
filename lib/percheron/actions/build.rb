@@ -4,27 +4,27 @@ module Percheron
 
       include Base
 
-      def initialize(container, nocache: false, exec_scripts: true)
-        @container = container
+      def initialize(unit, nocache: false, exec_scripts: true)
+        @unit = unit
         @nocache = nocache
         @exec_scripts = exec_scripts
       end
 
       def execute!
         results = []
-        results << build! if container.buildable?
-        results.compact.empty? ? nil : container
+        results << build! if unit.buildable?
+        results.compact.empty? ? nil : unit
       end
 
       private
 
-        attr_reader :container, :nocache, :exec_scripts
+        attr_reader :unit, :nocache, :exec_scripts
         alias_method :exec_scripts?, :exec_scripts
 
         def options
           {
-            'dockerfile'  => container.dockerfile.basename.to_s,
-            't'           => container.image_name,
+            'dockerfile'  => unit.dockerfile.basename.to_s,
+            't'           => unit.image_name,
             'forcerm'     => true,
             'nocache'     => nocache
           }
@@ -33,16 +33,16 @@ module Percheron
         def build!
           in_working_directory(base_dir) do
             execute_pre_build_scripts!
-            $logger.info "Building '#{container.image_name}' image"
-            Docker::Image.build_from_dir(base_dir, options) do |out|
+            $logger.info "Building '#{unit.image_name}' image"
+            Connection.perform(Docker::Image, :build_from_dir, base_dir, options) do |out|
               $logger.debug '%s' % [ out.strip ]
             end
           end
         end
 
         def execute_pre_build_scripts!
-          return nil if !exec_scripts? && container.pre_build_scripts.empty?
-          ExecLocal.new(container, container.pre_build_scripts, 'PRE build').execute!
+          return nil if !exec_scripts? && unit.pre_build_scripts.empty?
+          ExecLocal.new(unit, unit.pre_build_scripts, 'PRE build').execute!
         end
     end
   end

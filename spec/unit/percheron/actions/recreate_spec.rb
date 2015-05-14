@@ -5,10 +5,10 @@ describe Percheron::Actions::Recreate do
   let(:metastore) { double('Metastore::Cabinet') }
   let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
-  let(:container) { Percheron::Container.new(stack, 'debian', config.file_base_path) }
+  let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
   let(:opts) { {} }
 
-  subject { described_class.new(container, opts) }
+  subject { described_class.new(unit, opts) }
 
   before do
     Timecop.freeze(Time.local(1990))
@@ -23,9 +23,9 @@ describe Percheron::Actions::Recreate do
 
   describe '#execute!' do
     before do
-      allow(container).to receive(:image_exists?).and_return(true)
-      allow(container).to receive(:versions_match?).and_return(versions_match).at_least(:once)
-      allow(container).to receive(:dockerfile_md5s_match?).and_return(dockerfile_md5s_match).at_least(:once)
+      allow(unit).to receive(:image_exists?).and_return(true)
+      allow(unit).to receive(:versions_match?).and_return(versions_match).at_least(:once)
+      allow(unit).to receive(:dockerfile_md5s_match?).and_return(dockerfile_md5s_match).at_least(:once)
     end
 
     context 'where there are no Dockerfile changes' do
@@ -47,16 +47,16 @@ describe Percheron::Actions::Recreate do
       let(:create_action) { double('Percheron::Actions::Create') }
       let(:purge_action) { double('Percheron::Actions::Purge') }
 
-      let(:docker_container) { double('Docker::Container') }
+      let(:container) { double('Docker::Container') }
       let(:docker_image) { double('Docker::Image') }
 
       context 'and the version defined does match' do
         let(:versions_match) { true }
 
         it 'deletes the Docker Image and Container' do
-          expect(Percheron::Actions::Create).to receive(:new).with(container).and_return(create_action)
+          expect(Percheron::Actions::Create).to receive(:new).with(unit).and_return(create_action)
           expect(create_action).to receive(:execute!)
-          expect(Percheron::Actions::Purge).to receive(:new).with(container).and_return(purge_action)
+          expect(Percheron::Actions::Purge).to receive(:new).with(unit).and_return(purge_action)
           expect(purge_action).to receive(:execute!)
           subject.execute!
         end

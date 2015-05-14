@@ -21,69 +21,73 @@ module Percheron
       end
     end
 
-    def container_configs
-      stack_config.containers
+    def metastore_key
+      @metastore_key ||= 'stacks.%s' % name
     end
 
-    def containers(container_names = [])
-      container_names = !container_names.empty? ? container_names : filter_container_names
-      container_names.each_with_object({}) do |container_name, all|
-        all[container_name] = container_from_name(container_name)
+    def unit_configs
+      stack_config.units
+    end
+
+    def units(unit_names = [])
+      unit_names = !unit_names.empty? ? unit_names : filter_unit_names
+      unit_names.each_with_object({}) do |unit_name, all|
+        all[unit_name] = unit_from_name(unit_name)
       end
     end
 
-    def shell!(container_name, command: Percheron::Actions::Shell::DEFAULT_COMMAND)
-      Actions::Shell.new(container_from_name(container_name), command: command).execute!
+    def shell!(unit_name, command: Percheron::Actions::Shell::DEFAULT_COMMAND)
+      Actions::Shell.new(unit_from_name(unit_name), command: command).execute!
     end
 
-    def logs!(container_name, follow: false)
-      Actions::Logs.new(container_from_name(container_name), follow: follow).execute!
+    def logs!(unit_name, follow: false)
+      Actions::Logs.new(unit_from_name(unit_name), follow: follow).execute!
     end
 
-    def stop!(container_names: [])
-      execute!(Actions::Stop, filter_container_names(container_names).reverse)
+    def stop!(unit_names: [])
+      execute!(Actions::Stop, filter_unit_names(unit_names).reverse)
     end
 
-    # FIXME: bug when non-startable container specified, all containers started
-    def start!(container_names: [])
-      container_names = dependant_containers_for(container_names)
-      exec_on_dependant_containers_for(container_names) do |container|
-        dependant_containers = container.startable_dependant_containers.values
-        Actions::Start.new(container, dependant_containers: dependant_containers).execute!
-      end
-      nil
-    end
-
-    def restart!(container_names: [])
-      execute!(Actions::Restart, filter_container_names(container_names))
-    end
-
-    def build!(container_names: [])
-      container_names = dependant_containers_for(container_names)
-      exec_on_dependant_containers_for(container_names) do |container|
-        Actions::Build.new(container).execute!
+    # FIXME: bug when non-startable unit specified, all units started
+    def start!(unit_names: [])
+      unit_names = dependant_units_for(unit_names)
+      exec_on_dependant_units_for(unit_names) do |unit|
+        dependant_units = unit.startable_dependant_units.values
+        Actions::Start.new(unit, dependant_units: dependant_units).execute!
       end
       nil
     end
 
-    def create!(container_names: [],  start: false)
-      execute!(Actions::Create, dependant_containers_for(container_names), start: start)
+    def restart!(unit_names: [])
+      execute!(Actions::Restart, filter_unit_names(unit_names))
     end
 
-    def recreate!(container_names: [], start: false)
-      execute!(Actions::Recreate, filter_container_names(container_names), start: start)
+    def build!(unit_names: [])
+      unit_names = dependant_units_for(unit_names)
+      exec_on_dependant_units_for(unit_names) do |unit|
+        Actions::Build.new(unit).execute!
+      end
+      nil
     end
 
-    def purge!(container_names: [], force: false)
-      execute!(Actions::Purge, filter_container_names(container_names).reverse, force: force)
+    def create!(unit_names: [],  start: false)
+      execute!(Actions::Create, dependant_units_for(unit_names), start: start)
     end
 
-    def execute!(klass, container_names, args=nil)
-      exec_on_dependant_containers_for(container_names) do |container|
+    def recreate!(unit_names: [], start: false)
+      execute!(Actions::Recreate, filter_unit_names(unit_names), start: start)
+    end
+
+    def purge!(unit_names: [], force: false)
+      execute!(Actions::Purge, filter_unit_names(unit_names).reverse, force: force)
+    end
+
+    def execute!(klass, unit_names, args=nil)
+      exec_on_dependant_units_for(unit_names) do |unit|
         if args
-          klass.new(container, args).execute!
+          klass.new(unit, args).execute!
         else
-          klass.new(container).execute!
+          klass.new(unit).execute!
         end
       end
       nil
@@ -103,50 +107,50 @@ module Percheron
 
       # FIXME: yuck
       # rubocop:disable Style/Next
-      def filter_container_names(container_names = [])
-        stack_config.fetch('containers', {}).map do |container_name, container_config|
-          if container_names.empty? || container_names.include?(container_name) ||
-             (container_config.pseudo_name &&
-               container_names.include?(container_config.pseudo_name))
-            container_config.name
+      def filter_unit_names(unit_names = [])
+        stack_config.fetch('units', {}).map do |unit_name, unit_config|
+          if unit_names.empty? || unit_names.include?(unit_name) ||
+             (unit_config.pseudo_name &&
+               unit_names.include?(unit_config.pseudo_name))
+            unit_config.name
           end
         end.compact
       end
       # rubocop:enable Style/Next
 
-      def exec_on_dependant_containers_for(container_names)
-        exec_on_containers(container_names) do |container|
-          $logger.debug "Processing '#{container.name}' container"
-          yield(container)
-          container_names.delete(container.full_name)
+      def exec_on_dependant_units_for(unit_names)
+        exec_on_units(unit_names) do |unit|
+          $logger.debug "Processing '#{unit.name}' unit"
+          yield(unit)
+          unit_names.delete(unit.full_name)
         end
       end
 
-      def exec_on_containers(container_names)
-        containers(container_names).each { |_, container| yield(container) }
+      def exec_on_units(unit_names)
+        units(unit_names).each { |_, unit| yield(unit) }
       end
 
-      def dependant_containers_for(container_names)
+      def dependant_units_for(unit_names)
         list = []
-        container_names = filter_container_names(container_names)
-        containers = all_containers_and_dependants(container_names)
-        containers.each do |container_name, dependant_container_names|
-          list += dependant_container_names unless dependant_container_names.empty?
-          list << container_name
+        unit_names = filter_unit_names(unit_names)
+        units = all_units_and_dependants(unit_names)
+        units.each do |unit_name, dependant_unit_names|
+          list += dependant_unit_names unless dependant_unit_names.empty?
+          list << unit_name
         end
         list.uniq
       end
 
-      def all_containers_and_dependants(container_names)
-        all_containers = containers
-        containers = container_names.each_with_object({}) do |container_name, all|
-          all[container_name] = all_containers[container_name].dependant_container_names
+      def all_units_and_dependants(unit_names)
+        all_units = units
+        units = unit_names.each_with_object({}) do |unit_name, all|
+          all[unit_name] = all_units[unit_name].dependant_unit_names
         end
-        containers.sort { |x, y| x[1].length <=> y[1].length } # FIXME
+        units.sort { |x, y| x[1].length <=> y[1].length } # FIXME
       end
 
-      def container_from_name(container_name)
-        Container.new(self, container_name, config.file_base_path)
+      def unit_from_name(unit_name)
+        Unit.new(config, self, unit_name)
       end
   end
 end

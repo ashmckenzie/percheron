@@ -1,9 +1,9 @@
 require 'unit/spec_helper'
 
-describe Percheron::Container do
+describe Percheron::Unit do
   let(:extra_data) { {} }
-  let(:docker_container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
-  let(:dependant_docker_container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
+  let(:container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
+  let(:dependant_container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
   let(:docker_data) do
     {
       name: 'debian',
@@ -19,12 +19,12 @@ describe Percheron::Container do
   let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
 
-  let(:logger) { double('Logger') }
+  let(:logger) { double('Logger').as_null_object }
   let(:metastore) { double('Metastore::Cabinet') }
   let(:stop_action) { double('Percheron::Actions::Stop') }
   let(:start_action) { double('Percheron::Actions::Start') }
 
-  subject { described_class.new(stack, 'debian', config.file_base_path) }
+  subject { described_class.new(config, stack, 'debian') }
 
   before do
     $logger = logger
@@ -45,8 +45,7 @@ describe Percheron::Container do
 
       context 'when hostname is explicitly defined' do
         before do
-          # FIXME
-          expect(stack.container_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(hostname: 'debian-hostname'))
+          expect(stack.unit_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(hostname: 'debian-hostname'))
         end
 
         it 'is valid' do
@@ -62,31 +61,21 @@ describe Percheron::Container do
     end
 
     describe '#image_repo' do
-      context 'when the container is not a pseudo type' do
-        it 'returns full_name' do
-          expect(subject.image_repo).to eql('debian_jessie_debian')
+      context 'when the unit is not buildable' do
+        subject { described_class.new(config, stack, 'debian_external') }
+
+        context 'when the unit defines an image_name' do
+          it 'returns image_name' do
+            expect(subject.image_repo).to eql('debian')
+          end
         end
       end
 
-      context 'when the container defines an image_name' do
-        before do
-          # FIXME
-          expect(stack.container_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(docker_image: 'debian:jessie'))
-        end
-
-        it 'returns image_name' do
-          expect(subject.image_repo).to eql('debian')
-        end
-      end
-
-      context 'when the container is a pseudo type' do
-        before do
-          # FIXME
-          expect(stack.container_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(pseudo_name: 'pseudo_debian'))
-        end
+      context 'when the unit is a pseudo type' do
+        subject { described_class.new(config, stack, 'debian_pseudo1') }
 
         it 'returns full_name' do
-          expect(subject.image_repo).to eql('debian_jessie_pseudo_debian')
+          expect(subject.image_repo).to eql('debian_jessie_debian_pseudo')
         end
       end
     end
@@ -94,19 +83,17 @@ describe Percheron::Container do
     describe '#image_version' do
       context 'when a Dockerfile and Docker image is not defined' do
         before do
-          # FIXME
-          expect(stack.container_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(name: 'debian'))
+          expect(stack.unit_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(name: 'debian'))
         end
 
         it 'raises an exception' do
-          expect { subject.image_version }.to raise_error(Percheron::Errors::ContainerInvalid)
+          expect { subject.image_version }.to raise_error(Percheron::Errors::UnitInvalid)
         end
       end
 
       context 'when a Dockerfile is not defined but a Docker image is' do
         before do
-          # FIXME
-          expect(stack.container_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(name: 'debian', docker_image: 'debian:jessie'))
+          expect(stack.unit_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(name: 'debian', docker_image: 'debian:jessie'))
         end
 
         it 'returns the Docker image version' do
@@ -122,18 +109,17 @@ describe Percheron::Container do
     end
 
     describe '#full_name' do
-      it 'is a combination of stack name and container name' do
+      it 'is a combination of stack name and unit name' do
         expect(subject.full_name).to eql('debian_jessie_debian')
       end
     end
 
     describe '#pseudo_full_name' do
       before do
-        # FIXME
-        expect(stack.container_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(pseudo_name: 'pseudo_debian'))
+        expect(stack.unit_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(pseudo_name: 'pseudo_debian'))
       end
 
-      it 'is a combination of stack name and container name' do
+      it 'is a combination of stack name and unit name' do
         expect(subject.pseudo_full_name).to eql('debian_jessie_pseudo_debian')
       end
     end
@@ -162,6 +148,12 @@ describe Percheron::Container do
       end
     end
 
+    describe '#labels' do
+      it 'returns labels' do
+        expect(subject.labels).to eql(version: '1.0.0', created_by: "Percheron #{Percheron::VERSION}")
+      end
+    end
+
     describe '#dockerfile' do
       it 'returns a Pathname object' do
         expect(subject.dockerfile).to be_a(Pathname)
@@ -175,24 +167,24 @@ describe Percheron::Container do
     end
 
     describe '#links' do
-      it 'returns an array of dependant container names' do
+      it 'returns an array of dependant unit names' do
         expect(subject.links).to eql([ 'debian_jessie_dependant_debian:dependant_debian' ])
       end
     end
 
-    describe '#dependant_containers' do
+    describe '#dependant_units' do
       it 'returns a Hash of dependant Containers' do
-        expect(subject.dependant_containers).to be_a(Hash)
+        expect(subject.dependant_units).to be_a(Hash)
       end
 
-      it 'containers the dependant_debian Container' do
-        expect(subject.dependant_containers['dependant_debian']).to be_a(Percheron::Container)
+      it 'units the dependant_debian Container' do
+        expect(subject.dependant_units['dependant_debian']).to be_a(Percheron::Unit)
       end
     end
 
     describe '#metastore_key' do
       it 'returns a unique key' do
-        expect(subject.metastore_key).to eql('stacks.debian_jessie.containers.debian')
+        expect(subject.metastore_key).to eql('stacks.debian_jessie.units.debian')
       end
     end
 
@@ -223,8 +215,7 @@ describe Percheron::Container do
     describe '#buildable?' do
       context 'when a Dockerfile is not defined but an image is' do
         before do
-          # FIXME
-          expect(stack.container_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(image_name: 'debian:jessie'))
+          expect(stack.unit_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(image_name: 'debian:jessie'))
         end
 
         it 'returns false' do
@@ -269,30 +260,29 @@ describe Percheron::Container do
       end
     end
 
-    describe '#docker_container' do
-      it 'returns a Percheron::NullContainer' do
-        expect(subject.docker_container).to be_a(Percheron::NullContainer)
+    describe '#container' do
+      it 'returns a Percheron::NullUnit' do
+        expect(subject.container).to be_a(Percheron::NullUnit)
+      end
+    end
+
+    describe '#ip' do
+      it 'returns n/a' do
+        expect(subject.ip).to eql('n/a')
       end
     end
 
     describe '#update_dockerfile_md5!' do
       context 'when a Dockerfile is not defined but a Docker image is' do
-        before do
-          # FIXME
-          expect(stack.container_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(name: 'debian', docker_image: 'debian:jessie'))
-        end
-
         it 'updates the metastore' do
-          expect(logger).to receive(:info).with("Setting MD5 for 'debian' container to 02ce896e512816bf86458b581255d20c")
-          expect(metastore).to receive(:set).with('stacks.debian_jessie.containers.debian.dockerfile_md5', '02ce896e512816bf86458b581255d20c')
+          expect(metastore).to receive(:set).with('stacks.debian_jessie.units.debian.dockerfile_md5', '0b03152a88e90de1c5466d6484b8ce5b')
           subject.update_dockerfile_md5!
         end
       end
 
       context 'when a Dockerfile is defined and Docker image is not' do
         it 'updates the metastore' do
-          expect(logger).to receive(:info).with("Setting MD5 for 'debian' container to 0b03152a88e90de1c5466d6484b8ce5b")
-          expect(metastore).to receive(:set).with('stacks.debian_jessie.containers.debian.dockerfile_md5', '0b03152a88e90de1c5466d6484b8ce5b')
+          expect(metastore).to receive(:set).with('stacks.debian_jessie.units.debian.dockerfile_md5', '0b03152a88e90de1c5466d6484b8ce5b')
           subject.update_dockerfile_md5!
         end
       end
@@ -300,10 +290,10 @@ describe Percheron::Container do
 
     describe '#dockerfile_md5s_match?' do
       before do
-        expect(metastore).to receive(:get).with('stacks.debian_jessie.containers.debian.dockerfile_md5').and_return(dockerfile_md5)
+        expect(metastore).to receive(:get).with('stacks.debian_jessie.units.debian.dockerfile_md5').and_return(dockerfile_md5)
       end
 
-      context 'when the Docker container has never been built' do
+      context 'when the Docker unit has never been built' do
         let(:dockerfile_md5) { nil }
 
         it 'returns true' do
@@ -311,7 +301,7 @@ describe Percheron::Container do
         end
       end
 
-      context 'when the Docker container has been built in the past' do
+      context 'when the Docker unit has been built in the past' do
         let(:dockerfile_md5) { '1234' }
 
         it 'returns true' do
@@ -334,11 +324,11 @@ describe Percheron::Container do
   end
 
   context 'when the Docker Container exists' do
-    let(:extra_data) { { 'Config' => { 'Labels' => { 'version' => '1.0.0' } } } }
+    let(:extra_data) { { 'NetworkSettings' => { 'IPAddress' => '1.1.1.1' }, 'Config' => { 'Labels' => { 'version' => '1.0.0' } } } }
 
     before do
-      allow(Docker::Container).to receive(:get).with('debian_jessie_debian').and_return(docker_container)
-      allow(Docker::Container).to receive(:get).with('debian_jessie_dependant_debian').and_return(dependant_docker_container)
+      allow(Docker::Container).to receive(:get).with('debian_jessie_debian').and_return(container)
+      allow(Docker::Container).to receive(:get).with('debian_jessie_dependant_debian').and_return(dependant_container)
       allow(subject).to receive(:exists?).and_return(true)
     end
 
@@ -362,18 +352,24 @@ describe Percheron::Container do
       end
     end
 
-    describe '#docker_container' do
-      it 'returns a Percheron::NullContainer' do
-        expect(subject.docker_container).to be(docker_container)
+    describe '#container' do
+      it 'returns a Percheron::Unit' do
+        expect(subject.container).to be(container)
+      end
+    end
+
+    describe '#ip' do
+      it 'returns the IP' do
+        expect(subject.ip).to eql('1.1.1.1')
       end
     end
 
     describe '#dockerfile_md5s_match?' do
       before do
-        expect(metastore).to receive(:get).with('stacks.debian_jessie.containers.debian.dockerfile_md5').and_return(dockerfile_md5)
+        expect(metastore).to receive(:get).with('stacks.debian_jessie.units.debian.dockerfile_md5').and_return(dockerfile_md5)
       end
 
-      context 'when the Docker container needs to be rebuilt' do
+      context 'when the Docker unit needs to be rebuilt' do
         let(:dockerfile_md5) { 'abc123' }
 
         it 'returns false' do
@@ -381,7 +377,7 @@ describe Percheron::Container do
         end
       end
 
-      context 'when the Docker container has been freshly built' do
+      context 'when the Docker unit has been freshly built' do
         let(:dockerfile_md5) { '0b03152a88e90de1c5466d6484b8ce5b' }
 
         it 'returns true' do
@@ -392,7 +388,7 @@ describe Percheron::Container do
 
     describe 'versions_match?' do
       before do
-        expect(subject).to receive(:container_config).and_return(Hashie::Mash.new(name: 'debian', version: version)).exactly(3).times
+        expect(subject).to receive(:unit_config).and_return(Hashie::Mash.new(name: 'debian', version: version)).exactly(3).times
       end
 
       context 'when the version has not been bumped' do
@@ -433,19 +429,19 @@ describe Percheron::Container do
 
   describe '#exists?' do
     before do
-      expect(Docker::Container).to receive(:get).with('debian_jessie_debian').and_return(docker_container)
+      expect(Docker::Container).to receive(:get).with('debian_jessie_debian').and_return(container)
     end
 
     context 'when the Container does not exist' do
       it 'returns false' do
-        expect(docker_container).to receive(:info).and_return({})
+        expect(container).to receive(:info).and_return({})
         expect(subject.exists?).to be(false)
       end
     end
 
     context 'when the Container does exist' do
       it 'returns true' do
-        expect(docker_container).to receive(:info).and_return(not: 'empty')
+        expect(container).to receive(:info).and_return(not: 'empty')
         expect(subject.exists?).to be(true)
       end
     end

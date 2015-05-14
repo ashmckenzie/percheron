@@ -7,6 +7,10 @@ describe Percheron::Formatters::Stack::Table do
 
   subject { described_class.new(stack) }
 
+  before do
+    $logger = double('Logger').as_null_object
+  end
+
   describe '#generate' do
     it 'returns a Terminal::Table' do
       expect(subject.generate).to be_a(Terminal::Table)

@@ -17,7 +17,7 @@ describe 'percheron' do
   end
 
   describe 'build' do
-    context 'for just the base container' do
+    context 'for just the base unit' do
       it 'builds an image' do
         Percheron::Commands::Build.run(Dir.pwd, %w(percheron-test base))
         output = Docker::Image.get('percheron-test_base:9.9.9').json
@@ -25,7 +25,7 @@ describe 'percheron' do
       end
     end
 
-    context 'for just the app1 container' do
+    context 'for just the app1 unit' do
       it 'builds an image' do
         Percheron::Commands::Build.run(Dir.pwd, %w(percheron-test app1))
         output = Docker::Image.get('percheron-test_app1:9.9.9').json
@@ -33,7 +33,7 @@ describe 'percheron' do
       end
     end
 
-    context 'for all containers' do
+    context 'for all units' do
       it 'builds base and app1 images' do
         Percheron::Commands::Build.run(Dir.pwd, %w(percheron-test))
         base_output = Docker::Image.get('percheron-test_base:9.9.9').json

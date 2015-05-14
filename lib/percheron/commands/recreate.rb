@@ -6,7 +6,7 @@ module Percheron
 
       def execute
         super
-        stack.recreate!(container_names: container_names, start: start?)
+        stack.recreate!(unit_names: unit_names, start: start?)
       end
     end
   end

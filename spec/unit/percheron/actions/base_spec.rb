@@ -6,13 +6,13 @@ describe Percheron::Actions::Base do
       class BaseClass
         include Percheron::Actions::Base
 
-        def initialize(container)
-          @container = container
+        def initialize(unit)
+          @unit = unit
         end
 
         private
 
-          attr_reader :container
+          attr_reader :unit
       end
     end
   end
@@ -20,13 +20,13 @@ describe Percheron::Actions::Base do
   let(:logger) { double('Logger').as_null_object }
   let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
-  let(:container) { Percheron::Container.new(stack, 'debian', config.file_base_path) }
-  let(:dependant_containers) { container.dependant_containers }
+  let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
+  let(:dependant_units) { unit.dependant_units }
 
   before do
     $logger = logger
     Timecop.freeze(Time.local(1990))
-    allow(container).to receive(:dependant_containers).and_return(dependant_containers)
+    allow(unit).to receive(:dependant_units).and_return(dependant_units)
   end
 
   after do
@@ -34,7 +34,7 @@ describe Percheron::Actions::Base do
     $logger = nil
   end
 
-  subject { Percheron::Actions::BaseClass.new(container) }
+  subject { Percheron::Actions::BaseClass.new(unit) }
 
   describe '#base_dir' do
     it "returns the Dockerfile's base dir" do

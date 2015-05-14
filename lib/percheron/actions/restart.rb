@@ -4,28 +4,28 @@ module Percheron
 
       include Base
 
-      def initialize(container)
-        @container = container
+      def initialize(unit)
+        @unit = unit
       end
 
       def execute!
         results = []
         results << stop!
         results << start!
-        results.compact.empty? ? nil : container
+        results.compact.empty? ? nil : unit
       end
 
       private
 
-        attr_reader :container
+        attr_reader :unit
 
         def stop!
-          Stop.new(container).execute!
+          Stop.new(unit).execute!
         end
 
         def start!
-          opts = { dependant_containers: container.startable_dependant_containers.values }
-          Start.new(container, opts).execute!
+          opts = { dependant_units: unit.startable_dependant_units.values }
+          Start.new(unit, opts).execute!
         end
 
     end

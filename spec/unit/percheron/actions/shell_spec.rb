@@ -3,7 +3,7 @@ require 'unit/spec_helper'
 describe Percheron::Actions::Shell do
   let(:docker_client_validator) { double('Percheron::Validators::DockerClient', valid?: true) }
   let(:logger) { double('Logger').as_null_object }
-  let(:container) { double('Percheron::Container', full_name: 'stack-container').as_null_object }
+  let(:unit) { double('Percheron::Unit', full_name: 'stack-unit').as_null_object }
 
   before do
     $logger = logger
@@ -13,7 +13,7 @@ describe Percheron::Actions::Shell do
     $logger = nil
   end
 
-  subject { described_class.new(container) }
+  subject { described_class.new(unit) }
 
   describe '#execute!' do
     before do
@@ -21,7 +21,7 @@ describe Percheron::Actions::Shell do
     end
 
     it 'calls docker exec' do
-      expect(subject).to receive(:system).with("docker exec -ti stack-container sh -c '/bin/sh'")
+      expect(subject).to receive(:system).with("docker exec -ti stack-unit sh -c '/bin/sh'")
       subject.execute!
     end
   end

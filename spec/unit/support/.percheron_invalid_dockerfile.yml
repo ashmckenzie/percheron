@@ -6,7 +6,7 @@ docker:
 stacks:
   -
     name: debian_jessie
-    containers:
+    units:
       -
         name: debian
         version: 1.0.0

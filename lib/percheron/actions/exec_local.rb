@@ -6,8 +6,8 @@ module Percheron
 
       include Base
 
-      def initialize(container, scripts, description)
-        @container = container
+      def initialize(unit, scripts, description)
+        @unit = unit
         @scripts = scripts
         @description = description
       end
@@ -15,12 +15,12 @@ module Percheron
       def execute!
         results = []
         results << execute_scripts!
-        results.compact.empty? ? nil : container
+        results.compact.empty? ? nil : unit
       end
 
       private
 
-        attr_reader :container, :scripts, :description
+        attr_reader :unit, :scripts, :description
 
         def execute_scripts!
           $logger.debug "Executing #{description} scripts '#{scripts.inspect}' locally"

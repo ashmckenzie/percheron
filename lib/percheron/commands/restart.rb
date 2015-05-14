@@ -6,7 +6,7 @@ module Percheron
 
       def execute
         super
-        stack.restart!(container_names: container_names)
+        stack.restart!(unit_names: unit_names)
       end
     end
   end

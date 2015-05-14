@@ -12,20 +12,24 @@ module Percheron
 
       def self.default_parameters!
         parameter('STACK_NAME', 'stack name', required: true)
-        parameter('CONTAINER_NAMES', 'container names', default: [],
-                                                        required: false) do |container_names|
-          container_names.split(/,/)
+        parameter('UNIT_NAMES', 'unit names', default: [], required: false) do |names|
+          names.split(/,/)
         end
       end
 
       def self.default_create_parameters!
         default_parameters!
-        option('--start', :flag, 'Start container', default: false)
+        option('--start', :flag, 'Start unit', default: false)
+      end
+
+      def default_config_file
+        ENV.fetch('PERCHERON_CONFIG', Config::DEFAULT_CONFIG_FILE)
       end
 
       def execute
         stack.valid?
       rescue => e
+        puts "%s\n%s\n" % [ e.inspect, e.backtrace ]
         signal_usage_error(e.message)
       end
 
@@ -34,14 +38,14 @@ module Percheron
         Percheron::Stack.new(config, stack_name)
       end
 
-      def default_config_file
-        ENV.fetch('PERCHERON_CONFIG', Config::DEFAULT_CONFIG_FILE)
-      end
-
       def config
-        @config ||= Percheron::Config.load!(config_file)
+        @config ||= begin
+          Percheron::Config.new(config_file).tap do |c|
+            Percheron::Connection.load!(c)
+          end
+        end
       rescue Errors::ConfigFileInvalid => e
-        $logger.error e.message
+        $logger.error e.inspect
         exit(1)
       end
     end
