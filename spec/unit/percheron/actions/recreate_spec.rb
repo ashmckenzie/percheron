@@ -35,7 +35,7 @@ describe Percheron::Actions::Recreate do
         let(:versions_match) { true }
 
         it 'logs Docker Container does not need to be recreated' do
-          expect(logger).to receive(:info).with("Container 'debian' - No Dockerfile changes or version bump")
+          expect(logger).to receive(:info).with("Unit 'debian' - No Dockerfile changes or version bump")
           subject.execute!
         end
       end

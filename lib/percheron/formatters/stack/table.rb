@@ -24,7 +24,7 @@ module Percheron
 
           def headings
             [
-              'Container',
+              'Unit',
               'ID',
               'Running?',
               'IP',

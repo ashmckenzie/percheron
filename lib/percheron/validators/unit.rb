@@ -17,9 +17,9 @@ module Percheron
 
         def formatted_message(message)
           if unit.name
-            "Container config for '%s' is invalid: %s" % [ unit.name, message ]
+            "Unit config for '%s' is invalid: %s" % [ unit.name, message ]
           else
-            "Container config is invalid: #{message}"
+            "Unit config is invalid: #{message}"
           end
         end
 

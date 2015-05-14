@@ -15,7 +15,7 @@ module Percheron
       def execute!
         results = []
         if unit.exists?
-          $logger.debug "Container '#{unit.name}' already exists"
+          $logger.debug "Unit '#{unit.name}' already exists"
         else
           results << create!
         end

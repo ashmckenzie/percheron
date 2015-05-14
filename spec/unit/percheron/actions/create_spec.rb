@@ -147,7 +147,7 @@ describe Percheron::Actions::Create do
       end
 
       it 'creates a Docker::Container' do
-        expect(logger).to receive(:debug).with("Container 'debian' already exists")
+        expect(logger).to receive(:debug).with("Unit 'debian' already exists")
         subject.execute!
       end
     end

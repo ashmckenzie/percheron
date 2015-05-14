@@ -29,7 +29,7 @@ module Percheron
       def execute
         stack.valid?
       rescue => e
-        puts "%s\n%s\n" % [ e.inspect, e.backtrace ]
+        puts "%s\n\n%s\n\n" % [ e.inspect, e.backtrace.join("\n") ]
         signal_usage_error(e.message)
       end
 

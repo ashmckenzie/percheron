@@ -11,35 +11,35 @@ describe Percheron::Validators::Unit do
     context 'when unit config is missing name' do
       let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_missing_name.yml') }
       it 'raises exception' do
-        expect { subject.valid? }.to raise_error(Percheron::Errors::UnitInvalid, 'Container config is invalid: Name is invalid')
+        expect { subject.valid? }.to raise_error(Percheron::Errors::UnitInvalid, 'Unit config is invalid: Name is invalid')
       end
     end
 
     context 'when unit config is missing version' do
       let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_missing_version.yml') }
       it 'raises exception' do
-        expect { subject.valid? }.to raise_error(Percheron::Errors::UnitInvalid, "Container config for 'debian' is invalid: Version is invalid")
+        expect { subject.valid? }.to raise_error(Percheron::Errors::UnitInvalid, "Unit config for 'debian' is invalid: Version is invalid")
       end
     end
 
     context 'when unit config is missing dockerfile AND image_name' do
       let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_missing_dockerfile_and_image_name.yml') }
       it 'raises exception' do
-        expect { subject.valid? }.to raise_error(Percheron::Errors::UnitInvalid, "Container config for 'debian' is invalid: Dockerfile OR image name not provided")
+        expect { subject.valid? }.to raise_error(Percheron::Errors::UnitInvalid, "Unit config for 'debian' is invalid: Dockerfile OR image name not provided")
       end
     end
 
     context 'when unit config is has an invalid dockerfile' do
       let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_invalid_dockerfile.yml') }
       it 'raises exception' do
-        expect { subject.valid? }.to raise_error(Percheron::Errors::UnitInvalid, "Container config for 'debian' is invalid: Dockerfile is invalid")
+        expect { subject.valid? }.to raise_error(Percheron::Errors::UnitInvalid, "Unit config for 'debian' is invalid: Dockerfile is invalid")
       end
     end
 
     context 'when unit config has an invalid Docker image' do
       let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_invalid_docker_image.yml') }
       it 'raises exception' do
-        expect { subject.valid? }.to raise_error(Percheron::Errors::UnitInvalid, "Container config for 'debian' is invalid: Docker image is invalid")
+        expect { subject.valid? }.to raise_error(Percheron::Errors::UnitInvalid, "Unit config for 'debian' is invalid: Docker image is invalid")
       end
     end
 
