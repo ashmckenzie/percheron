@@ -66,14 +66,15 @@ docker:
   ssl_verify_peer: false
 
 stacks:
-  - name: consul
+  - name: consul-stack
     units:
       - name: master
         version: 1.0.0
         docker_image: progrium/consul:latest
         start_args: "-server -bootstrap -ui-dir /ui"
         ports:
-          - "8500:8500"
+          - 8500:8500
+          - 8600:53/udp
       - name: agent
         version: 1.0.0
         docker_image: progrium/consul:latest
@@ -85,13 +86,19 @@ stacks:
 3) Start it up!
 
 ```bash
-percheron start demo
+percheron start consul-stack
 ```
 
 4) Bring up the consul UI
 
 ```bash
 open http://boot2docker:8500/ui
+```
+
+5) Perform a DNS lookup
+
+```bash
+dig @boot2docker -p 8600 master.node.consul +short
 ```
 
 ## Demo
