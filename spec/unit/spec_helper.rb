@@ -1,5 +1,4 @@
 require 'climate_control'
-require 'awesome_print'
 require 'timecop'
 
 begin

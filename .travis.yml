@@ -1,5 +1,6 @@
 language: ruby
 before_install: gem install bundler --version 1.9.7
+gemfile: Gemfile.travis
 rvm:
   - 2.0
   - 2.1
