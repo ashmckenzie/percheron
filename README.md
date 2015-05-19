@@ -11,12 +11,12 @@ Organise your Docker containers with muscle and intelligence.
 ## Features
 
 * Single, easy to write `.percheron.yml` controls everything
-* Supports building, creating and starting of containers and their dependancies
+* Supports building, creating and starting of containers and their dependencies
 * Supports building using a Dockerfile or pulling a Docker image from Docker Hub
-* Build 'base' images as a dependancy and then build from there
+* Build 'base' images as a dependency and then build from there
 * Support for pre-build and post-start scripts when generating images and starting containers
 * Version control of building images and containers
-* Generate Graphviz dependancy graphs dynamically
+* Generate Graphviz dependency graphs dynamically
 * Written in Ruby :)
 
 ## Supported platforms
@@ -106,7 +106,7 @@ dig @boot2docker -p 8600 agent1.node.consul +short
 dig @boot2docker -p 8600 agent2.node.consul +short
 ```
 
-## Dependancy graph
+## Dependency graph
 
 Note: Requires [Graphviz](http://graphviz.org/) installed.
 
