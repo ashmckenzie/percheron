@@ -11,4 +11,5 @@ begin
   Percheron::Commands::Main.run
 rescue => e
   puts Percheron::OhDear.new(e).generate
+  exit(1)
 end
