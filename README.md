@@ -108,6 +108,12 @@ dig @boot2docker -p 8600 agent2.node.consul +short
 
 ## Dependancy graph
 
+Note: Requires [Graphviz](http://graphviz.org/) installed.
+
+```bash
+percheron graph consul-stack
+```
+
 ![consul-stack](https://raw.githubusercontent.com/ashmckenzie/percheron-consul/master/assets/stack.png)
 
 ## Demo
