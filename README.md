@@ -16,6 +16,7 @@ Organise your Docker containers with muscle and intelligence.
 * Build 'base' images as a dependancy and then build from there
 * Support for pre-build and post-start scripts when generating images and starting containers
 * Version control of building images and containers
+* Generate Graphviz dependancy graphs dynamically
 * Written in Ruby :)
 
 ## Supported platforms
@@ -67,6 +68,7 @@ docker:
 
 stacks:
   - name: consul-stack
+    description: A demo consul stack with one master and two agents
     units:
       - name: master
         version: 1.0.0
@@ -77,6 +79,7 @@ stacks:
           - 8600:53/udp
       - name: agent
         version: 1.0.0
+        instances: 2
         docker_image: progrium/consul:latest
         start_args: "-server -join master"
         dependant_unit_names:
@@ -95,15 +98,21 @@ percheron start consul-stack
 open http://boot2docker:8500/ui
 ```
 
-5) Perform a DNS lookup
+5) Perform some DNS lookups
 
 ```bash
 dig @boot2docker -p 8600 master.node.consul +short
+dig @boot2docker -p 8600 agent1.node.consul +short
+dig @boot2docker -p 8600 agent2.node.consul +short
 ```
+
+## Dependancy graph
+
+![consul-stack](https://raw.githubusercontent.com/ashmckenzie/percheron-consul/master/assets/stack.png)
 
 ## Demo
 
-[![asciicast](https://asciinema.org/a/bs09umip9wdozy26ylbd7d26o.png)](https://asciinema.org/a/bs09umip9wdozy26ylbd7d26o)
+[![asciicast](https://asciinema.org/a/7l1ar35xlmfsaphhptrqvx7jg.png)](https://asciinema.org/a/7l1ar35xlmfsaphhptrqvx7jg)
 
 ## Debugging
 
@@ -113,14 +122,17 @@ To perform debugging you will need to install the `pry-byebug` gem:
 gem install pry-byebug
 ```
 
-To debug Percheron, set the `DEBUG=true` environment variable.  To debug Percheron and Docker, set the `DOCKER_DEBUG=true` environment variable.
+To debug Percheron, set the `DEBUG=true` environment variable.
+
+To debug Percheron and Docker, set the `DOCKER_DEBUG=true` environment variable.
 
 ## Examples
 
+* [consul](https://github.com/ashmckenzie/percheron-consul) - consul server + UI and two agents
 * [Rails](https://github.com/ashmckenzie/percheron-rails#quickstart) - Rails 4.2, PostgreSQL, redis, HAProxy and postfix
 * [Redis](https://github.com/ashmckenzie/percheron-redis#quickstart) - Redis cluster + sentinel, master, two slaves and tools
 * [Torrent](https://github.com/ashmckenzie/percheron-torrent#quickstart) - Tracker (chihaya), seeder (aria2) and three peers (aria2)
-* [SaltStack](https://github.com/ashmckenzie/percheron-saltstack#quickstart) - SaltStack v2015.2.0rc2 with master and minion
+* [SaltStack](https://github.com/ashmckenzie/percheron-saltstack#quickstart) - SaltStack v2015.5.0 with master and two minions
 
 ## Testing
 
