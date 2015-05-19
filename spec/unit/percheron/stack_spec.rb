@@ -150,6 +150,17 @@ describe Percheron::Stack do
       allow(Percheron::Unit).to receive(:new).with(config, subject, 'debian_pseudo2').and_return(pseudo2_unit)
     end
 
+    describe '#graph!' do
+      let(:file) { '/tmp/stack.png' }
+      let(:graph) { double('Percheron::Graph') }
+
+      it 'calls out to create a dependancy graph' do
+        expect(Percheron::Graph).to receive(:new).with(subject).and_return(graph)
+        expect(graph).to receive(:save!).with(file)
+        subject.graph!(file)
+      end
+    end
+
     describe '#shell!' do
       let(:klass) { Percheron::Actions::Shell }
       let(:action_double) { double('Percheron::Actions::Shell') }

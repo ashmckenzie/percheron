@@ -36,6 +36,11 @@ module Percheron
       end
     end
 
+    def graph!(file)
+      Graph.new(self).save!(file)
+      $logger.info "Saved '%s'" % file
+    end
+
     def shell!(unit_name, command: Percheron::Actions::Shell::DEFAULT_COMMAND)
       Actions::Shell.new(unit_from_name(unit_name), command: command).execute!
     end

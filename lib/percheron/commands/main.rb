@@ -12,6 +12,7 @@ module Percheron
       subcommand 'purge', 'Purge a stack', Purge
       subcommand 'shell', 'Shell into a unit', Shell
       subcommand 'logs', 'Show logs for a unit', Logs
+      subcommand 'graph', 'Generate a stack graph', Graph
     end
   end
 end

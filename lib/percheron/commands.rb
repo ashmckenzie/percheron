@@ -12,6 +12,7 @@ require 'percheron/commands/build'
 require 'percheron/commands/recreate'
 require 'percheron/commands/shell'
 require 'percheron/commands/logs'
+require 'percheron/commands/graph'
 require 'percheron/commands/main'
 
 module Percheron

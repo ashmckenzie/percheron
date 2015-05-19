@@ -3,7 +3,7 @@ require 'unit/spec_helper'
 describe Percheron::Unit do
   let(:extra_data) { {} }
   let(:container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
-  let(:dependant_container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
+  let(:dependant_unit) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
   let(:docker_data) do
     {
       name: 'debian',
@@ -328,7 +328,7 @@ describe Percheron::Unit do
 
     before do
       allow(Docker::Container).to receive(:get).with('debian_jessie_debian').and_return(container)
-      allow(Docker::Container).to receive(:get).with('debian_jessie_dependant_debian').and_return(dependant_container)
+      allow(Docker::Container).to receive(:get).with('debian_jessie_dependant_debian').and_return(dependant_unit)
       allow(subject).to receive(:exists?).and_return(true)
     end
 

@@ -118,7 +118,7 @@ module Percheron
 
     def update_dockerfile_md5!
       md5 = current_dockerfile_md5
-      $logger.info "Setting MD5 for '#{name}' unit to #{md5}"
+      $logger.debug "Setting MD5 for '#{name}' unit to #{md5}"
       $metastore.set("#{metastore_key}.dockerfile_md5", md5)
     end
 
@@ -150,6 +150,10 @@ module Percheron
       Validators::Unit.new(self).valid?
     end
 
+    def pseudo?
+      !pseudo_name.nil?
+    end
+
     alias_method :startable?, :startable
 
     private
@@ -172,8 +176,5 @@ module Percheron
         Hashie::Mash.new(container.info)
       end
 
-      def pseudo?
-        !pseudo_name.nil?
-      end
   end
 end
