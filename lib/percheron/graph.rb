@@ -65,8 +65,8 @@ module Percheron
 
       def create_cluster(unit)
         return nil if graphs[unit.pseudo_name]
-        opts = 'cluster%s' % graphs.keys.count, cluster_opts(unit)
-        graphs[unit.pseudo_name] = graph.add_graph(opts)
+        name = 'cluster%s' % graphs.keys.count
+        graphs[unit.pseudo_name] = graph.add_graph(name, cluster_opts(unit))
       end
 
       def cluster_opts(unit)
