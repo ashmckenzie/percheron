@@ -108,6 +108,12 @@ describe Percheron::Stack do
     end
   end
 
+  describe '#metastore_key' do
+    it "returns the stacks' key when using metascore" do
+      expect(subject.metastore_key).to eql('stacks.debian_jessie')
+    end
+  end
+
   describe '#unit_configs' do
     it 'returns a Hash of Container objects' do
       expect(subject.unit_configs).to be_a(Hash)
