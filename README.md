@@ -8,15 +8,30 @@
 
 Organise your Docker containers with muscle and intelligence.
 
+## Why?
+
+Percheron aims to address the following challenges when working with Docker images and containers:
+
+* Managing multiple containers and mutiple sets (stacks) of containers
+* Building images and containers with support for dependencies
+* Versioning of images and containers
+
+Percheron is like Vagrant but instead of managing VM's, it manages Docker images and containers.
+It is a very handy tool when you wish to create a basic or complex stack without the need to run
+multiple VMs.
+
+It is intended to be used in a test, development or prototying scenario.
+
 ## Features
 
-* Single, easy to write `.percheron.yml` controls everything
-* Supports building, creating and starting of containers and their dependencies
-* Supports building using a Dockerfile or pulling a Docker image from Docker Hub
-* Build 'base' images as a dependency and then build from there
+* Single, easy to write `.percheron.yml` describes your stack(s)
+* Build, create and start containers and their dependancies
+* Build using a Dockerfile or pulling a Docker image from Docker Hub
+* Build 'base' images as a dependency and then build on top of
 * Support for pre-build and post-start scripts when generating images and starting containers
-* Version control of building images and containers
-* Generate Graphviz dependency graphs dynamically
+* Version control of images and containers
+* Partial template (liquid) support for `.percheron.yml`
+* Generate Graphviz dependency graphs dynamically based purely on your `.percheron.yml`
 * Written in Ruby :)
 
 ## Supported platforms
@@ -51,6 +66,36 @@ $ gem install percheron
 * [Docker client](https://docs.docker.com/installation) (nice to have)
 
 ## Usage
+
+```
+Usage:
+    percheron [OPTIONS] SUBCOMMAND [ARG] ...
+
+Parameters:
+    SUBCOMMAND                    subcommand
+    [ARG] ...                     subcommand arguments
+
+Subcommands:
+    list, status                  List stacks and its units
+    console                       Start a pry console session
+    start                         Start a stack
+    stop                          Stop a stack
+    restart                       Restart a stack
+    build                         Build images for a stack
+    create                        Build images and create units for a stack
+    recreate                      Recreate a stack
+    purge                         Purge a stack
+    shell                         Shell into a unit
+    logs                          Show logs for a unit
+    graph                         Generate a stack graph
+
+Options:
+    -h, --help                    print help
+    -c, --config_file CONFIG      Config file (default: ".percheron.yml")
+    --version                     show version
+```
+
+## Demo
 
 1) Install percheron
 
@@ -116,7 +161,7 @@ percheron graph consul-stack
 
 ![consul-stack](https://raw.githubusercontent.com/ashmckenzie/percheron-consul/master/assets/stack.png)
 
-## Demo
+## Demo asciicast
 
 [![asciicast](https://asciinema.org/a/7l1ar35xlmfsaphhptrqvx7jg.png)](https://asciinema.org/a/7l1ar35xlmfsaphhptrqvx7jg)
 
