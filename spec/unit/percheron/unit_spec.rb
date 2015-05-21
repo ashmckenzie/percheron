@@ -101,6 +101,16 @@ describe Percheron::Unit do
         end
       end
 
+      context 'when Docker image is defined without the tag (version)' do
+        before do
+          expect(stack.unit_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(name: 'debian', docker_image: 'debian'))
+        end
+
+        it 'returns the :latest tag' do
+          expect(subject.image_version).to eql('latest')
+        end
+      end
+
       context 'when a Dockerfile is defined and Docker image is not' do
         it 'returns the version' do
           expect(subject.image_version.to_s).to eql('1.0.0')

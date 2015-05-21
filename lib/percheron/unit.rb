@@ -59,7 +59,7 @@ module Percheron
       if buildable?
         unit_config.version
       elsif !unit_config.docker_image.nil?
-        unit_config.docker_image.split(':')[1]
+        unit_config.docker_image.split(':')[1] || 'latest'
       else
         fail Errors::UnitInvalid, 'Cannot determine image version'
       end
