@@ -25,12 +25,12 @@ It is intended to be used in a test, development or prototying scenario.
 ## Features
 
 * Single, easy to write `.percheron.yml` describes your stack(s)
-* Build, create and start containers and their dependancies
-* Build using a Dockerfile or pulling a Docker image from Docker Hub
-* Build 'base' images as a dependency and then build on top of
-* Support for pre-build and post-start scripts when generating images and starting containers
-* Version control of images and containers
-* Partial template (liquid) support for `.percheron.yml`
+* Build, create and start units and their dependancies
+* Build units using a Dockerfile or by pulling Docker images from Docker Hub
+* Build 'bare/base' images and build new images on top of them
+* Support for pre-build and post-start scripts when generating images and starting units
+* Version control of images and units
+* Partial template (liquid) support within `.percheron.yml`
 * Generate Graphviz dependency graphs dynamically based purely on your `.percheron.yml`
 * Written in Ruby :)
 
