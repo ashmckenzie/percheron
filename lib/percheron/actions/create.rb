@@ -51,7 +51,8 @@ module Percheron
               'PortBindings'  => port_bindings,
               'Links'         => unit.links,
               'Binds'         => unit.volumes,
-              'Dns'           => unit.dns
+              'Dns'           => unit.dns,
+              'VolumesFrom'   => unit.volumes_from
             }
           }
         end

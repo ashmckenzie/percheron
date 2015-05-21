@@ -25,11 +25,13 @@ module Percheron
           def headings
             [
               'Unit',
-              'ID',
-              'Running?',
+              'Unit ID',
+              'Image ID',
+              'Up?',
               'IP',
               'Ports',
               'Volumes',
+              'Volumes from',
               'Version'
             ]
           end
@@ -57,10 +59,12 @@ module Percheron
             [
               unit.name,
               unit.id,
+              unit.image_id,
               startable(unit),
               unit.ip,
               unit.ports.join(', '),
               unit.volumes.join(', '),
+              unit.volumes_from.join(', '),
               version(unit)
             ]
           end
@@ -71,7 +75,7 @@ module Percheron
 
           def startable(unit)
             if unit.startable?
-              unit.running? ? 'yes' : '-'
+              unit.running? ? 'yes' : 'no'
             else
               'n/a'
             end

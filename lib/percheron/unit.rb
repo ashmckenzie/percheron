@@ -5,9 +5,9 @@ module Percheron
     extend ConfigDelegator
 
     def_delegators :unit_config, :name, :pseudo_name, :docker_image
-    def_config_item_with_default :unit_config, [], :env, :ports, :volumes,
-                                 :dependant_unit_names, :pre_build_scripts,
-                                 :post_start_scripts, :start_args
+    def_config_item_with_default :unit_config, [], :env, :ports, :volumes, :volumes_from,
+                                 :start_args, :dependant_unit_names, :pre_build_scripts,
+                                 :post_start_scripts
     def_config_item_with_default :unit_config, %w(127.0.0.1 8.8.8.8), :dns
     def_config_item_with_default :unit_config, true, :startable
 
@@ -39,6 +39,10 @@ module Percheron
 
     def hostname
       unit_config.fetch('hostname', name)
+    end
+
+    def image_id
+      image.id ? image.id[0...12] : nil
     end
 
     def image_name
@@ -76,7 +80,7 @@ module Percheron
     def image
       Connection.perform(Docker::Image, :get, image_name)
     rescue Docker::Error::NotFoundError
-      nil
+      NullImage.new
     end
 
     def version
@@ -139,7 +143,7 @@ module Percheron
     end
 
     def image_exists?
-      image.nil? ? false : true
+      image.id.nil? ? false : true
     end
 
     def buildable?
