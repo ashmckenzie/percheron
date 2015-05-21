@@ -95,15 +95,21 @@ Options:
     --version                     show version
 ```
 
-## Demo
+## Demo (using boot2docker)
 
-1) Install percheron
+1) Get boot2docker up and running
+
+```bash
+boot2docker up && eval $(boot2docker shellinit) && export BOOT2DOCKER_IP=$(boot2docker ip)
+```
+
+2) Install percheron
 
 ```bash
 gem install percheron
 ```
 
-2) Create a `.percheron.yml` file describing your stack:
+3) Create a `.percheron.yml` file describing the stack, in this case [consul](https://consul.io/):
 
 ```yaml
 ---
@@ -131,24 +137,67 @@ stacks:
           - master
 ```
 
-3) Start it up!
+4) Start it up!
 
 ```bash
 percheron start consul-stack
+
+I, [2015-05-21T19:25:05.975964 #35449]  INFO -- : Starting 'master' unit
+I, [2015-05-21T19:25:06.676782 #35449]  INFO -- : Starting 'agent1' unit
+I, [2015-05-21T19:25:07.167997 #35449]  INFO -- : Starting 'agent2' unit
 ```
 
-4) Bring up the consul UI
+5) Show the status
+
+```bash
+percheron status consul-stack
+
++--------+--------------+----------+------------+------------------------+---------+---------+
+|                                        consul-stack                                        |
++--------+--------------+----------+------------+------------------------+---------+---------+
+| Unit   | ID           | Running? | IP         | Ports                  | Volumes | Version |
++--------+--------------+----------+------------+------------------------+---------+---------+
+| master | 0acd1e2cfbc0 | yes      | 172.17.0.1 | 8500:8500, 8600:53/udp |         | 1.0.0   |
+| agent1 | d70495c1c62b | yes      | 172.17.0.2 |                        |         | 1.0.0   |
+| agent2 | 458ad3ba0890 | yes      | 172.17.0.3 |                        |         | 1.0.0   |
++--------+--------------+----------+------------+------------------------+---------+---------+
+```
+
+6) Ensure consul is running
+
+```bash
+curl http://boot2docker:8500/v1/catalog/nodes
+
+[{"Node":"agent1","Address":"172.17.0.5"},{"Node":"agent2","Address":"172.17.0.6"},{"Node":"master","Address":"172.17.0.4"}]
+```
+
+7) Perform some DNS lookups using consul
+
+```bash
+dig @boot2docker -p 8600 master.node.consul agent1.node.consul agent2.node.consul +short
+
+172.17.0.7
+172.17.0.8
+172.17.0.9
+```
+
+8) Bring up the consul UI
 
 ```bash
 open http://boot2docker:8500/ui
 ```
 
-5) Perform some DNS lookups
+9) Purge it!
 
 ```bash
-dig @boot2docker -p 8600 master.node.consul +short
-dig @boot2docker -p 8600 agent1.node.consul +short
-dig @boot2docker -p 8600 agent2.node.consul +short
+percheron purge consul-stack
+
+I, [2015-05-21T19:28:23.925205 #35710]  INFO -- : Stopping 'agent2' unit
+I, [2015-05-21T19:28:24.269218 #35710]  INFO -- : Deleting 'agent2' unit
+I, [2015-05-21T19:28:24.452320 #35710]  INFO -- : Stopping 'agent1' unit
+I, [2015-05-21T19:28:24.811764 #35710]  INFO -- : Deleting 'agent1' unit
+I, [2015-05-21T19:28:24.965680 #35710]  INFO -- : Stopping 'master' unit
+I, [2015-05-21T19:28:25.246578 #35710]  INFO -- : Deleting 'master' unit
 ```
 
 ## Dependency graph
