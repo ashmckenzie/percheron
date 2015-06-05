@@ -154,8 +154,11 @@ module Percheron
         units.sort { |x, y| x[1].length <=> y[1].length } # FIXME
       end
 
-      def unit_from_name(unit_name)
-        Unit.new(config, self, unit_name)
+      def unit_from_name(name)
+        # FIXME
+        res = name.match(/^((?<stack_name>[^:]+):)?(?<unit_name>[^:]+)$/)
+        stack = res[:stack_name] ? self.class.new(config, res[:stack_name]) : self
+        Unit.new(config, stack, res[:unit_name])
       end
   end
 end

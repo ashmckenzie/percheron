@@ -20,8 +20,11 @@ module Percheron
     end
 
     def dependant_units
+      # FIXME
       dependant_unit_names.each_with_object({}) do |unit_name, all|
-        all[unit_name] = stack.units[unit_name]
+        res = unit_name.match(/^((?<stack_name>[^:]+):)?(?<unit_name>[^:]+)$/)
+        actual_stack = res[:stack_name] ? Stack.new(config, res[:stack_name]) : stack
+        all[unit_name] = actual_stack.units[res[:unit_name]]
       end
     end
 
