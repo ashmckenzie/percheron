@@ -47,7 +47,7 @@ module Percheron
           scripts.each do |script|
             in_working_directory(base_dir) do
               file = Pathname.new(File.expand_path(script, base_dir))
-              execute_command!('/bin/sh /tmp/%s 2>&1' % file.basename)
+              execute_command!('/bin/sh -x /tmp/%s 2>&1' % file.basename)
             end
           end
         end
