@@ -36,7 +36,7 @@ describe Percheron::Actions::Exec do
       expect(Percheron::Actions::Start).to receive(:new).with(unit, exec_scripts: false).and_return(start_action2)
       expect(start_action1).to receive(:execute!).and_return(dependant_unit)
       expect(start_action2).to receive(:execute!).and_return(unit)
-      expect(container).to receive(:exec).with(['/bin/sh', '/tmp/test.sh', '2>&1']).and_yield(:stdout, 'output from test.sh')
+      expect(container).to receive(:exec).with(['/bin/sh', '-x', '/tmp/test.sh', '2>&1']).and_yield(:stdout, 'output from test.sh')
       subject.execute!
     end
   end

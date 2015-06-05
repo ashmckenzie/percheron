@@ -21,7 +21,7 @@ describe Percheron::Actions::ExecLocal do
   describe '#execute!' do
     it 'executes scripts locally' do
       expect(output).to receive(:gets).and_return("output from test.sh\n", false)
-      expect(Open3).to receive(:popen2e).with('/bin/sh /tmp/test.sh 2>&1').and_yield(nil, output, nil)
+      expect(Open3).to receive(:popen2e).with('/bin/sh -x /tmp/test.sh 2>&1').and_yield(nil, output, nil)
       expect(logger).to receive(:debug).with('output from test.sh')
 
       subject.execute!
