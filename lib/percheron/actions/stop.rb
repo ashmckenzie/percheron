@@ -19,7 +19,7 @@ module Percheron
         attr_reader :unit
 
         def stop!
-          $logger.info "Stopping '#{unit.name}' unit"
+          $logger.info "Stopping '#{unit.display_name}' unit"
           unit.container.stop!
         end
 

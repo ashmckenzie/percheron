@@ -31,7 +31,7 @@ module Percheron
 
         def delete_unit!
           return nil unless unit.exists?
-          $logger.info "Deleting '#{unit.name}' unit"
+          $logger.info "Deleting '#{unit.display_name}' unit"
           unit.container.remove(force: force)
         rescue Docker::Error::ConflictError => e
           $logger.error "Unable to delete '%s' unit - %s" % [ unit.name, e.inspect ]

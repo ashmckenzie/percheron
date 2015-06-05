@@ -69,6 +69,10 @@ module Percheron
       '%s_%s' % [ stack.name, name ]
     end
 
+    def display_name
+      '%s:%s' % [ stack.name, name ]
+    end
+
     def pseudo_full_name
       '%s_%s' % [ stack.name, pseudo_name ]
     end
@@ -93,7 +97,7 @@ module Percheron
 
     def links
       startable_dependant_units.map do |_, unit|
-        '%s:%s' % [ unit.full_name, unit.name ]
+        '%s:%s' % [ unit.full_name, unit.full_name ]
       end
     end
 

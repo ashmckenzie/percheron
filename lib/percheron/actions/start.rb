@@ -36,7 +36,7 @@ module Percheron
 
         def start!
           return nil if !unit.startable? || unit.running?
-          $logger.info "Starting '#{unit.name}' unit"
+          $logger.info "Starting '#{unit.display_name}' unit"
           unit.container.start!
         end
 

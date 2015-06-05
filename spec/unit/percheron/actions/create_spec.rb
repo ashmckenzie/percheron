@@ -85,7 +85,7 @@ describe Percheron::Actions::Create do
               'PortBindings' => {
                 '9999' => [ { 'HostPort' => '9999' } ]
               },
-              'Links' => [ 'debian_jessie_dependant_debian:dependant_debian' ],
+              'Links' => [ 'debian_jessie_dependant_debian:debian_jessie_dependant_debian' ],
               'Binds' => [ '/outside/container/path:/inside/container/path' ],
               'Dns' => [ '127.0.0.1', '8.8.8.8' ]
             }
@@ -147,7 +147,7 @@ describe Percheron::Actions::Create do
       end
 
       it 'creates a Docker::Container' do
-        expect(logger).to receive(:debug).with("Unit 'debian' already exists")
+        expect(logger).to receive(:debug).with("Unit 'debian_jessie:debian' already exists")
         subject.execute!
       end
     end

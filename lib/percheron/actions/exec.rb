@@ -12,7 +12,7 @@ module Percheron
       end
 
       def execute!
-        $logger.debug "Executing #{description} #{scripts.inspect} on '#{unit.name}' unit"
+        $logger.debug "Executing #{description} #{scripts.inspect} on '#{unit.display_name}' unit"
         results = exec!
         results.compact.empty? ? nil : unit
       end
@@ -52,7 +52,7 @@ module Percheron
         end
 
         def execute_command!(command)
-          $logger.info "Executing #{description} '#{command}' for '#{unit.name}' unit"
+          $logger.info "Executing #{description} '#{command}' for '#{unit.display_name}' unit"
           unit.container.exec(command.split(' ')) do |stream, out|
             $logger.debug '%s: %s' % [ stream, out.strip ]
           end

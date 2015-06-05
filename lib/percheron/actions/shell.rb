@@ -29,7 +29,7 @@ module Percheron
 
         def exec!
           cmd = '%s exec -ti %s %s' % [ DOCKER_CLIENT, unit.full_name, command ]
-          $logger.debug %(Executing "#{cmd}" on '#{unit.name}' unit)
+          $logger.debug %(Executing "#{cmd}" on '#{unit.display_name}' unit)
           system(cmd)
         end
     end
