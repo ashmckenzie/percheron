@@ -2,7 +2,7 @@ module Percheron
   module Commands
     class Shell < Abstract
 
-      parameter('STACK_NAME', 'stack name', required: true)
+      default_base_parameters!
       parameter('UNIT_NAME', 'unit name', required: true)
       option('--command', 'COMMAND', 'command', default: '/bin/sh')
 

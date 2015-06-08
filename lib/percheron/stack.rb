@@ -10,6 +10,10 @@ module Percheron
       @stack_names = stack_names
     end
 
+    def run!(unit_name, interactive: false, command: nil)
+      exec_on_stacks([ stacks.first ]) { |stack| stack.run!(unit_name, interactive: interactive, command: command) }
+    end
+
     def start!(unit_names: [])
       exec_on_stacks { |stack| stack.start!(unit_names: unit_names) }
     end
@@ -35,8 +39,8 @@ module Percheron
         @stacks ||= stack_names.map { |stack_name| Percheron::Stack.new(config, stack_name) }
       end
 
-      def exec_on_stacks
-        stacks.map do |stack|
+      def exec_on_stacks(filtered_stacks=stacks)
+        filtered_stacks.map do |stack|
           # FIXME
           begin
             stack.valid?

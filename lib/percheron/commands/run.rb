@@ -2,7 +2,7 @@ module Percheron
   module Commands
     class Run < Abstract
 
-      parameter('STACK_NAME', 'stack name', required: true)
+      default_base_parameters!
       parameter('UNIT_NAME', 'unit name', required: true)
       option('--interactive', :flag, 'Interactive mode', default: false)
       option('--command', 'COMMAND', 'command', required: true)

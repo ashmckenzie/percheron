@@ -2,7 +2,7 @@ module Percheron
   module Commands
     class Graph < Abstract
 
-      parameter('STACK_NAMES', 'stack names', required: false) { |s| s.split(/[, ]/) }
+      parameter('STACK_NAMES', 'stack names', default: [], required: false) { |s| s.split(/[, ]/) }
       option([ '-o', '--output' ], 'OUTPUT', 'Output file')
 
       def execute
