@@ -15,7 +15,7 @@ module Percheron
     def self.get(config, name = nil)
       stacks = name.nil? ? config.stacks : { name => config.stacks[name] }
       stacks.each_with_object({}) do |stack_config, all|
-        stack_name, _ = stack_config
+        stack_name = stack_config.shift
         stack = new(config, stack_name)
         all[stack.name] = stack
       end
