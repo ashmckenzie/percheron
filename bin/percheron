@@ -7,6 +7,8 @@ require 'percheron'
 require 'percheron/commands'
 require 'percheron/metastore'
 
+require 'pry-byebug'
+
 begin
   Percheron::Commands::Main.run
 rescue => e

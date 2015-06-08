@@ -40,12 +40,20 @@ module Percheron
         @units ||= stack.units
       end
 
+      def all_units
+        @all_units ||= begin
+          binding.pry
+          []
+        end
+      end
+
       def header_label
         '\n%s\n%s\n' % [ stack.name, stack.description ]
       end
 
       def add_nodes
         units.each do |_, unit|
+          binding.pry
           if unit.pseudo?
             add_pseudo_node(unit)
           else
