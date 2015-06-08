@@ -14,8 +14,13 @@ module Percheron
       exec_on_stacks { |stack| stack.start!(unit_names: unit_names) }
     end
 
+    def build!(unit_names: [])
+      exec_on_stacks { |stack| stack.build!(unit_names: unit_names) }
+    end
+
     def graph!(file)
       Graph.new(stacks).save!(file)
+      $logger.info "Saved '%s'" % file
     end
 
     def list!
