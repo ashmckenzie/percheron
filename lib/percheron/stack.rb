@@ -18,6 +18,18 @@ module Percheron
       exec_on_stacks { |stack| stack.start!(unit_names: unit_names) }
     end
 
+    def stop!(unit_names: [])
+      exec_on_stacks { |stack| stack.stop!(unit_names: unit_names) }
+    end
+
+    def restart!(unit_names: [])
+      exec_on_stacks { |stack| stack.restart!(unit_names: unit_names) }
+    end
+
+    def purge!(unit_names: [], force: false)
+      exec_on_stacks { |stack| stack.purge!(unit_names: unit_names) }
+    end
+
     def build!(unit_names: [])
       exec_on_stacks { |stack| stack.build!(unit_names: unit_names) }
     end
