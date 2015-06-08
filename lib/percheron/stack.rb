@@ -27,7 +27,11 @@ module Percheron
     end
 
     def purge!(unit_names: [], force: false)
-      exec_on_stacks { |stack| stack.purge!(unit_names: unit_names) }
+      exec_on_stacks { |stack| stack.purge!(unit_names: unit_names, force: force) }
+    end
+
+    def recreate!(unit_names: [], start: false)
+      exec_on_stacks { |stack| stack.recreate!(unit_names: unit_names, start: start) }
     end
 
     def build!(unit_names: [])
