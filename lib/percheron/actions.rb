@@ -8,7 +8,7 @@ require 'percheron/actions/build'
 require 'percheron/actions/purge'
 require 'percheron/actions/exec'
 require 'percheron/actions/exec_local'
-require 'percheron/actions/shell'
+require 'percheron/actions/run'
 require 'percheron/actions/logs'
 
 module Percheron

@@ -1,6 +1,6 @@
 require 'unit/spec_helper'
 
-describe Percheron::Actions::Shell do
+describe Percheron::Actions::Run do
   let(:docker_client_validator) { double('Percheron::Validators::DockerClient', valid?: true) }
   let(:logger) { double('Logger').as_null_object }
   let(:unit) { double('Percheron::Unit', full_name: 'stack-unit').as_null_object }

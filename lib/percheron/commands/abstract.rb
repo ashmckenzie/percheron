@@ -11,10 +11,8 @@ module Percheron
       end
 
       def self.default_parameters!
-        parameter('STACK_NAME', 'stack name', required: true)
-        parameter('UNIT_NAMES', 'unit names', default: [], required: false) do |names|
-          names.split(/,/)
-        end
+        parameter('STACK_NAMES', 'stack names', required: true) { |s| s.split(/[, ]/) }
+        parameter('UNIT_NAMES', 'unit names', default: [], required: false) { |n| n.split(/[, ]/) }
       end
 
       def self.default_create_parameters!
@@ -27,6 +25,7 @@ module Percheron
       end
 
       def execute
+        validate_one_stack_only_if_units_defined!
         stack.valid?
       rescue => e
         puts "%s\n\n%s\n\n" % [ e.inspect, e.backtrace.join("\n") ]
@@ -34,8 +33,8 @@ module Percheron
       end
 
       def stack
-        return NullStack.new if stack_name.nil?
-        Percheron::Stack.new(config, stack_name)
+        return [ NullStackProxy.new ] if stack_names.empty?
+        Percheron::StackProxy.new(config, stack_names)
       end
 
       def config
@@ -48,6 +47,13 @@ module Percheron
         $logger.error e.inspect
         exit(1)
       end
+
+      private
+
+        def validate_one_stack_only_if_units_defined!
+          # fail(Errors::MultipleStacksAndUnitsDefined,
+          #   'Units cannot be specified if multiple stacks defined')
+        end
     end
   end
 end

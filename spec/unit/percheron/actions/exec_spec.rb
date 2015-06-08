@@ -5,6 +5,7 @@ describe Percheron::Actions::Exec do
   let(:stop_action) { double('Percheron::Actions::Stop') }
   let(:start_action1) { double('Percheron::Actions::Start') }
   let(:start_action2) { double('Percheron::Actions::Start') }
+  let(:start_action3) { double('Percheron::Actions::Start') }
   let(:container) { double('Docker::Container').as_null_object }
   let(:docker_image) { double('Docker::Image') }
 
@@ -12,7 +13,8 @@ describe Percheron::Actions::Exec do
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
   let(:dependant_units) { unit.dependant_units.values }
-  let(:dependant_unit) { dependant_units.first }
+  let(:dependant_unit1) { unit.dependant_units['common:base'] }
+  let(:dependant_unit2) { unit.dependant_units['dependant_debian'] }
   let(:scripts) { [ '/tmp/test.sh' ] }
 
   subject { described_class.new(unit, dependant_units, scripts, 'TEST') }
@@ -32,10 +34,12 @@ describe Percheron::Actions::Exec do
     end
 
     it 'executes scripts' do
-      expect(Percheron::Actions::Start).to receive(:new).with(dependant_unit, dependant_units: [], exec_scripts: true).and_return(start_action1)
-      expect(Percheron::Actions::Start).to receive(:new).with(unit, exec_scripts: false).and_return(start_action2)
-      expect(start_action1).to receive(:execute!).and_return(dependant_unit)
-      expect(start_action2).to receive(:execute!).and_return(unit)
+      expect(Percheron::Actions::Start).to receive(:new).with(dependant_unit1, dependant_units: [], exec_scripts: true).and_return(start_action1)
+      expect(Percheron::Actions::Start).to receive(:new).with(dependant_unit2, dependant_units: [], exec_scripts: true).and_return(start_action2)
+      expect(Percheron::Actions::Start).to receive(:new).with(unit, exec_scripts: false).and_return(start_action3)
+      expect(start_action1).to receive(:execute!).and_return(dependant_unit1)
+      expect(start_action2).to receive(:execute!).and_return(dependant_unit2)
+      expect(start_action3).to receive(:execute!).and_return(unit)
       expect(container).to receive(:exec).with(['/bin/sh', '-x', '/tmp/test.sh', '2>&1']).and_yield(:stdout, 'output from test.sh')
       subject.execute!
     end

@@ -37,7 +37,7 @@ module Percheron
 
         def docker_client_exists?
           paths.each do |path|
-            exe = File.join(path, Actions::Shell::DOCKER_CLIENT)
+            exe = File.join(path, Actions::Run::DOCKER_CLIENT)
             return true if File.executable?(exe) && !File.directory?(exe)
           end
           false
@@ -48,7 +48,7 @@ module Percheron
         end
 
         def current_version
-          `#{Actions::Shell::DOCKER_CLIENT} --version`.chomp.match(/version (.+),/)[1]
+          `#{Actions::Run::DOCKER_CLIENT} --version`.chomp.match(/version (.+),/)[1]
         end
 
     end

@@ -1,6 +1,32 @@
 require 'highline/import'
 
 module Percheron
+  class StackProxy
+
+    extend Forwardable
+
+    def initialize(config, stack_names)
+      @config = config
+      @stack_names = stack_names
+    end
+
+    def valid?
+      true
+    end
+
+    def start!(unit_names: [])
+      stacks.map { |stack| stack.start!(unit_names: unit_names) }
+    end
+
+    private
+
+      attr_reader :config, :stack_names
+
+      def stacks
+        @stacks ||= stack_names.map { |stack_name| Percheron::Stack.new(config, stack_name) }
+      end
+  end
+
   class Stack
     extend Forwardable
 
@@ -41,8 +67,8 @@ module Percheron
       $logger.info "Saved '%s'" % file
     end
 
-    def shell!(unit_name, command: Percheron::Actions::Shell::DEFAULT_COMMAND)
-      Actions::Shell.new(unit_from_name(unit_name), command: command).execute!
+    def run!(unit_name, interactive: false, command: nil)
+      Actions::Run.new(unit_from_name(unit_name), command: command, interactive: interactive).execute!
     end
 
     def logs!(unit_name, follow: false)
