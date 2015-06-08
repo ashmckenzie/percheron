@@ -40,7 +40,7 @@ def cleanup!
 end
 
 def cleanup_units!
-  %w(percheron-test_base percheron-test_app1 percheron-test_app2 percheron-test_app3 ).each do |name|
+  %w(percheron-common_base percheron-test_app1 percheron-test_app2 percheron-test_app3 ).each do |name|
     begin
       Docker::Container.get(name).tap { |c| c.stop! && c.remove(force: true) }
     rescue Docker::Error::NotFoundError
@@ -50,7 +50,7 @@ def cleanup_units!
 end
 
 def cleanup_images!
-  %w(busybox:ubuntu-14.04 percheron-test_base:9.9.9 percheron-test_app1:9.9.9 percheron-test_app2:9.9.9).each do |name|
+  %w(busybox:ubuntu-14.04 percheron-common_base:9.9.9 percheron-test_app1:9.9.9 percheron-test_app2:9.9.9).each do |name|
     begin
       Docker::Image.get(name).tap { |i| i.remove(force: true) }
     rescue Docker::Error::NotFoundError

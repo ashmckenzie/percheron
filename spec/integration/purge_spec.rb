@@ -29,9 +29,9 @@ describe 'percheron' do
     context 'for all units' do
       it 'purges base, app1 images and units' do
         Percheron::Commands::Create.run(Dir.pwd, %w(percheron-test))
-        Percheron::Commands::Purge.run(Dir.pwd, %w(--force percheron-test))
-        expect { Docker::Image.get('percheron-test_base:9.9.9').json }.to raise_error(Docker::Error::NotFoundError)
-        expect { Docker::Container.get('percheron-test_base').json }.to raise_error(Docker::Error::NotFoundError)
+        Percheron::Commands::Purge.run(Dir.pwd, %w(--force percheron-common percheron-test))
+        expect { Docker::Image.get('percheron-common_base:9.9.9').json }.to raise_error(Docker::Error::NotFoundError)
+        expect { Docker::Container.get('percheron-common_base').json }.to raise_error(Docker::Error::NotFoundError)
         expect { Docker::Image.get('percheron-test_app1:9.9.9').json }.to raise_error(Docker::Error::NotFoundError)
         expect { Docker::Container.get('percheron-test_app1').json }.to raise_error(Docker::Error::NotFoundError)
       end

@@ -19,8 +19,8 @@ describe 'percheron' do
   describe 'build' do
     context 'for just the base unit' do
       it 'builds an image' do
-        Percheron::Commands::Build.run(Dir.pwd, %w(percheron-test base))
-        output = Docker::Image.get('percheron-test_base:9.9.9').json
+        Percheron::Commands::Build.run(Dir.pwd, %w(percheron-common base))
+        output = Docker::Image.get('percheron-common_base:9.9.9').json
         expect(output['Author']).to eql('ash@the-rebellion.net')
       end
     end
@@ -33,13 +33,23 @@ describe 'percheron' do
       end
     end
 
+    context 'for just the app2 unit' do
+      it 'builds an image' do
+        Percheron::Commands::Build.run(Dir.pwd, %w(percheron-test app2))
+        output = Docker::Image.get('percheron-test_app2:9.9.9').json
+        expect(output['Config']['Cmd']).to eql([ 'sh', '-c', "while true; do date ; echo 'hello from percheron'; done" ])
+      end
+    end
+
     context 'for all units' do
       it 'builds base and app1 images' do
         Percheron::Commands::Build.run(Dir.pwd, %w(percheron-test))
-        base_output = Docker::Image.get('percheron-test_base:9.9.9').json
+        base_output = Docker::Image.get('percheron-common_base:9.9.9').json
         app1_output = Docker::Image.get('percheron-test_app1:9.9.9').json
+        app2_output = Docker::Image.get('percheron-test_app2:9.9.9').json
         expect(base_output['Author']).to eql('ash@the-rebellion.net')
         expect(app1_output['Config']['Cmd']).to eql([ 'sh', '-c', "while true; do date ; echo 'hello from percheron'; done" ])
+        expect(app2_output['Config']['Cmd']).to eql([ 'sh', '-c', "while true; do date ; echo 'hello from percheron'; done" ])
       end
     end
   end

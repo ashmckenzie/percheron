@@ -1,4 +1,4 @@
-FROM percheron-test_base:9.9.9
+FROM percheron-common_base:9.9.9
 MAINTAINER ash@the-rebellion.net
 
 ENV HOME /root

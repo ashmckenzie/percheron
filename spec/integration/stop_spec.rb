@@ -19,9 +19,9 @@ describe 'percheron' do
   describe 'stop' do
     context 'for just the base unit' do
       it 'cannot create a unit as not startable' do
-        Percheron::Commands::Start.run(Dir.pwd, %w(percheron-test base))
-        Percheron::Commands::Stop.run(Dir.pwd, %w(percheron-test base))
-        expect { Docker::Container.get('percheron-test_base') }.to raise_error(Docker::Error::NotFoundError)
+        Percheron::Commands::Start.run(Dir.pwd, %w(percheron-common base))
+        Percheron::Commands::Stop.run(Dir.pwd, %w(percheron-common base))
+        expect { Docker::Container.get('percheron-common_base') }.to raise_error(Docker::Error::NotFoundError)
       end
     end
 
@@ -38,7 +38,7 @@ describe 'percheron' do
       it 'stop just the app1 unit' do
         Percheron::Commands::Start.run(Dir.pwd, %w(percheron-test))
         Percheron::Commands::Stop.run(Dir.pwd, %w(percheron-test))
-        expect { Docker::Container.get('percheron-test_base') }.to raise_error(Docker::Error::NotFoundError)
+        expect { Docker::Container.get('percheron-common_base') }.to raise_error(Docker::Error::NotFoundError)
         app1_output = Docker::Container.get('percheron-test_app1').json
         expect(app1_output['State']['Running']).to eql(false)
       end

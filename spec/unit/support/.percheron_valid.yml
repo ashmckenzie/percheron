@@ -4,11 +4,20 @@ docker:
   read_timeout: 300
 
 stacks:
+  - name: common
+    units:
+      - name: base
+        version: 1.0.0
+        dockerfile: ./Dockerfile
+        startable: false
+
   - name: debian_jessie
     units:
       - name: dependant_debian
         version: 1.1.0
         dockerfile: ./Dockerfile
+        dependant_unit_names:
+          - common:base
         pre_build_scripts:
           - ./pre_build_script1.sh
         post_start_scripts:
@@ -30,6 +39,7 @@ stacks:
         volumes:
           - '/outside/container/path:/inside/container/path'
         dependant_unit_names:
+          - common:base
           - dependant_debian
 
       - name: debian_external

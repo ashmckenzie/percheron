@@ -19,8 +19,8 @@ describe 'percheron' do
   describe 'create' do
     context 'for just the base unit' do
       it 'cannot create a unit as not startable' do
-        Percheron::Commands::Create.run(Dir.pwd, %w(percheron-test base))
-        expect { Docker::Container.get('percheron-test_base') }.to raise_error(Docker::Error::NotFoundError)
+        Percheron::Commands::Create.run(Dir.pwd, %w(percheron-common base))
+        expect { Docker::Container.get('percheron-common_base') }.to raise_error(Docker::Error::NotFoundError)
       end
     end
 
@@ -44,7 +44,7 @@ describe 'percheron' do
     context 'for all units' do
       it 'creates just the app1 unit' do
         Percheron::Commands::Create.run(Dir.pwd, %w(percheron-test))
-        expect { Docker::Container.get('percheron-test_base') }.to raise_error(Docker::Error::NotFoundError)
+        expect { Docker::Container.get('percheron-common_base') }.to raise_error(Docker::Error::NotFoundError)
         app1_output = Docker::Container.get('percheron-test_app1').json
         expect(app1_output['Config']['Cmd']).to eql([ 'sh', '-c', "while true; do date ; echo 'hello from percheron'; done" ])
       end

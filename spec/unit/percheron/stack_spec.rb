@@ -87,12 +87,16 @@ describe Percheron::Stack do
         expect(described_class.get(config)).to be_a(Hash)
       end
 
-      it 'has one Stack' do
-        expect(described_class.get(config).keys.count).to eql(1)
+      it 'has two Stacks' do
+        expect(described_class.get(config).keys.count).to eql(2)
       end
 
-      it 'is the debian_jessie Stack' do
-        expect(described_class.get(config).keys.first).to eql('debian_jessie')
+      it 'has the common Stack' do
+        expect(described_class.get(config).keys).to include('common')
+      end
+
+      it 'has the debian_jessie Stack' do
+        expect(described_class.get(config).keys).to include('debian_jessie')
       end
     end
 
@@ -173,8 +177,8 @@ describe Percheron::Stack do
     end
 
     describe '#shell!' do
-      let(:klass) { Percheron::Actions::Shell }
-      let(:action_double) { double('Percheron::Actions::Shell') }
+      let(:klass) { Percheron::Actions::Run }
+      let(:action_double) { double('Percheron::Actions::Run') }
 
       it 'executes a shell on a given Container' do
         expect(klass).to receive(:new).with(unit, command: '/bin/sh').and_return(action_double)
