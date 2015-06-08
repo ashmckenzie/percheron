@@ -6,14 +6,9 @@
 [![Test Coverage](https://codeclimate.com/github/ashmckenzie/percheron/badges/coverage.svg)](https://codeclimate.com/github/ashmckenzie/percheron)
 [![Dependency Status](https://gemnasium.com/ashmckenzie/percheron.svg)](https://gemnasium.com/ashmckenzie/percheron)
 
-<div style="float: left">
 ![Percheron logo](./percheron-logo.png)
-</div>
 
-<br/><br/>
-### Organise your Docker containers with <br/>muscle and intelligence.
-
-<div style="clear: both"></div>
+### Organise your Docker containers with muscle and intelligence.
 
 ## Why?
 
