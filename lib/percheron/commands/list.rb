@@ -2,17 +2,11 @@ module Percheron
   module Commands
     class List < Abstract
 
-      parameter('STACK_NAME', 'stack name', required: false)
+      parameter('STACK_NAMES', 'stack names', required: false) { |s| s.split(/[, ]/) }
 
       def execute
-        Stack.get(config, stack_name).each do |_, stack|
-          begin
-            stack.valid?
-            puts("\n", Percheron::Formatters::Stack::Table.new(stack).generate)
-          rescue Percheron::Errors::StackInvalid => e
-            signal_usage_error(e.message)
-          end
-        end
+        super
+        stack.list!
       end
     end
   end

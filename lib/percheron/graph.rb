@@ -3,10 +3,12 @@ require 'graphviz'
 module Percheron
   class Graph
 
-    def initialize(stack)
-      @stack = stack
+    def initialize(stacks)
+      @stacks = stacks
+
       @nodes = {}
-      @graphs = {}
+      @stack_graph = {}
+      @unit_group_graph = {}
     end
 
     def save!(file)
@@ -16,12 +18,20 @@ module Percheron
 
     private
 
-      attr_reader :stack
-      attr_accessor :nodes, :graphs
+      attr_reader :stacks
+      attr_accessor :nodes, :stack_graph, :unit_group_graph
 
       def generate
-        add_nodes
-        add_links
+        stacks.each do |stack|
+          stack.units.each do |_, unit|
+            add_node(stack, unit)
+            unit.dependant_units.each do |_, dependant_unit|
+              add_node(dependant_unit.stack, dependant_unit)
+              graph.add_edges(nodes[unit.display_name], nodes[dependant_unit.display_name],
+                              node_link_opts(dependant_unit))
+            end
+          end
+        end
       end
 
       def save(file)
@@ -33,51 +43,41 @@ module Percheron
       end
 
       def graph_opts
-        { type: :digraph, nodesep: 0.75, ranksep: 1.0, label: header_label, fontsize: 12 }
+        { type: :digraph, nodesep: 0.75, ranksep: 1.0, fontsize: 12 }
       end
 
-      def units
-        @units ||= stack.units
+      def add_node(stack, unit)
+        create_stack(stack)
+        unit.pseudo? ? add_pseudo_node(stack, unit) : add_real_node(stack, unit)
       end
 
-      def all_units
-        @all_units ||= begin
-          binding.pry
-          []
-        end
+      def add_real_node(stack, unit)
+        nodes[unit.display_name] = stack_graph[stack.name].add_nodes(unit.name, node_opts(unit))
       end
 
-      def header_label
-        '\n%s\n%s\n' % [ stack.name, stack.description ]
+      def add_pseudo_node(stack, unit)
+        create_unit_group(stack, unit)
+        nodes[unit.display_name] = unit_group_graph[unit.pseudo_name].add_nodes(unit.name, pseudo_node_opts(unit))
       end
 
-      def add_nodes
-        units.each do |_, unit|
-          binding.pry
-          if unit.pseudo?
-            add_pseudo_node(unit)
-          else
-            add_node(unit)
-          end
-        end
+      def create_stack(stack)
+        return nil if stack_graph[stack.name]
+        name = 'cluster-stack%s' % stack_graph.keys.count
+        stack_graph[stack.name] = graph.add_graph(name, stack_opts(stack))
       end
 
-      def add_node(unit)
-        nodes[unit.name] = graph.add_nodes(unit.name, node_opts(unit))
+      def stack_opts(stack)
+        label = '%s\n%s\n' % [ stack.name, stack.description ]
+        { label: label, style: 'filled', fontcolor: 'black', color: 'lightblue' }
       end
 
-      def add_pseudo_node(unit)
-        create_cluster(unit)
-        nodes[unit.name] = graphs[unit.pseudo_name].add_nodes(unit.name, pseudo_node_opts(unit))
+      def create_unit_group(stack, unit)
+        return nil if unit_group_graph[unit.pseudo_name]
+        name = 'cluster-unit-group%s' % unit_group_graph.keys.count
+        unit_group_graph[unit.pseudo_name] = stack_graph[stack.name].add_graph(name, unit_group_opts(unit))
       end
 
-      def create_cluster(unit)
-        return nil if graphs[unit.pseudo_name]
-        name = 'cluster%s' % graphs.keys.count
-        graphs[unit.pseudo_name] = graph.add_graph(name, cluster_opts(unit))
-      end
-
-      def cluster_opts(unit)
+      def unit_group_opts(unit)
         { label: unit.pseudo_name, style: 'filled', color: 'lightgrey' }
       end
 
@@ -85,19 +85,12 @@ module Percheron
         shape = unit.startable? ? 'box' : 'ellipse'
         label = [ unit.name ]
         unit.ports.each { |ports| label << 'public: %s, internal: %s' % ports.split(':') }
-        { shape: shape, label: label.join("\n"), fontname: 'arial', fontsize: 12 }
+        { style: 'filled', color: 'white', shape: shape, label: label.join("\n"),
+          fontname: 'arial', fontsize: 12 }
       end
 
       def pseudo_node_opts(unit)
-        node_opts(unit).merge!(style: 'filled', color: 'white')
-      end
-
-      def add_links
-        units.each do |name, unit|
-          unit.dependant_units.each do |dependant_name, dependant_unit|
-            graph.add_edges(nodes[name], nodes[dependant_name], node_link_opts(dependant_unit))
-          end
-        end
+        node_opts(unit)
       end
 
       def node_link_opts(unit)

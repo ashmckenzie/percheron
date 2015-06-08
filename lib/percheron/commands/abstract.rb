@@ -11,7 +11,7 @@ module Percheron
       end
 
       def self.default_parameters!
-        parameter('STACK_NAMES', 'stack names', required: true) { |s| s.split(/[, ]/) }
+        # parameter('STACK_NAMES', 'stack names', required: true) { |s| s.split(/[, ]/) }
         parameter('UNIT_NAMES', 'unit names', default: [], required: false) { |n| n.split(/[, ]/) }
       end
 
@@ -26,15 +26,18 @@ module Percheron
 
       def execute
         validate_one_stack_only_if_units_defined!
-        stack.valid?
       rescue => e
         puts "%s\n\n%s\n\n" % [ e.inspect, e.backtrace.join("\n") ]
         signal_usage_error(e.message)
       end
 
+      def complete_stack_names
+        return stack_names if !stack_names.nil? && !stack_names.empty?
+        config.stacks.keys
+      end
+
       def stack
-        return [ NullStackProxy.new ] if stack_names.empty?
-        Percheron::StackProxy.new(config, stack_names)
+        Percheron::StackProxy.new(config, complete_stack_names)
       end
 
       def config

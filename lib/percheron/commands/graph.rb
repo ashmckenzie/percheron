@@ -2,17 +2,18 @@ module Percheron
   module Commands
     class Graph < Abstract
 
-      parameter('STACK_NAME', 'stack name', required: true)
+      parameter('STACK_NAMES', 'stack names', required: false) { |s| s.split(/[, ]/) }
       option([ '-o', '--output' ], 'OUTPUT', 'Output file')
 
       def execute
         super
-        stack.graph!(output || default_output)
+        stack.graph!(output)
       end
 
       def default_output
-        'percheron_%s.png' % stack.name
+        'percheron_stack.png'
       end
+
     end
   end
 end

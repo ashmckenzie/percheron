@@ -4,6 +4,8 @@ module Percheron
     extend Forwardable
     extend ConfigDelegator
 
+    attr_reader :stack
+
     def_delegators :unit_config, :name, :pseudo_name, :docker_image
     def_config_item_with_default :unit_config, [], :env, :ports, :volumes,
                                  :dependant_unit_names, :pre_build_scripts,
@@ -165,7 +167,7 @@ module Percheron
 
     private
 
-      attr_reader :config, :stack, :unit_config, :unit_name
+      attr_reader :config, :unit_config, :unit_name
 
       def current_dockerfile_md5
         dockerfile ? Digest::MD5.file(dockerfile).hexdigest : Digest::MD5.hexdigest(image_name)

@@ -10,12 +10,16 @@ module Percheron
       @stack_names = stack_names
     end
 
-    def valid?
-      true
+    def start!(unit_names: [])
+      exec_on_stacks { |stack| stack.start!(unit_names: unit_names) }
     end
 
-    def start!(unit_names: [])
-      stacks.map { |stack| stack.start!(unit_names: unit_names) }
+    def graph!(file)
+      Graph.new(stacks).save!(file)
+    end
+
+    def list!
+      exec_on_stacks { |stack| puts("\n", stack.list!) }
     end
 
     private
@@ -24,6 +28,19 @@ module Percheron
 
       def stacks
         @stacks ||= stack_names.map { |stack_name| Percheron::Stack.new(config, stack_name) }
+      end
+
+      def exec_on_stacks
+        stacks.map do |stack|
+          # FIXME
+          begin
+            stack.valid?
+          rescue Percheron::Errors::StackInvalid => e
+            puts e
+            next
+          end
+          yield(stack)
+        end
       end
   end
 
@@ -36,15 +53,6 @@ module Percheron
       @config = config
       @stack_name = stack_name
       self
-    end
-
-    def self.get(config, name = nil)
-      stacks = name.nil? ? config.stacks : { name => config.stacks[name] }
-      stacks.each_with_object({}) do |stack_config, all|
-        stack_name = stack_config.shift
-        stack = new(config, stack_name)
-        all[stack.name] = stack
-      end
     end
 
     def metastore_key
@@ -62,9 +70,8 @@ module Percheron
       end
     end
 
-    def graph!(file)
-      Graph.new(self).save!(file)
-      $logger.info "Saved '%s'" % file
+    def list!
+      Percheron::Formatters::Stack::Table.new(self).generate
     end
 
     def run!(unit_name, interactive: false, command: nil)
