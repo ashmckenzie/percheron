@@ -20,12 +20,12 @@ Percheron is like Vagrant but instead of managing VM's, it manages Docker images
 It is a very handy tool when you wish to create a basic or complex stack without the need to run
 multiple VMs.
 
-It is intended to be used in a test, development or prototying scenario.
+It is intended to be used in a test, development or prototyping scenario.
 
 ## Features
 
 * Single, easy to write `.percheron.yml` describes your stack(s)
-* Build, create and start units and their dependancies
+* Build, create and start units and their dependencies
 * Build units using a Dockerfile or by pulling Docker images from Docker Hub
 * Build 'bare/base' images and build new images on top of them
 * Support for pre-build and post-start scripts when generating images and starting units
