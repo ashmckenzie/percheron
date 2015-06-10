@@ -57,7 +57,7 @@ module Percheron
       def replace_scanned(all, config, scanned)
         match = config.fetch(:dependant_unit_names, [])
         unless (match & scanned.keys).empty?
-          config.dependant_unit_names = match.map { |v| scanned[v] }.flatten
+          config.dependant_unit_names = match.map { |v| scanned[v] }.flatten.compact  # FIXME
         end
         all[config.name] = config
       end
