@@ -11,7 +11,6 @@ module Percheron
       end
 
       def self.default_base_parameters!
-        # parameter('STACK_NAMES', 'stack names', required: true) { |s| s.split(/[, ]/) }
         parameter('STACK_NAMES', 'stack names', required: false, default: []) { |s| s.split(/[, ]/) }
       end
 

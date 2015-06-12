@@ -52,12 +52,12 @@ module Percheron
       end
 
       def add_real_node(stack, unit)
-        nodes[unit.display_name] = stack_graph[stack.name].add_nodes(unit.name, node_opts(unit))
+        nodes[unit.display_name] = stack_graph[stack.name].add_nodes(unit.display_name, node_opts(unit))
       end
 
       def add_pseudo_node(stack, unit)
         create_unit_group(stack, unit)
-        nodes[unit.display_name] = unit_group_graph[unit.pseudo_name].add_nodes(unit.name, pseudo_node_opts(unit))
+        nodes[unit.display_name] = unit_group_graph[unit.pseudo_name].add_nodes(unit.display_name, pseudo_node_opts(unit))
       end
 
       def create_stack(stack)
