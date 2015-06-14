@@ -6,7 +6,7 @@
 [![Test Coverage](https://codeclimate.com/github/ashmckenzie/percheron/badges/coverage.svg)](https://codeclimate.com/github/ashmckenzie/percheron)
 [![Dependency Status](https://gemnasium.com/ashmckenzie/percheron.svg)](https://gemnasium.com/ashmckenzie/percheron)
 
-![Percheron logo](./percheron-logo.png =728x)
+![Percheron logo](./percheron-logo.png)
 
 ### Organise your Docker containers with muscle and intelligence.
 
