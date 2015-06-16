@@ -53,7 +53,8 @@ describe Percheron::Actions::Create do
               'PortBindings' => {},
               'Links' => [],
               'Binds' => [],
-              'Dns' => [ '127.0.0.1', '8.8.8.8' ]
+              'Dns' => [ '127.0.0.1', '8.8.8.8' ],
+              'VolumesFrom' => []
             }
           }
         end
@@ -87,7 +88,8 @@ describe Percheron::Actions::Create do
               },
               'Links' => [ 'debian_jessie_dependant_debian:dependant_debian' ],
               'Binds' => [ '/outside/container/path:/inside/container/path' ],
-              'Dns' => [ '127.0.0.1', '8.8.8.8' ]
+              'Dns' => [ '127.0.0.1', '8.8.8.8' ],
+              'VolumesFrom' => []
             }
           }
         end
