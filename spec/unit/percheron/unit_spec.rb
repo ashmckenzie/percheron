@@ -140,8 +140,8 @@ describe Percheron::Unit do
           expect(Docker::Image).to receive(:get).with('debian_jessie_debian:1.0.0').and_raise(Docker::Error::NotFoundError)
         end
 
-        it 'returns nil' do
-          expect(subject.image).to be(nil)
+        it 'returns NullImage' do
+          expect(subject.image).to be_a(Percheron::NullImage)
         end
       end
 
@@ -210,7 +210,7 @@ describe Percheron::Unit do
       end
 
       context 'when the Docker Image does exist' do
-        let(:docker_image_double) { double('Docker::Image') }
+        let(:docker_image_double) { double('Docker::Image', id: '5d6cb3bdb606') }
 
         before do
           expect(Docker::Image).to receive(:get).with('debian_jessie_debian:1.0.0').and_return(docker_image_double)
