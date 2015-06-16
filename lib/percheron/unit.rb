@@ -112,7 +112,7 @@ module Percheron
     end
 
     def ip
-      exists? ? info.NetworkSettings.IPAddress : 'n/a'
+      exists? ? info.NetworkSettings.IPAddress : nil
     end
 
     def dockerfile

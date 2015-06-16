@@ -277,8 +277,8 @@ describe Percheron::Unit do
     end
 
     describe '#ip' do
-      it 'returns n/a' do
-        expect(subject.ip).to eql('n/a')
+      it 'returns nil' do
+        expect(subject.ip).to be_nil
       end
     end
 

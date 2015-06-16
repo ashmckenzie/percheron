@@ -22,20 +22,6 @@ module Percheron
             stack.name
           end
 
-          def headings
-            [
-              'Unit',
-              'Unit ID',
-              'Image ID',
-              'Up?',
-              'IP',
-              'Ports',
-              'Volumes',
-              'Volumes from',
-              'Version'
-            ]
-          end
-
           def rows
             queue_jobs
             process_queue!
@@ -48,11 +34,24 @@ module Percheron
           def process_queue!
             resp = []
             4.times.map do
-              Thread.new do
-                queue.size.times { resp << queue.pop(true) }
-              end
+              Thread.new { queue.size.times { resp << queue.pop(true) } }
             end.map(&:join)
             resp
+          end
+
+          # rubocop:disable Metrics/MethodLength
+          def headings
+            [
+              'Unit',
+              'Container ID',
+              'Image ID',
+              'Up?',
+              'IP',
+              'Ports',
+              'Volumes',
+              'Volumes from',
+              'Version'
+            ]
           end
 
           def row_for(unit)
@@ -62,11 +61,19 @@ module Percheron
               unit.image_id,
               startable(unit),
               unit.ip,
-              unit.ports.join(', '),
+              ports(unit),
               unit.volumes.join(', '),
               unit.volumes_from.join(', '),
               version(unit)
             ]
+          end
+          # rubocop:enable Metrics/MethodLength
+
+          def ports(unit)
+            unit.ports.map do |port|
+              pub, int = port.split(':')
+              '%s(pub):%s(int)' % [ pub, int ]
+            end.join(', ')
           end
 
           def version(unit)
@@ -74,11 +81,11 @@ module Percheron
           end
 
           def startable(unit)
-            if unit.startable?
-              unit.running? ? 'yes' : 'no'
-            else
-              'n/a'
-            end
+            unit.startable? ? boolean_to_human(unit.running?) : 'n/a'
+          end
+
+          def boolean_to_human(bool)
+            bool ? 'yes' : 'no'
           end
       end
     end
