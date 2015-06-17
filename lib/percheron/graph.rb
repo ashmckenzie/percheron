@@ -76,7 +76,7 @@ module Percheron
       def node_opts(unit)
         shape = unit.startable? ? 'box' : 'ellipse'
         label = [ unit.name ]
-        unit.ports.each { |ports| label << 'public: %s, internal: %s' % ports.split(':') }
+        unit.ports.each { |m| label << 'public: %s, internal: %s' % [ m['public'], m['internal'] ] }
         { shape: shape, label: label.join("\n"), fontname: 'arial', fontsize: 12 }
       end
 

@@ -70,10 +70,7 @@ module Percheron
           # rubocop:enable Metrics/MethodLength
 
           def ports(unit)
-            unit.ports.map do |port|
-              pub, int = port.split(':')
-              '%s(pub):%s(int)' % [ pub, int ]
-            end.join(', ')
+            unit.ports.map { |m| '%s(pub):%s(int)' % [ m['public'], m['internal'] ] }.join(', ')
           end
 
           def version(unit)

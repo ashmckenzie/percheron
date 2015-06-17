@@ -14,7 +14,7 @@ stacks:
         post_start_scripts:
           - ./post_start_script1.sh
         ports:
-          - '8888:8888'
+          - '8888:80'
         volumes:
           - '/outside/container/path:/inside/container/path'
 
@@ -35,6 +35,11 @@ stacks:
       - name: debian_external
         version: 1.0.0
         docker_image: debian:jessie
+        ports:
+          -
+            public: 1234
+            internal: 80
+          - '5678:81'
 
       - name: debian_pseudo
         version: 1.0.0

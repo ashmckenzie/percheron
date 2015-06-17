@@ -33,13 +33,17 @@ module Percheron
           @cmd ||= (@cmd || unit.start_args)
         end
 
+        def exposed_ports
+          unit.ports.each_with_object({}) { |m, all| all[m['internal']] = {} }
+        end
+
         def base_options
           {
             'name'          => unit.full_name,
             'Image'         => unit.image_name,
             'Hostname'      => unit.hostname,
             'Env'           => unit.env,
-            'ExposedPorts'  => unit.exposed_ports,
+            'ExposedPorts'  => exposed_ports,
             'Cmd'           => cmd,
             'Labels'        => unit.labels
           }
@@ -62,9 +66,8 @@ module Percheron
         end
 
         def port_bindings
-          unit.ports.each_with_object({}) do |p, all|
-            destination, source = p.split(':')
-            all[source] = [ { 'HostPort' => destination } ]
+          unit.ports.each_with_object({}) do |m, all|
+            all[m['internal']] = [ { 'HostPort' => m['public'] } ]
           end
         end
 

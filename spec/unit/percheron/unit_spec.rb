@@ -170,9 +170,29 @@ describe Percheron::Unit do
       end
     end
 
-    describe '#exposed_ports' do
-      it 'returns a hash of exposed ports' do
-        expect(subject.exposed_ports).to eql('9999' => {})
+    describe '#ports' do
+      context 'when ports defined as an Array' do
+        let(:object) { subject }
+
+        it 'returns a hash of  ports' do
+          expect(object.ports).to eql([ { 'public' => '9999', 'internal' => '9999' } ])
+        end
+      end
+
+      context 'when ports defined as an Array' do
+        let(:object) { described_class.new(config, stack, 'dependant_debian') }
+
+        it 'returns a hash of  ports' do
+          expect(object.ports).to eql([ { 'public' => '8888', 'internal' => '80' } ])
+        end
+      end
+
+      context 'when ports defined as a Hash' do
+        let(:object) { described_class.new(config, stack, 'debian_external') }
+
+        it 'returns a hash of  ports' do
+          expect(object.ports).to eql([ { 'public' => '1234', 'internal' => '80' }, { 'public' => '5678', 'internal' => '81' } ])
+        end
       end
     end
 

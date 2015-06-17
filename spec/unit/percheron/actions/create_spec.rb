@@ -46,11 +46,11 @@ describe Percheron::Actions::Create do
             'Image' => 'debian:jessie',
             'Hostname' => 'debian_external',
             'Env' => [],
-            'ExposedPorts' => {},
+            'ExposedPorts' => { '80' => {}, '81' => {} },
             'Cmd' => [],
             'Labels' => { version: '1.0.0', created_by: /Percheron \d+\.\d+\.\d+/ },
             'HostConfig' => {
-              'PortBindings' => {},
+              'PortBindings' => { '80' => [ { 'HostPort' => '1234' } ], '81' => [ { 'HostPort' => '5678' } ] },
               'Links' => [],
               'Binds' => [],
               'Dns' => [ '127.0.0.1', '8.8.8.8' ],

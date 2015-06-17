@@ -57,10 +57,6 @@ describe Percheron::Connection do
     end
   end
 
-  describe '#perform' do
-
-  end
-
   describe '#setup!' do
     context "when ENV['DOCKER_CERT_PATH'] is defined" do
       let(:expected_options) { { client_cert: '/tmp/cert.pem', client_key: '/tmp/key.pem', ssl_ca_file: '/tmp/ca.pem', scheme: 'https', read_timeout: 300, connect_timeout: 5 } }

@@ -5,9 +5,8 @@ module Percheron
     extend ConfigDelegator
 
     def_delegators :unit_config, :name, :pseudo_name, :docker_image
-    def_config_item_with_default :unit_config, [], :env, :ports, :volumes, :volumes_from,
-                                 :start_args, :dependant_unit_names, :pre_build_scripts,
-                                 :post_start_scripts
+    def_config_item_with_default :unit_config, [], :env, :volumes, :volumes_from, :start_args,
+                                 :dependant_unit_names, :pre_build_scripts, :post_start_scripts
     def_config_item_with_default :unit_config, %w(127.0.0.1 8.8.8.8), :dns
     def_config_item_with_default :unit_config, true, :startable
 
@@ -91,8 +90,15 @@ module Percheron
       @built_version ||= Semantic::Version.new(built_image_version)
     end
 
-    def exposed_ports
-      ports.each_with_object({}) { |p, all| all[p.split(':')[1]] = {} }
+    def ports
+      unit_config.fetch('ports', []).each_with_object([]) do |port, all|
+        if port.is_a?(String)
+          pub, int = port.split(':')
+          all << { 'internal' => int.to_s, 'public' => pub.to_s }
+        elsif port.is_a?(Hash)
+          all << { 'internal' => port['internal'].to_s, 'public' => port['public'].to_s }
+        end
+      end
     end
 
     def links
