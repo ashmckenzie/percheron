@@ -20,6 +20,8 @@ module Percheron
 
     def perform(klass, method, *args)
       klass.public_send(method, *args)
+    rescue Docker::Error::NotFoundError, Excon::Errors::SocketError => e
+      raise Errors::ConnectionException, e
     rescue => e
       $logger.debug '%s.%s(%s) - %s' % [ klass, method, args, e.inspect ]
       raise

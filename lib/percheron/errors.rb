@@ -5,5 +5,6 @@ module Percheron
     class UnitInvalid < StandardError; end
     class UnitDoesNotExist < StandardError; end
     class DockerClientInvalid < StandardError; end
+    class ConnectionException < StandardError; end
   end
 end

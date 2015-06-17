@@ -79,7 +79,7 @@ module Percheron
 
     def image
       Connection.perform(Docker::Image, :get, image_name)
-    rescue Docker::Error::NotFoundError, Excon::Errors::SocketError
+    rescue Errors::ConnectionException
       NullImage.new
     end
 
@@ -103,7 +103,7 @@ module Percheron
 
     def container
       Connection.perform(Docker::Container, :get, full_name)
-    rescue Docker::Error::NotFoundError, Excon::Errors::SocketError
+    rescue Errors::ConnectionException
       NullUnit.new
     end
 

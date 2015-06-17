@@ -18,10 +18,47 @@ describe Percheron::Connection do
   end
 
   describe '.perform' do
-    it 'calls the instance #perform' do
-      expect(subject).to receive(:perform).with(Docker::Image, :get, 'ubuntu:latest')
-      subject.perform(Docker::Image, :get, 'ubuntu:latest')
+    context 'when an exception is thrown' do
+      before do
+        expect(Docker::Image).to receive(:get).with('ubuntu:latest').and_raise(exception)
+      end
+
+      context 'when a Docker::Error::NotFoundError exception is thrown' do
+        let(:exception) { Docker::Error::NotFoundError }
+
+        it 'raises an Errors::ConnectionException exception' do
+          expect { described_class.perform(Docker::Image, :get, 'ubuntu:latest') }.to raise_error(Percheron::Errors::ConnectionException)
+        end
+      end
+
+      context 'when a Excon::Errors::SocketError exception is thrown' do
+        let(:exception) { Excon::Errors::SocketError.new(StandardError.new) }
+
+        it 'raises an Errors::ConnectionException exception' do
+          expect { described_class.perform(Docker::Image, :get, 'ubuntu:latest') }.to raise_error(Percheron::Errors::ConnectionException)
+        end
+      end
+
+      context 'when an unknown exception is thrown' do
+        let(:exception) { StandardError }
+
+        it 'raises an Errors::ConnectionException exception' do
+          expect(logger).to receive(:debug).with('Docker::Image.get(["ubuntu:latest"]) - #<StandardError: StandardError>')
+          expect { described_class.perform(Docker::Image, :get, 'ubuntu:latest') }.to raise_error(exception)
+        end
+      end
     end
+
+    context 'when no exception is thrown' do
+      it 'calls the instance #perform' do
+        expect(subject).to receive(:perform).with(Docker::Image, :get, 'ubuntu:latest')
+        described_class.perform(Docker::Image, :get, 'ubuntu:latest')
+      end
+    end
+  end
+
+  describe '#perform' do
+
   end
 
   describe '#setup!' do
