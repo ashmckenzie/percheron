@@ -91,14 +91,7 @@ module Percheron
     end
 
     def ports
-      unit_config.fetch('ports', []).each_with_object([]) do |port, all|
-        if port.is_a?(String)
-          pub, int = port.split(':')
-          all << { 'internal' => int.to_s, 'public' => pub.to_s }
-        elsif port.is_a?(Hash)
-          all << { 'internal' => port['internal'].to_s, 'public' => port['public'].to_s }
-        end
-      end
+      unit_config.fetch('ports', []).each_with_object([]) { |port, all| all << expand_ports(port) }
     end
 
     def links
@@ -169,6 +162,15 @@ module Percheron
     private
 
       attr_reader :config, :stack, :unit_config, :unit_name
+
+      def expand_ports(port)
+        if port.is_a?(String)
+          pub, int = port.split(':')
+          { 'internal' => int.to_s, 'public' => pub.to_s }
+        elsif port.is_a?(Hash)
+          { 'internal' => port['internal'].to_s, 'public' => port['public'].to_s }
+        end
+      end
 
       def current_dockerfile_md5
         dockerfile ? Digest::MD5.file(dockerfile).hexdigest : Digest::MD5.hexdigest(image_name)
