@@ -12,3 +12,10 @@ branches:
 script:
   - bundle exec rake test:style
   - bundle exec rake spec:unit
+notifications:
+  webhooks:
+    on_success: always
+    on_failure: never
+    on_start: never
+    urls:
+      secure: GhILPw3qQwOqXSFr/hip/1snn/mwE/J6pZsM9SBdTAx9OvqqcOJguhtqT+Y1K9sdEN6kPv1JW5gLmLThXnYyWwFvAXD5YwoCU2ereqPP4OVY1HUeTYgpPLDIBVN0XVvpUVVQeE7gdjSV05+/tefkGYiwT2gZK5yBJ6jFbyAKRPI=
