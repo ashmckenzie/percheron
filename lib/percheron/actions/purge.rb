@@ -26,7 +26,7 @@ module Percheron
         end
 
         def delete_image?
-          unit.image_exists? && unit.buildable?
+          unit.image.exists? && unit.buildable?
         end
 
         def delete_unit!

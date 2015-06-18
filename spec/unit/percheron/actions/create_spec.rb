@@ -23,16 +23,18 @@ describe Percheron::Actions::Create do
 
   describe '#execute!' do
     before do
+      allow(unit).to receive(:image).and_return(image)
       expect(unit).to receive(:exists?).and_return(unit_exists)
     end
 
     context 'when a Docker Container does not exist' do
       let(:unit_exists) { false }
-      let(:image) { double('Docker::Image') }
+      let(:image_exists) { false }
+      let(:image) { double('Percheron::Image') }
       let(:new_image) { double('Docker::Image') }
 
       before do
-        expect(unit).to receive(:image_exists?).and_return(false, image_exists)
+        expect(image).to receive(:exists?).and_return(false, image_exists)
         expect(Percheron::Connection).to receive(:perform).with(Docker::Container, :create, create_options)
         expect(metastore).to receive(:set).with(metastore_key, metastore_key_md5)
       end
@@ -98,7 +100,7 @@ describe Percheron::Actions::Create do
 
         before do
           expect(unit).to receive(:dependant_units).and_return(dependant_units)
-          expect(unit).to receive(:image).and_return(image)
+          expect(unit).to receive(:image).and_return(image).at_least(:once)
         end
 
         context 'and Docker image does not exist' do
@@ -142,11 +144,8 @@ describe Percheron::Actions::Create do
 
     context 'when a Docker unit already exists' do
       let(:unit_exists) { true }
+      let(:image) { double('Percheron::Image.new', exists?: true) }
       let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
-
-      before do
-        expect(unit).to receive(:image_exists?).and_return(true)
-      end
 
       it 'creates a Docker::Container' do
         expect(logger).to receive(:debug).with("Unit 'debian' already exists")

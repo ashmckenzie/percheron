@@ -135,26 +135,8 @@ describe Percheron::Unit do
     end
 
     describe '#image' do
-      context 'when the Docker Image does not exist' do
-        before do
-          expect(Docker::Image).to receive(:get).with('debian_jessie_debian:1.0.0').and_raise(Docker::Error::NotFoundError)
-        end
-
-        it 'returns NullImage' do
-          expect(subject.image).to be_a(Percheron::NullImage)
-        end
-      end
-
-      context 'when the Docker Image does exist' do
-        let(:docker_image_double) { double('Docker::Image') }
-
-        before do
-          expect(Docker::Image).to receive(:get).with('debian_jessie_debian:1.0.0').and_return(docker_image_double)
-        end
-
-        it 'returns a Docker::Image' do
-          expect(subject.image).to eql(docker_image_double)
-        end
+      it 'returns a Percheron::Image' do
+        expect(subject.image).to be_a(Percheron::Image)
       end
     end
 
@@ -215,30 +197,6 @@ describe Percheron::Unit do
     describe '#metastore_key' do
       it 'returns a unique key' do
         expect(subject.metastore_key).to eql('stacks.debian_jessie.units.debian')
-      end
-    end
-
-    describe '#image_exists?' do
-      context 'when the Docker Image does not exist' do
-        before do
-          expect(Docker::Image).to receive(:get).with('debian_jessie_debian:1.0.0').and_raise(Docker::Error::NotFoundError)
-        end
-
-        it 'returns false' do
-          expect(subject.image_exists?).to be(false)
-        end
-      end
-
-      context 'when the Docker Image does exist' do
-        let(:docker_image_double) { double('Docker::Image', id: '5d6cb3bdb606') }
-
-        before do
-          expect(Docker::Image).to receive(:get).with('debian_jessie_debian:1.0.0').and_return(docker_image_double)
-        end
-
-        it 'returns true' do
-          expect(subject.image_exists?).to be(true)
-        end
       end
     end
 

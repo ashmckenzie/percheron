@@ -58,7 +58,7 @@ module Percheron
             [
               unit.name,
               unit.id,
-              unit.image_id,
+              unit.image.id,
               startable(unit),
               unit.ip,
               ports(unit),

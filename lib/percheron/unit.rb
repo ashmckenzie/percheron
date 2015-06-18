@@ -40,10 +40,6 @@ module Percheron
       unit_config.fetch('hostname', name)
     end
 
-    def image_id
-      image.id ? image.id[0...12] : nil
-    end
-
     def image_name
       '%s:%s' % [ image_repo, image_version.to_s ] if image_repo && image_version
     end
@@ -77,9 +73,7 @@ module Percheron
     end
 
     def image
-      Connection.perform(Docker::Image, :get, image_name)
-    rescue Errors::ConnectionException
-      NullImage.new
+      @image ||= Image.new(image_name)
     end
 
     def version
@@ -95,9 +89,7 @@ module Percheron
     end
 
     def links
-      startable_dependant_units.map do |_, unit|
-        '%s:%s' % [ unit.full_name, unit.name ]
-      end
+      startable_dependant_units.map { |_, unit| '%s:%s' % [ unit.full_name, unit.name ] }
     end
 
     def container
@@ -139,10 +131,6 @@ module Percheron
 
     def exists?
       !info.empty?
-    end
-
-    def image_exists?
-      image.id.nil? ? false : true
     end
 
     def buildable?

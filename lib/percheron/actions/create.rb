@@ -9,7 +9,7 @@ module Percheron
         @start = start
         @exec_scripts = exec_scripts
         @cmd = cmd
-        @unit_image_existed = unit.image_exists?
+        @unit_image_existed = unit.image.exists?
       end
 
       def execute!
@@ -81,12 +81,12 @@ module Percheron
         end
 
         def build_image!
-          Build.new(unit).execute! unless unit.image_exists?
+          Build.new(unit).execute! unless unit.image.exists?
         end
 
         # FIXME: move this
         def pull_image!
-          return nil if unit.image_exists?
+          return nil if unit.image.exists?
           $logger.info "Pulling '#{unit.image_name}' image"
           Connection.perform(Docker::Image, :create, fromImage: unit.image_name) do |out|
             $logger.debug JSON.parse(out)
