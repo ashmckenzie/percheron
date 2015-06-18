@@ -1,7 +1,5 @@
 module Percheron
-  NullImage = Naught.build do
-    def kind_of?(klass)
-      self.class == klass
-    end
+  NullImage = Naught.build do |config|
+    config.mimic Image
   end
 end
