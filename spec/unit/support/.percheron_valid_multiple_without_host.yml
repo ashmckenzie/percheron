@@ -1,0 +1,43 @@
+---
+docker:
+  read_timeout: 300
+
+stacks:
+  -
+    name: debian_jessie
+    units:
+      -
+        name: dependant_debian
+        version: 1.1.0
+        dockerfile: ./Dockerfile
+        pre_build_scripts:
+          - ./pre_build_script1.sh
+        post_start_scripts:
+          - ./post_start_script1.sh
+        ports:
+          - '8888:8888'
+        volumes:
+          - '/outside/container/path:/inside/container/path'
+
+      -
+        name: debian
+        version: 1.0.0
+        dockerfile: ./Dockerfile
+        instances: 2
+        pre_build_scripts:
+          - ./pre_build_script2.sh
+        post_start_scripts:
+          - ./post_start_script2.sh
+        ports:
+          - '9999:9999'
+        volumes:
+          - '/outside/container/path/{{name}}:/inside/container/path'
+        dependant_unit_names:
+          - dependant_debian
+
+      -
+        name: debian_external
+        version: 1.0.0
+        docker_image: debian:jessie
+        dependant_unit_names:
+          - debian

@@ -90,8 +90,30 @@ module Percheron
         YAML.load(template.render(unit_config))
       end
 
+      def raw_contents
+        @contents ||= Hashie::Mash.new(YAML.load_file(file))
+      end
+
       def contents
-        Hashie::Mash.new(YAML.load_file(file))
+        raw_contents.tap do |c|
+          c.docker ||= {}
+          c.docker.host ||= env_docker_host
+          c.docker.cert_path ||= env_cert_path
+          c.docker.ssl_verify_peer ||= env_ssl_verify_peer
+        end
+      end
+
+      def env_docker_host
+        @env_docker_host ||= ENV['DOCKER_HOST'] ||
+                             fail("Docker host not defined in '#{file}' or ENV['DOCKER_HOST']")
+      end
+
+      def env_cert_path
+        @cert_path ||= ENV['DOCKER_CERT_PATH'] ? File.expand_path(ENV['DOCKER_CERT_PATH']) : nil
+      end
+
+      def env_ssl_verify_peer
+        @ssl_verify_peer ||= (ENV['DOCKER_TLS_VERIFY'] == 1) || true
       end
   end
 end
