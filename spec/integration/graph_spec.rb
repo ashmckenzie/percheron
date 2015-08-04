@@ -8,16 +8,6 @@ describe 'percheron' do
     $metastore = double('Metastore').as_null_object
   end
 
-  before(:all) do
-    Dir.chdir(File.expand_path('../support', __FILE__))
-    cleanup!
-  end
-
-  after do
-    $logger = $metastore = nil
-    cleanup!
-  end
-
   describe 'graph' do
     let(:file) { Tempfile.new(%w(percheron-graph- .png)) }
 

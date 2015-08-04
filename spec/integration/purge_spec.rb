@@ -6,16 +6,6 @@ describe 'percheron' do
     $metastore = double('Metastore').as_null_object
   end
 
-  before(:all) do
-    Dir.chdir(File.expand_path('../support', __FILE__))
-    cleanup!
-  end
-
-  after do
-    $logger = $metastore = nil
-    cleanup!
-  end
-
   describe 'purge' do
     context 'for just the app1 unit' do
       it 'purges app1 images and units' do

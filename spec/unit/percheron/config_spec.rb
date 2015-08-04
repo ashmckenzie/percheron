@@ -11,10 +11,9 @@ describe Percheron::Config do
 
     describe '#docker' do
       describe 'host' do
-
         context "with no ENV['DOCKER_HOST'] defined" do
           it 'raises exception' do
-            expect{ with_modified_env(env) { subject.docker.host } }.to raise_error(/Docker host not defined/)
+            expect { with_modified_env(env) { subject.docker.host } }.to raise_error(/Docker host not defined/)
           end
         end
 
