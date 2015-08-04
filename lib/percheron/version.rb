@@ -1,3 +1,3 @@
 module Percheron
-  VERSION = '0.7.10'
+  VERSION = '0.7.11'
 end
