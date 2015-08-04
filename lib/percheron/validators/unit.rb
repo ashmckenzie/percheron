@@ -47,9 +47,7 @@ module Percheron
         end
 
         def validate_dockerfile
-          if !unit.dockerfile.nil? && !File.exist?(unit.dockerfile)
-            'Dockerfile is invalid'
-          end
+          'Dockerfile is invalid' unless unit.dockerfile.exists?
         end
 
         def validate_image

@@ -60,7 +60,7 @@ describe Percheron::Actions::Create do
             }
           }
         end
-        let(:metastore_key) { 'stacks.debian_jessie.units.debian_external.dockerfile_md5' }
+        let(:metastore_key) { 'stacks.debian_jessie.units.debian_external.md5' }
         let(:metastore_key_md5) { '02ce896e512816bf86458b581255d20c' }
 
         it 'pulls down the Docker image' do
@@ -95,7 +95,7 @@ describe Percheron::Actions::Create do
             }
           }
         end
-        let(:metastore_key) { 'stacks.debian_jessie.units.debian.dockerfile_md5' }
+        let(:metastore_key) { 'stacks.debian_jessie.units.debian.md5' }
         let(:metastore_key_md5) { '0b03152a88e90de1c5466d6484b8ce5b' }
 
         before do

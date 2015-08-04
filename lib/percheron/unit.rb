@@ -28,10 +28,6 @@ module Percheron
       dependant_units.select { |_, unit| unit.startable? }
     end
 
-    def metastore_key
-      @metastore_key ||= '%s.units.%s' % [ stack.metastore_key, name ]
-    end
-
     def id
       exists? ? info.id[0...12] : nil
     end
@@ -107,18 +103,26 @@ module Percheron
     end
 
     def dockerfile
-      return nil unless unit_config.dockerfile
-      Pathname.new(File.expand_path(unit_config.dockerfile, config.file_base_path))
+      @dockerfile ||= begin
+        file_name = ''
+        if unit_config.dockerfile
+          file_name = File.expand_path(unit_config.dockerfile, config.file_base_path)
+        end
+        Dockerfile.new(file_name, metastore_key)
+      end
     end
 
-    def update_dockerfile_md5!
-      md5 = current_dockerfile_md5
-      $logger.debug "Setting MD5 for '#{name}' unit to #{md5}"
-      $metastore.set("#{metastore_key}.dockerfile_md5", md5)
+    def update_md5!
+      # binding.pry
+      # dockerfile.update_md5! # FIXME
+      # Digest::MD5.hexdigest(image_name)
+      key = "#{metastore_key}.md5"
+      $logger.debug "Setting MD5 for '#{key}' unit to #{md5}"
+      $metastore.set(key, md5)
     end
 
-    def dockerfile_md5s_match?
-      dockerfile_md5 == current_dockerfile_md5
+    # FIXME: private?
+    def md5
     end
 
     def versions_match?
@@ -134,7 +138,8 @@ module Percheron
     end
 
     def buildable?
-      !dockerfile.nil? && unit_config.docker_image.nil?
+      # FIXME: need to differentiate between defined options and looked up values
+      dockerfile.exists? && unit_config.docker_image.nil?
     end
 
     def valid?
@@ -151,6 +156,10 @@ module Percheron
 
       attr_reader :config, :stack, :unit_config, :unit_name
 
+      def metastore_key
+        @metastore_key ||= '%s.units.%s' % [ stack.metastore_key, name ]
+      end
+
       def expand_ports(port)
         if port.is_a?(String)
           pub, int = port.split(':')
@@ -158,14 +167,6 @@ module Percheron
         elsif port.is_a?(Hash)
           { 'internal' => port['internal'].to_s, 'public' => port['public'].to_s }
         end
-      end
-
-      def current_dockerfile_md5
-        dockerfile ? Digest::MD5.file(dockerfile).hexdigest : Digest::MD5.hexdigest(image_name)
-      end
-
-      def dockerfile_md5
-        $metastore.get("#{metastore_key}.dockerfile_md5") || current_dockerfile_md5
       end
 
       def built_image_version

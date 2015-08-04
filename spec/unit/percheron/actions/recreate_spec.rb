@@ -25,11 +25,11 @@ describe Percheron::Actions::Recreate do
     before do
       allow(unit).to receive(:image_exists?).and_return(true)
       allow(unit).to receive(:versions_match?).and_return(versions_match).at_least(:once)
-      allow(unit).to receive(:dockerfile_md5s_match?).and_return(dockerfile_md5s_match).at_least(:once)
+      allow(unit).to receive(:md5s_match?).and_return(md5s_match).at_least(:once)
     end
 
     context 'where there are no Dockerfile changes' do
-      let(:dockerfile_md5s_match) { true }
+      let(:md5s_match) { true }
 
       context 'and the version defined does match' do
         let(:versions_match) { true }
@@ -42,7 +42,7 @@ describe Percheron::Actions::Recreate do
     end
 
     context 'where there are Dockerfile changes' do
-      let(:dockerfile_md5s_match) { false }
+      let(:md5s_match) { false }
 
       let(:create_action) { double('Percheron::Actions::Create') }
       let(:purge_action) { double('Percheron::Actions::Purge') }

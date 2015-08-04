@@ -26,11 +26,11 @@ module Percheron
         alias_method :start?, :start
 
         def recreate?
-          !unit.versions_match? || !unit.dockerfile_md5s_match?
+          !unit.versions_match? || !unit.dockerfile.md5s_match?
         end
 
         def inform!
-          return nil unless unit.dockerfile_md5s_match?
+          return nil unless unit.dockerfile.md5s_match?
           $logger.info "Unit '#{unit.name}' - No Dockerfile changes or version bump"
         end
 

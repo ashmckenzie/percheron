@@ -76,7 +76,7 @@ module Percheron
           return unless unit.startable?
           insert_scripts!
           create_unit!
-          update_dockerfile_md5!
+          update_md5!
           start!
         end
 
@@ -103,8 +103,8 @@ module Percheron
           Start.new(unit).execute!
         end
 
-        def update_dockerfile_md5!
-          unit.update_dockerfile_md5!
+        def update_md5!
+          unit.update_md5!
         end
 
         def insert_scripts!
