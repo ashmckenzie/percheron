@@ -19,15 +19,15 @@ Gem::Specification.new do |spec|
   spec.require_paths = [ 'lib' ]
 
   spec.add_runtime_dependency 'clamp', '~> 1.0.0'
-  spec.add_runtime_dependency 'docker-api', '~> 1.20.0'
-  spec.add_runtime_dependency 'hashie', '~> 3.2.0'
+  spec.add_runtime_dependency 'docker-api', '~> 1.22.0'
+  spec.add_runtime_dependency 'hashie', '~> 3.4.0'
   spec.add_runtime_dependency 'highline', '~> 1.7.1'
   spec.add_runtime_dependency 'liquid', '~> 3.0.0'
   spec.add_runtime_dependency 'metastore', '~> 0.3.0'
   spec.add_runtime_dependency 'naught', '~> 1.0.0'
   spec.add_runtime_dependency 'ruby-graphviz', '~> 1.2.0'
   spec.add_runtime_dependency 'semantic', '~> 1.4.0'
-  spec.add_runtime_dependency 'terminal-table', '~> 1.4.0'
+  spec.add_runtime_dependency 'terminal-table', '~> 1.5.0'
 
   spec.add_development_dependency 'bundler', '~> 1.10.0'
   spec.add_development_dependency 'cane', '~> 2.6.0'
