@@ -46,9 +46,7 @@ module Percheron
           def process_queue!
             resp = []
             4.times.map do
-              Thread.new do
-                queue.size.times { resp << queue.pop(true) }
-              end
+              Thread.new { queue.size.times { resp << queue.pop(true) } }
             end.map(&:join)
             resp
           end
@@ -60,7 +58,7 @@ module Percheron
               startable(unit),
               unit.ip,
               unit.ports.join(', '),
-              unit.volumes.join(', '),
+              unit.volumes.join("\n"),
               version(unit)
             ]
           end
