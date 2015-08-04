@@ -36,16 +36,12 @@ module Percheron
         @@config
       end
 
-      def cert_path
-        @cert_path ||= ENV['DOCKER_CERT_PATH'] ? File.expand_path(ENV['DOCKER_CERT_PATH']) : nil
-      end
-
       def set_url!
         Docker.url = config.docker.host
       end
 
       def set_options!
-        Excon.defaults[:ssl_verify_peer] = config.docker.fetch('ssl_verify_peer', true)
+        Excon.defaults[:ssl_verify_peer] = config.docker.ssl_verify_peer
         Docker.options = docker_options
       end
 
@@ -61,7 +57,7 @@ module Percheron
       end
 
       def extra_docker_opts
-        return {} unless cert_path
+        return {} unless config.docker.cert_path
         {
           client_cert:  cert_path_for('cert.pem'),
           client_key:   cert_path_for('key.pem'),
@@ -70,7 +66,7 @@ module Percheron
       end
 
       def cert_path_for(file)
-        File.join(cert_path, file)
+        File.join(config.docker.cert_path, file)
       end
 
   end
