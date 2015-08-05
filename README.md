@@ -34,6 +34,8 @@ It is intended to be used in a test, development or prototyping scenario.
 * Version control of images and units
 * Partial template (liquid) support within `.percheron.yml`
 * Generate Graphviz dependency graphs dynamically based purely on your `.percheron.yml`
+* Support for userdata key/value pairs
+* Support for secrets in YML format
 * Written in Ruby :)
 
 ## Supported platforms
@@ -115,10 +117,6 @@ gem install percheron
 
 ```yaml
 ---
-docker:
-  host: "https://boot2docker:2376"
-  ssl_verify_peer: false
-
 stacks:
   - name: consul-stack
     description: A demo consul stack with one master and two agents
@@ -234,7 +232,7 @@ To debug Percheron and Docker, set the `DOCKER_DEBUG=true` environment variable.
 * [Rails](https://github.com/ashmckenzie/percheron-rails#quickstart) - Rails 4.2, PostgreSQL, redis, HAProxy and postfix
 * [Redis](https://github.com/ashmckenzie/percheron-redis#quickstart) - Redis cluster + sentinel, master, two slaves and tools
 * [Torrent](https://github.com/ashmckenzie/percheron-torrent#quickstart) - Tracker (chihaya), seeder (aria2) and three peers (aria2)
-* [SaltStack](https://github.com/ashmckenzie/percheron-saltstack#quickstart) - SaltStack v2015.5.0 with master and two minions
+* [SaltStack](https://github.com/ashmckenzie/percheron-saltstack#quickstart) - SaltStack with master and two minions
 
 ## Testing
 
