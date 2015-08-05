@@ -1,7 +1,7 @@
 require 'unit/spec_helper'
 
 describe Percheron::Config do
-  subject { described_class.new(config_file) }
+  subject { described_class.load!(config_file) }
 
   context 'with a .percheron.yml that does not have a docker host defined' do
     let(:docker_host) { nil }
@@ -46,12 +46,6 @@ describe Percheron::Config do
     describe '#file_base_path' do
       it 'is the directory in which the file resides' do
         expect(subject.file_base_path).to eql(Pathname.new(config_file).expand_path.dirname)
-      end
-    end
-
-    describe '#valid?' do
-      it 'is true' do
-        expect(subject.valid?).to be(true)
       end
     end
   end

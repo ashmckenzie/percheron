@@ -3,32 +3,66 @@ require 'yaml'
 module Percheron
   class Config
 
+    include Singleton
     extend Forwardable
 
     DEFAULT_CONFIG_FILE = '.percheron.yml'
 
+    # rubocop:disable Style/ClassVars
+    @@file = Pathname.new(DEFAULT_CONFIG_FILE).expand_path
+    # rubocop:enable Style/ClassVars
+
     def_delegators :contents, :docker
 
-    def initialize(file = DEFAULT_CONFIG_FILE)
-      @file = Pathname.new(file).expand_path
+    def self.load!(file)
+      instance.load!(file)
+    end
+
+    # rubocop:disable Style/ClassVars
+    def load!(file)
+      @@file = Pathname.new(file).expand_path
+      invalidate_memoised_values!
       self
+    end
+    # rubocop:enable Style/ClassVars
+
+    def self.stacks
+      instance.stacks
     end
 
     def stacks
       @stacks ||= process_stacks!
     end
 
+    def self.file_base_path
+      instance.file_base_path
+    end
+
     def file_base_path
       file.dirname
     end
 
-    def valid?
-      Validators::Config.new(file).valid?
+    def self.secrets
+      instance.secrets
+    end
+
+    def secrets
+      if yaml_contents.secrets_file
+        Hashie::Mash.new(YAML.load_file(yaml_contents.secrets_file))
+      else
+        {}
+      end
     end
 
     private
 
-      attr_reader :file
+      def file
+        @@file
+      end
+
+      def invalidate_memoised_values!
+        @stacks = @yaml_contents = @raw_contents = @contents = nil
+      end
 
       def process_stacks!   # FIXME: bugs here :(
         stacks_by_name = contents.stacks.to_hash_by_key(:name)
@@ -91,29 +125,42 @@ module Percheron
       end
 
       def raw_contents
-        @contents ||= Hashie::Mash.new(YAML.load_file(file))
+        @raw_contents ||= file.read
+      end
+
+      def yaml_contents
+        @yaml_contents ||= Hashie::Mash.new(YAML.load(raw_contents))
+      end
+
+      def templated_contents
+        Liquid::Template.parse(raw_contents).render('secrets' => secrets)
+      end
+
+      def parsed_contents
+        Hashie::Mash.new(YAML.load(templated_contents))
       end
 
       def contents
-        raw_contents.tap do |c|
-          c.docker ||= {}
-          c.docker.host ||= env_docker_host
-          c.docker.cert_path ||= env_cert_path
-          c.docker.ssl_verify_peer ||= env_ssl_verify_peer
+        @contents ||= begin
+          parsed_contents.tap do |c|
+            c.docker ||= {}
+            c.docker.host ||= env_docker_host
+            c.docker.cert_path ||= env_cert_path
+            c.docker.ssl_verify_peer ||= env_ssl_verify_peer
+          end
         end
       end
 
       def env_docker_host
-        @env_docker_host ||= ENV['DOCKER_HOST'] ||
-                             fail("Docker host not defined in '#{file}' or ENV['DOCKER_HOST']")
+        ENV['DOCKER_HOST'] || fail("Docker host not defined in '#{file}' or ENV['DOCKER_HOST']")
       end
 
       def env_cert_path
-        @cert_path ||= ENV['DOCKER_CERT_PATH'] ? File.expand_path(ENV['DOCKER_CERT_PATH']) : nil
+        ENV['DOCKER_CERT_PATH'] ? File.expand_path(ENV['DOCKER_CERT_PATH']) : nil
       end
 
       def env_ssl_verify_peer
-        @ssl_verify_peer ||= (ENV['DOCKER_TLS_VERIFY'] == 1) || true
+        (ENV['DOCKER_TLS_VERIFY'] == 1) || true
       end
   end
 end
