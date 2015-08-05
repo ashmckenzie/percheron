@@ -54,7 +54,7 @@ module Percheron
         def write_out_temp_dockerfile!
           options = { 'secrets' => Config.secrets }
           content = Liquid::Template.parse(unit.dockerfile.read).render(options)
-          temp_dockerfile.write(content)
+          File.open(temp_dockerfile, 'w') { |f| f.write(content) }
         end
 
         def remove_temp_dockerfile!
