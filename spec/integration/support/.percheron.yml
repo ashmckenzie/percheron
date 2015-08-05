@@ -21,7 +21,7 @@ stacks:
         post_start_scripts:
           - ./post_start.sh
         ports:
-          - 1234:1234
+          - 12349:12349
 
       - name: app3
         version: 9.9.9
