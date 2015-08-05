@@ -37,7 +37,6 @@ module Percheron
           Stop.new(unit).execute!  unless unit_running
         end
 
-        # FIXME
         def commit_and_tag_new_image!
           new_image = unit.container.commit
           new_image.tag(repo: unit.image_repo, tag: unit.version.to_s, force: true)

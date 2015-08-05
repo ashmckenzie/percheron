@@ -13,6 +13,7 @@ describe Percheron::Actions::Build do
 
   before do
     $logger = logger
+    allow(SecureRandom).to receive(:urlsafe_base64).and_return('temp1234')
     allow(unit).to receive(:dependant_units).and_return(dependant_units)
   end
 

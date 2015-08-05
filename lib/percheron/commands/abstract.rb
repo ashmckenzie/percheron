@@ -2,8 +2,8 @@ module Percheron
   module Commands
     class Abstract < Clamp::Command
 
-      option([ '-c', '--config_file' ], 'CONFIG', 'Config file',
-             default: Config::DEFAULT_CONFIG_FILE)
+      option([ '-c', '--config_file' ], 'CONFIG', 'Config file', default:
+              ENV.fetch('PERCHERON_CONFIG', Config::DEFAULT_CONFIG_FILE))
 
       option('--version', :flag, 'show version') do
         puts Percheron::VERSION
@@ -20,10 +20,6 @@ module Percheron
       def self.default_create_parameters!
         default_parameters!
         option('--start', :flag, 'Start unit', default: false)
-      end
-
-      def default_config_file
-        ENV.fetch('PERCHERON_CONFIG', Config::DEFAULT_CONFIG_FILE)
       end
 
       def execute
