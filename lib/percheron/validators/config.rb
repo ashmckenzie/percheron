@@ -23,8 +23,7 @@ module Percheron
           [
             :validate_config_file_defined,
             :validate_config_file_existence,
-            :validate_config_file_not_empty,
-            :validate_config_file_contents
+            :validate_config_file_not_empty
           ]
         end
 
@@ -42,10 +41,6 @@ module Percheron
 
         def validate_config_file_not_empty
           'Is empty' if config_file_contents.empty?
-        end
-
-        def validate_config_file_contents
-          'Is invalid' unless config_file_contents.docker
         end
 
     end

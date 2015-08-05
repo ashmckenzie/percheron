@@ -32,14 +32,6 @@ describe Percheron::Validators::Config do
         end
       end
 
-      context 'and is invalid' do
-        let(:config_file_name) { './spec/unit/support/.percheron_invalid_docker.yml' }
-
-        it 'raises exception' do
-          expect { subject.valid? }.to raise_error(Percheron::Errors::ConfigFileInvalid, 'Config is invalid: Is invalid')
-        end
-      end
-
       context 'and is valid' do
         it 'is true' do
           expect(subject.valid?).to be(true)
