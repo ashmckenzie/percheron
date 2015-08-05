@@ -14,12 +14,12 @@ module Percheron
     end
     # rubocop:enable Style/ClassVars
 
-    def self.perform(klass, method, *args)
-      instance.perform(klass, method, *args)
+    def self.perform(klass, method, *args, &blk)
+      instance.perform(klass, method, *args, &blk)
     end
 
     def perform(klass, method, *args)
-      klass.public_send(method, *args)
+      klass.public_send(method, *args) { |out| yield(out) if block_given? }
     rescue => e
       $logger.debug '%s.%s(%s) - %s' % [ klass, method, args, e.inspect ]
       raise
