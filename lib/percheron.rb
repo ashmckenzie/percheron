@@ -6,6 +6,7 @@ require 'naught'
 require 'semantic'
 require 'metastore'
 require 'liquid'
+require 'singleton'
 
 require 'percheron/oh_dear'
 require 'percheron/core_extensions'
