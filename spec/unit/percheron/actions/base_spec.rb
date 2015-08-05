@@ -18,7 +18,7 @@ describe Percheron::Actions::Base do
   end
 
   let(:logger) { double('Logger').as_null_object }
-  let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
   let(:dependant_units) { unit.dependant_units }

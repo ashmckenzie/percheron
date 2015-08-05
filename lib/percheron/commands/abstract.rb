@@ -40,7 +40,7 @@ module Percheron
 
       def config
         @config ||= begin
-          Percheron::Config.new(config_file).tap do |c|
+          Percheron::Config.load!(config_file).tap do |c|
             Percheron::Connection.load!(c)
           end
         end

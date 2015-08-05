@@ -2,7 +2,7 @@ require 'unit/spec_helper'
 
 describe Percheron::Connection do
   let(:logger) { double('Logger') }
-  let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:expected_url) { 'https://127.0.0.1:2376' }
 
   subject { described_class.load!(config) }

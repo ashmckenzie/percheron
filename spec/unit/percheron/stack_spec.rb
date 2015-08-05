@@ -2,7 +2,7 @@ require 'unit/spec_helper'
 
 describe Percheron::Stack do
   let(:logger) { double('Logger').as_null_object }
-  let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
 
   let(:dependant_unit) do
     double(

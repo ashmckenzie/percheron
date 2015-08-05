@@ -4,7 +4,7 @@ describe Percheron::Actions::Start do
   let(:container) { double('Docker::Container') }
   let(:logger) { double('Logger').as_null_object }
   let(:exec_action) { double('Percheron::Actions::Exec') }
-  let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
   let(:dependant_units) { unit.dependant_units.values }

@@ -16,7 +16,7 @@ describe Percheron::Unit do
     }
   end
 
-  let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
 
   let(:logger) { double('Logger').as_null_object }

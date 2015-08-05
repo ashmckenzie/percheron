@@ -35,7 +35,7 @@ require 'percheron/commands'
 require 'percheron/logger'
 
 begin
-  Percheron::Config.new(File.join(support_directory, '.percheron.yml')).tap do |c|
+  Percheron::Config.load!(File.join(support_directory, '.percheron.yml')).tap do |c|
     Percheron::Connection.load!(c)
   end
   Docker.version

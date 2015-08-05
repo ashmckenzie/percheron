@@ -5,7 +5,7 @@ describe Percheron::Actions::Create do
   let(:metastore) { double('Metastore::Cabinet') }
   let(:build_double) { double('Percheron::Actions::Build') }
 
-  let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
 
   let(:new_opts) { {} }

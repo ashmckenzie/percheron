@@ -3,7 +3,7 @@ require 'unit/spec_helper'
 describe Percheron::Actions::Recreate do
   let(:logger) { double('Logger').as_null_object }
   let(:metastore) { double('Metastore::Cabinet') }
-  let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
   let(:opts) { {} }
