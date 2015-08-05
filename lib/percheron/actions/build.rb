@@ -12,8 +12,13 @@ module Percheron
 
       def execute!
         results = []
-        results << build! if unit.buildable?
+        if unit.buildable?
+          results << write_out_temp_dockerfile!
+          results << build!
+        end
         results.compact.empty? ? nil : unit
+      ensure
+        remove_temp_dockerfile!
       end
 
       private
@@ -23,11 +28,35 @@ module Percheron
 
         def options
           {
-            'dockerfile'  => unit.dockerfile.basename.to_s,
+            'dockerfile'  => temp_dockerfile.basename.to_s,
             't'           => unit.image_name,
             'forcerm'     => true,
             'nocache'     => nocache
           }
+        end
+
+        def temp_dockerfile
+          @temp_dockerfile ||= Pathname.new(temp_dockerfile_name)
+        end
+
+        def temp_dockerfile_name
+          @temp_dockerfile_name ||= begin
+            '%s/%s.%s' % [
+              unit.dockerfile.expand_path.dirname.to_s,
+              unit.dockerfile.basename.to_s,
+              SecureRandom.urlsafe_base64
+            ]
+          end
+        end
+
+        def write_out_temp_dockerfile!
+          options = { 'secrets' => Config.secrets }
+          content = Liquid::Template.parse(unit.dockerfile.read).render(options)
+          temp_dockerfile.write(content)
+        end
+
+        def remove_temp_dockerfile!
+          temp_dockerfile.delete
         end
 
         def build!
