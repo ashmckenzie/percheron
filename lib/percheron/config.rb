@@ -47,6 +47,14 @@ module Percheron
       secrets_file ? Hashie::Mash.new(YAML.load_file(secrets_file)) : {}
     end
 
+    def self.userdata
+      instance.userdata
+    end
+
+    def userdata
+      contents.userdata || {}
+    end
+
     def self.docker
       instance.docker
     end

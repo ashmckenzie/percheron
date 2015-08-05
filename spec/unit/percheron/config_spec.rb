@@ -16,10 +16,28 @@ describe Percheron::Config do
     end
 
     context 'with a .percheron.yml that has secrets' do
-      let(:config_file) { './spec/unit/support/.percheron_valid_multiple_with_secrets.yml' }
+      let(:config_file) { './spec/unit/support/.percheron_valid_multiple_with_secrets_and_userdata.yml' }
 
       it 'exposes them' do
         expect(subject.secrets).to eql('very' => 'secret')
+      end
+    end
+  end
+
+  describe '.userdata' do
+    context 'with a .percheron.yml that does not have userdata' do
+      let(:config_file) { './spec/unit/support/.percheron_valid_multiple.yml' }
+
+      it 'is an empty Hash' do
+        expect(subject.userdata).to eql({})
+      end
+    end
+
+    context 'with a .percheron.yml that has userdata' do
+      let(:config_file) { './spec/unit/support/.percheron_valid_multiple_with_secrets_and_userdata.yml' }
+
+      it 'exposes them' do
+        expect(subject.userdata).to eql('key' => 'value')
       end
     end
   end
