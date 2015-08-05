@@ -1,7 +1,28 @@
 require 'unit/spec_helper'
 
 describe Percheron::Config do
-  subject { described_class.load!(config_file) }
+  subject do
+    described_class.load!(config_file)
+    described_class
+  end
+
+  describe '.secrets' do
+    context 'with a .percheron.yml that does not have secrets' do
+      let(:config_file) { './spec/unit/support/.percheron_valid_multiple.yml' }
+
+      it 'is an empty Hash' do
+        expect(subject.secrets).to eql({})
+      end
+    end
+
+    context 'with a .percheron.yml that has secrets' do
+      let(:config_file) { './spec/unit/support/.percheron_valid_multiple_with_secrets.yml' }
+
+      it 'exposes them' do
+        expect(subject.secrets).to eql('very' => 'secret')
+      end
+    end
+  end
 
   context 'with a .percheron.yml that does not have a docker host defined' do
     let(:docker_host) { nil }
@@ -9,8 +30,8 @@ describe Percheron::Config do
 
     let(:config_file) { './spec/unit/support/.percheron_valid_multiple_without_host.yml' }
 
-    describe '#docker' do
-      describe 'host' do
+    describe '.docker' do
+      describe '.host' do
         context "with no ENV['DOCKER_HOST'] defined" do
           it 'raises exception' do
             expect { with_modified_env(env) { subject.docker.host } }.to raise_error(/Docker host not defined/)
@@ -33,7 +54,7 @@ describe Percheron::Config do
   context 'with a .percheron.yml that has a docker host defined' do
     let(:config_file) { './spec/unit/support/.percheron_valid_multiple.yml' }
 
-    describe '#stacks' do
+    describe '.stacks' do
       it 'returns a Hash of stack configs' do
         expect(subject.stacks).to be_a(Hash)
       end
@@ -43,7 +64,7 @@ describe Percheron::Config do
       end
     end
 
-    describe '#file_base_path' do
+    describe '.file_base_path' do
       it 'is the directory in which the file resides' do
         expect(subject.file_base_path).to eql(Pathname.new(config_file).expand_path.dirname)
       end

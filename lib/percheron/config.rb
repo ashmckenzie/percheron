@@ -4,15 +4,12 @@ module Percheron
   class Config
 
     include Singleton
-    extend Forwardable
 
     DEFAULT_CONFIG_FILE = '.percheron.yml'
 
     # rubocop:disable Style/ClassVars
     @@file = Pathname.new(DEFAULT_CONFIG_FILE).expand_path
     # rubocop:enable Style/ClassVars
-
-    def_delegators :contents, :docker
 
     def self.load!(file)
       instance.load!(file)
@@ -47,17 +44,26 @@ module Percheron
     end
 
     def secrets
-      if yaml_contents.secrets_file
-        Hashie::Mash.new(YAML.load_file(yaml_contents.secrets_file))
-      else
-        {}
-      end
+      secrets_file ? Hashie::Mash.new(YAML.load_file(secrets_file)) : {}
+    end
+
+    def self.docker
+      instance.docker
+    end
+
+    def docker
+      contents.docker
     end
 
     private
 
       def file
         @@file
+      end
+
+      def secrets_file
+        return unless yaml_contents.secrets_file
+        File.expand_path(yaml_contents.secrets_file, file_base_path)
       end
 
       def invalidate_memoised_values!

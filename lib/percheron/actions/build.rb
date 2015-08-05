@@ -17,8 +17,6 @@ module Percheron
           results << build!
         end
         results.compact.empty? ? nil : unit
-      ensure
-        remove_temp_dockerfile!
       end
 
       private
@@ -28,11 +26,15 @@ module Percheron
 
         def options
           {
-            'dockerfile'  => temp_dockerfile.basename.to_s,
+            'dockerfile'  => dockerfile,
             't'           => unit.image_name,
             'forcerm'     => true,
             'nocache'     => nocache
           }
+        end
+
+        def dockerfile
+          temp_dockerfile.basename.to_s
         end
 
         def temp_dockerfile
@@ -67,6 +69,8 @@ module Percheron
               $logger.debug '%s' % [ out.strip ]
             end
           end
+        ensure
+          remove_temp_dockerfile!
         end
 
         def execute_pre_build_scripts!
