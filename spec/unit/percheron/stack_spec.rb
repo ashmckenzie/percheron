@@ -239,11 +239,11 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Build') }
 
       it 'asks each Container to build' do
-        expect(klass).to receive(:new).with(pseudo2_unit).and_return(action_double)
-        expect(klass).to receive(:new).with(pseudo1_unit).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_unit).and_return(action_double)
-        expect(klass).to receive(:new).with(external_unit).and_return(action_double)
-        expect(klass).to receive(:new).with(unit).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo2_unit, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_unit, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(unit, forcerm: false).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(5).times
         subject.build!
       end
