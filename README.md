@@ -123,17 +123,17 @@ stacks:
     units:
       - name: master
         version: 1.0.0
-        docker_image: progrium/consul:latest
-        start_args: "-server -bootstrap -ui-dir /ui"
+        docker_image: gliderlabs/consul-server:0.5
+        start_args: [ "-bootstrap", "-client", "0.0.0.0", "-data-dir", "/data", "-ui-dir", "/ui" ]
         ports:
           - 8500:8500
           - 8600:53/udp
       - name: agent
         version: 1.0.0
         instances: 2
-        docker_image: progrium/consul:latest
-        start_args: "-server -join master"
-        dependant_unit_names:
+        docker_image: gliderlabs/consul-agent:0.5
+        start_args: [ "-join", "master" ]
+        dependent_unit_names:
           - master
 ```
 
