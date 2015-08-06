@@ -52,8 +52,7 @@ describe Percheron::Actions::Create do
             'HostConfig' => {
               'PortBindings' => {},
               'Links' => [],
-              'Binds' => [],
-              'Dns' => [ '127.0.0.1', '8.8.8.8' ]
+              'Binds' => []
             }
           }
         end
@@ -86,8 +85,7 @@ describe Percheron::Actions::Create do
                 '9999' => [ { 'HostPort' => '9999' } ]
               },
               'Links' => [ 'debian_jessie_dependant_debian:debian_jessie_dependant_debian' ],
-              'Binds' => [ '/outside/container/path:/inside/container/path' ],
-              'Dns' => [ '127.0.0.1', '8.8.8.8' ]
+              'Binds' => [ '/outside/container/path:/inside/container/path' ]
             }
           }
         end

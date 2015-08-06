@@ -46,14 +46,15 @@ module Percheron
         end
 
         def host_config_options
-          {
+          config = {
             'HostConfig'    => {
               'PortBindings'  => port_bindings,
               'Links'         => unit.links,
-              'Binds'         => unit.volumes,
-              'Dns'           => unit.dns
+              'Binds'         => unit.volumes
             }
           }
+          config['Dns'] = unit.dns unless unit.dns.empty?
+          config
         end
 
         def options
