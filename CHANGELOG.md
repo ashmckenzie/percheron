@@ -1,3 +1,9 @@
+## v0.7.15 / 2015-08-06
+
+* Allow --force to be used when recreating
+* Don't specify a default set of DNS servers
+* Updated consul example in README
+
 ## v0.7.14 / 2015-08-06
 
 * When executing scripts, pass -x for more insight
