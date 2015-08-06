@@ -142,9 +142,12 @@ stacks:
 ```bash
 percheron start consul-stack
 
-I, [2015-05-21T19:25:05.975964 #35449]  INFO -- : Starting 'master' unit
-I, [2015-05-21T19:25:06.676782 #35449]  INFO -- : Starting 'agent1' unit
-I, [2015-05-21T19:25:07.167997 #35449]  INFO -- : Starting 'agent2' unit
+I, [2015-08-06T22:36:46.536424 #45026]  INFO -- : Creating 'consul-stack:master' unit
+I, [2015-08-06T22:36:46.851682 #45026]  INFO -- : Starting 'consul-stack:master' unit
+I, [2015-08-06T22:36:47.861800 #45026]  INFO -- : Creating 'consul-stack:agent1' unit
+I, [2015-08-06T22:36:48.221852 #45026]  INFO -- : Starting 'consul-stack:agent1' unit
+I, [2015-08-06T22:36:48.929909 #45026]  INFO -- : Creating 'consul-stack:agent2' unit
+I, [2015-08-06T22:36:49.378310 #45026]  INFO -- : Starting 'consul-stack:agent2' unit
 ```
 
 5) Show the status
