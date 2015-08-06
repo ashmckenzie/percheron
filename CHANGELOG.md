@@ -1,3 +1,8 @@
+## v0.7.14 / 2015-08-06
+
+* When executing scripts, pass -x for more insight
+* When referring to Unit, use #display_name - <stack_name>:<unit_name>
+
 ## v0.7.13 / 2015-08-05
 
 * Support for userdata in the .percheron.yml
