@@ -88,7 +88,7 @@ describe Percheron::Actions::Create do
               'PortBindings' => {
                 '9999' => [ { 'HostPort' => '9999' } ]
               },
-              'Links' => [ 'debian_jessie_dependant_debian:debian_jessie_dependant_debian' ],
+              'Links' => [ 'debian_jessie_dependant_debian:dependant_debian' ],
               'Binds' => [ '/outside/container/path:/inside/container/path' ],
               'Dns' => [ '127.0.0.1', '8.8.8.8' ],
               'VolumesFrom' => []

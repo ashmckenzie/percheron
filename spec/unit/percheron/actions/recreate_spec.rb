@@ -26,6 +26,7 @@ describe Percheron::Actions::Recreate do
       allow(unit).to receive(:image_exists?).and_return(true)
       allow(unit).to receive(:versions_match?).and_return(versions_match).at_least(:once)
       allow(unit).to receive(:md5s_match?).and_return(md5s_match).at_least(:once)
+      expect(metastore).to receive(:get).with('stacks.debian_jessie.units.debian').twice
     end
 
     context 'where there are no Dockerfile changes' do

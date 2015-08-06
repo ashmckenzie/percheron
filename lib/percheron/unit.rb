@@ -106,27 +106,26 @@ module Percheron
       exists? ? info.NetworkSettings.IPAddress : nil
     end
 
+    # FIXME
     def dockerfile
       @dockerfile ||= begin
-        file_name = ''
         if unit_config.dockerfile
           file_name = File.expand_path(unit_config.dockerfile, config.file_base_path)
+          Dockerfile.new(file_name, metastore_key)
+        else
+          NullDockerfile.new
         end
-        Dockerfile.new(file_name, metastore_key)
       end
     end
 
+    def md5
+      dockerfile.md5sum
+    end
+
     def update_md5!
-      # binding.pry
-      # dockerfile.update_md5! # FIXME
-      # Digest::MD5.hexdigest(image_name)
       key = "#{metastore_key}.md5"
       $logger.debug "Setting MD5 for '#{key}' unit to #{md5}"
       $metastore.set(key, md5)
-    end
-
-    # FIXME: private?
-    def md5
     end
 
     def versions_match?
@@ -161,7 +160,7 @@ module Percheron
       attr_reader :config, :stack, :unit_config, :unit_name
 
       def metastore_key
-        @metastore_key ||= '%s.units.%s' % [ stack.metastore_key, name ]
+        '%s.units.%s' % [ stack.metastore_key, name ]
       end
 
       def expand_ports(port)

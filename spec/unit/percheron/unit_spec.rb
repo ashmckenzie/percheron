@@ -186,7 +186,7 @@ describe Percheron::Unit do
 
     describe '#links' do
       it 'returns an array of dependant unit names' do
-        expect(subject.links).to eql(%w(debian_jessie_dependant_debian:debian_jessie_dependant_debian))
+        expect(subject.links).to eql(%w(debian_jessie_dependant_debian:dependant_debian))
       end
     end
 
