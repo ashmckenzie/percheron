@@ -12,7 +12,7 @@ module Percheron
       end
 
       def execute!
-        $logger.debug "Executing #{description} #{scripts.inspect} on '#{unit.name}' unit"
+        $logger.debug "Executing #{description} #{scripts.inspect} on '#{unit.display_name}' unit"
         results = exec!
         results.compact.empty? ? nil : unit
       end
@@ -37,7 +37,6 @@ module Percheron
           Stop.new(unit).execute!  unless unit_running
         end
 
-        # FIXME
         def commit_and_tag_new_image!
           new_image = unit.container.commit
           new_image.tag(repo: unit.image_repo, tag: unit.version.to_s, force: true)
@@ -47,13 +46,13 @@ module Percheron
           scripts.each do |script|
             in_working_directory(base_dir) do
               file = Pathname.new(File.expand_path(script, base_dir))
-              execute_command!('/bin/sh /tmp/%s 2>&1' % file.basename)
+              execute_command!('/bin/sh -x /tmp/%s 2>&1' % file.basename)
             end
           end
         end
 
         def execute_command!(command)
-          $logger.info "Executing #{description} '#{command}' for '#{unit.name}' unit"
+          $logger.info "Executing #{description} '#{command}' for '#{unit.display_name}' unit"
           unit.container.exec(command.split(' ')) do |stream, out|
             $logger.debug '%s: %s' % [ stream, out.strip ]
           end

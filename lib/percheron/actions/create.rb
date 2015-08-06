@@ -15,7 +15,7 @@ module Percheron
       def execute!
         results = []
         if unit.exists?
-          $logger.debug "Unit '#{unit.name}' already exists"
+          $logger.debug "Unit '#{unit.display_name}' already exists"
         else
           results << create!
         end
@@ -94,7 +94,7 @@ module Percheron
         end
 
         def create_unit!
-          $logger.info "Creating '#{unit.name}' unit"
+          $logger.info "Creating '#{unit.display_name}' unit"
           Connection.perform(Docker::Container, :create, options)
         end
 

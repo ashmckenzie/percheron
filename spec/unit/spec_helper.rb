@@ -13,12 +13,16 @@ CodeClimate::TestReporter.start
 require 'simplecov'
 SimpleCov.start
 
-$LOAD_PATH.unshift File.expand_path('../../../lib', __FILE__)
+base_directory = File.expand_path('../../..', __FILE__)
 
-Dir['./spec/unit/support/**/*.rb'].sort.each { |f| require(f) }
+$LOAD_PATH.unshift(File.join(base_directory, 'lib'))
+Dir[File.join(base_directory, 'spec', 'unit', 'support', '**', '*.rb')].sort.each { |f| require(f) }
 
 RSpec.configure do |config|
   config.filter_run_excluding broken: true
+  config.before(:all) do
+    Dir.chdir(base_directory)
+  end
 end
 
 require 'percheron'

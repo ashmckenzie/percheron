@@ -9,7 +9,7 @@ module Percheron
       end
 
       def execute!
-        $logger.debug "Showing logs on '#{unit.name}' unit"
+        $logger.debug "Showing logs on '#{unit.display_name}' unit"
         display_logs!
       end
 

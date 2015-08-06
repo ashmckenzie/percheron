@@ -2,7 +2,7 @@ require 'unit/spec_helper'
 
 describe Percheron::Formatters::Stack::Table do
   let(:config_file_name) { './spec/unit/support/.percheron_valid_table.yml' }
-  let(:config) { Percheron::Config.new(config_file_name) }
+  let(:config) { Percheron::Config.load!(config_file_name) }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
 
   subject { described_class.new(stack) }

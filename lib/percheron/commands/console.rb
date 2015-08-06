@@ -7,7 +7,7 @@ module Percheron
       def execute
         super
         require 'pry-byebug'
-        pry
+        pry Percheron
       end
 
       private

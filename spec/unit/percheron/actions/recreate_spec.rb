@@ -3,7 +3,7 @@ require 'unit/spec_helper'
 describe Percheron::Actions::Recreate do
   let(:logger) { double('Logger').as_null_object }
   let(:metastore) { double('Metastore::Cabinet') }
-  let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
   let(:opts) { {} }
@@ -35,7 +35,7 @@ describe Percheron::Actions::Recreate do
         let(:versions_match) { true }
 
         it 'logs Docker Container does not need to be recreated' do
-          expect(logger).to receive(:info).with("Unit 'debian' - No Dockerfile changes or version bump")
+          expect(logger).to receive(:info).with("Unit 'debian_jessie:debian' - No Dockerfile changes or version bump")
           subject.execute!
         end
       end

@@ -64,6 +64,10 @@ module Percheron
       '%s_%s' % [ stack.name, name ]
     end
 
+    def display_name
+      '%s:%s' % [ stack.name, name ]
+    end
+
     def pseudo_full_name
       '%s_%s' % [ stack.name, pseudo_name ]
     end

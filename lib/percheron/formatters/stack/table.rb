@@ -62,7 +62,7 @@ module Percheron
               startable(unit),
               unit.ip,
               ports(unit),
-              unit.volumes.join(', '),
+              unit.volumes.join("\n"),
               unit.volumes_from.join(', '),
               version(unit)
             ]

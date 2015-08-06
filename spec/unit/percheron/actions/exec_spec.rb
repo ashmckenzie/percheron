@@ -8,7 +8,7 @@ describe Percheron::Actions::Exec do
   let(:container) { double('Docker::Container').as_null_object }
   let(:docker_image) { double('Docker::Image') }
 
-  let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
   let(:dependant_units) { unit.dependant_units.values }
@@ -36,7 +36,7 @@ describe Percheron::Actions::Exec do
       expect(Percheron::Actions::Start).to receive(:new).with(unit, exec_scripts: false).and_return(start_action2)
       expect(start_action1).to receive(:execute!).and_return(dependant_unit)
       expect(start_action2).to receive(:execute!).and_return(unit)
-      expect(container).to receive(:exec).with(['/bin/sh', '/tmp/test.sh', '2>&1']).and_yield(:stdout, 'output from test.sh')
+      expect(container).to receive(:exec).with(['/bin/sh', '-x', '/tmp/test.sh', '2>&1']).and_yield(:stdout, 'output from test.sh')
       subject.execute!
     end
   end

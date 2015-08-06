@@ -67,10 +67,10 @@ module Percheron
       execute!(Actions::Restart, filter_unit_names(unit_names))
     end
 
-    def build!(unit_names: [])
+    def build!(unit_names: [], forcerm: false)
       unit_names = dependant_units_for(unit_names)
       exec_on_dependant_units_for(unit_names) do |unit|
-        Actions::Build.new(unit).execute!
+        Actions::Build.new(unit, forcerm: forcerm).execute!
       end
       nil
     end
@@ -125,7 +125,7 @@ module Percheron
 
       def exec_on_dependant_units_for(unit_names)
         exec_on_units(unit_names) do |unit|
-          $logger.debug "Processing '#{unit.name}' unit"
+          $logger.debug "Processing '#{unit.display_name}' unit"
           yield(unit)
           unit_names.delete(unit.full_name)
         end

@@ -2,13 +2,14 @@ require 'unit/spec_helper'
 
 describe Percheron::Stack do
   let(:logger) { double('Logger').as_null_object }
-  let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
 
   let(:dependant_unit) do
     double(
       'Perheron::Unit',
       name: 'dependant_debian',
       full_name: 'debian_jessie-dependant_debian',
+      display_name: 'debian_jessie:dependant_debian',
       dependant_unit_names: [],
       dependant_units: {},
       startable_dependant_units: {},
@@ -21,6 +22,7 @@ describe Percheron::Stack do
       'Perheron::Unit',
       name: 'debian',
       full_name: 'debian_jessie-debian',
+      display_name: 'debian_jessie:debian',
       dependant_unit_names: %w(dependant_debian),
       dependant_units: { 'dependant_debian' => dependant_unit },
       startable_dependant_units: { 'dependant_debian' => dependant_unit },
@@ -33,6 +35,7 @@ describe Percheron::Stack do
       'Perheron::Unit',
       name: 'debian_external',
       full_name: 'debian_jessie-debian_external',
+      display_name: 'debian_jessie:debian_external',
       dependant_unit_names: [],
       dependant_units: {},
       startable_dependant_units: {},
@@ -45,6 +48,7 @@ describe Percheron::Stack do
       'Perheron::Unit',
       name: 'debian_pseudo1',
       full_name: 'debian_jessie-xxx',
+      display_name: 'debian_jessie:xxx',
       dependant_unit_names: [],
       dependant_units: {},
       startable_dependant_units: {},
@@ -57,6 +61,7 @@ describe Percheron::Stack do
       'Perheron::Unit',
       name: 'debian_pseudo2',
       full_name: 'debian_jessie-xxx',
+      display_name: 'debian_jessie:xxx',
       dependant_unit_names: [],
       dependant_units: {},
       startable_dependant_units: {},
@@ -239,11 +244,11 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Build') }
 
       it 'asks each Container to build' do
-        expect(klass).to receive(:new).with(pseudo2_unit).and_return(action_double)
-        expect(klass).to receive(:new).with(pseudo1_unit).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_unit).and_return(action_double)
-        expect(klass).to receive(:new).with(external_unit).and_return(action_double)
-        expect(klass).to receive(:new).with(unit).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo2_unit, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_unit, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(unit, forcerm: false).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(5).times
         subject.build!
       end

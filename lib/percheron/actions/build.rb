@@ -4,30 +4,62 @@ module Percheron
 
       include Base
 
-      def initialize(unit, nocache: false, exec_scripts: true)
+      def initialize(unit, nocache: false, forcerm: false, exec_scripts: true)
         @unit = unit
         @nocache = nocache
+        @forcerm = forcerm
         @exec_scripts = exec_scripts
       end
 
       def execute!
         results = []
-        results << build! if unit.buildable?
+        if unit.buildable?
+          results << write_out_temp_dockerfile!
+          results << build!
+        end
         results.compact.empty? ? nil : unit
       end
 
       private
 
-        attr_reader :unit, :nocache, :exec_scripts
+        attr_reader :unit, :nocache, :forcerm, :exec_scripts
         alias_method :exec_scripts?, :exec_scripts
 
         def options
           {
-            'dockerfile'  => unit.dockerfile.basename.to_s,
+            'dockerfile'  => dockerfile,
             't'           => unit.image_name,
-            'forcerm'     => true,
+            'forcerm'     => forcerm,
             'nocache'     => nocache
           }
+        end
+
+        def dockerfile
+          temp_dockerfile.basename.to_s
+        end
+
+        def temp_dockerfile
+          @temp_dockerfile ||= Pathname.new(temp_dockerfile_name)
+        end
+
+        def temp_dockerfile_name
+          @temp_dockerfile_name ||= begin
+            '%s/%s.%s' % [
+              unit.dockerfile.expand_path.dirname.to_s,
+              unit.dockerfile.basename.to_s,
+              SecureRandom.urlsafe_base64
+            ]
+          end
+        end
+
+        def write_out_temp_dockerfile!
+          options = { 'secrets' => Config.secrets, 'userdata' => Config.userdata }
+          content = Liquid::Template.parse(unit.dockerfile.read).render(options)
+          File.open(temp_dockerfile, 'w') { |f| f.write(content) }
+        end
+
+        def remove_temp_dockerfile!
+          temp_dockerfile.delete
         end
 
         def build!
@@ -38,6 +70,8 @@ module Percheron
               $logger.debug '%s' % [ out.strip ]
             end
           end
+        ensure
+          remove_temp_dockerfile!
         end
 
         def execute_pre_build_scripts!

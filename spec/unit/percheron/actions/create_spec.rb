@@ -5,7 +5,7 @@ describe Percheron::Actions::Create do
   let(:metastore) { double('Metastore::Cabinet') }
   let(:build_double) { double('Percheron::Actions::Build') }
 
-  let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
 
   let(:new_opts) { {} }
@@ -88,7 +88,7 @@ describe Percheron::Actions::Create do
               'PortBindings' => {
                 '9999' => [ { 'HostPort' => '9999' } ]
               },
-              'Links' => [ 'debian_jessie_dependant_debian:dependant_debian' ],
+              'Links' => [ 'debian_jessie_dependant_debian:debian_jessie_dependant_debian' ],
               'Binds' => [ '/outside/container/path:/inside/container/path' ],
               'Dns' => [ '127.0.0.1', '8.8.8.8' ],
               'VolumesFrom' => []
@@ -148,7 +148,7 @@ describe Percheron::Actions::Create do
       let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
 
       it 'creates a Docker::Container' do
-        expect(logger).to receive(:debug).with("Unit 'debian' already exists")
+        expect(logger).to receive(:debug).with("Unit 'debian_jessie:debian' already exists")
         subject.execute!
       end
     end

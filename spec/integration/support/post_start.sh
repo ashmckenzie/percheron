@@ -1,3 +1,3 @@
 #!/bin/sh
 
-touch /perheron_was_here
+touch /percheron_was_here

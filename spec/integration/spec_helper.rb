@@ -16,8 +16,18 @@ $LOAD_PATH.unshift File.expand_path('../../../lib', __FILE__)
 
 Dir['./spec/integration/support/**/*.rb'].sort.each { |f| require(f) }
 
+support_directory = File.expand_path('../support', __FILE__)
+
 RSpec.configure do |config|
   config.filter_run_excluding broken: true
+  config.before(:all) do
+    Dir.chdir(support_directory)
+    cleanup!
+  end
+  config.after(:all) do
+    $logger = $metastore = nil
+    cleanup!
+  end
 end
 
 require 'percheron'
@@ -25,7 +35,7 @@ require 'percheron/commands'
 require 'percheron/logger'
 
 begin
-  Percheron::Config.new('./spec/integration/support/.percheron.yml').tap do |c|
+  Percheron::Config.load!(File.join(support_directory, '.percheron.yml')).tap do |c|
     Percheron::Connection.load!(c)
   end
   Docker.version

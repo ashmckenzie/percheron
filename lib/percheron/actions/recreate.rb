@@ -31,11 +31,11 @@ module Percheron
 
         def inform!
           return nil unless unit.dockerfile.md5s_match?
-          $logger.info "Unit '#{unit.name}' - No Dockerfile changes or version bump"
+          $logger.info "Unit '#{unit.display_name}' - No Dockerfile changes or version bump"
         end
 
         def recreate!
-          $logger.debug "Unit '#{unit.name}' exists but will be recreated"
+          $logger.debug "Unit '#{unit.display_name}' exists but will be recreated"
           Purge.new(unit).execute!
           Create.new(unit).execute!
         end

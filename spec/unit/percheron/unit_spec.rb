@@ -16,7 +16,7 @@ describe Percheron::Unit do
     }
   end
 
-  let(:config) { Percheron::Config.new('./spec/unit/support/.percheron_valid.yml') }
+  let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
 
   let(:logger) { double('Logger').as_null_object }
@@ -124,6 +124,12 @@ describe Percheron::Unit do
       end
     end
 
+    describe '#display_name' do
+      it 'is a combination of stack name and unit name' do
+        expect(subject.display_name).to eql('debian_jessie:debian')
+      end
+    end
+
     describe '#pseudo_full_name' do
       before do
         expect(stack.unit_configs).to receive(:[]).with('debian').and_return(Hashie::Mash.new(pseudo_name: 'pseudo_debian'))
@@ -180,7 +186,7 @@ describe Percheron::Unit do
 
     describe '#links' do
       it 'returns an array of dependant unit names' do
-        expect(subject.links).to eql([ 'debian_jessie_dependant_debian:dependant_debian' ])
+        expect(subject.links).to eql(%w(debian_jessie_dependant_debian:debian_jessie_dependant_debian))
       end
     end
 
