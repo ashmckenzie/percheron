@@ -79,8 +79,8 @@ module Percheron
       execute!(Actions::Create, dependant_units_for(unit_names), start: start)
     end
 
-    def recreate!(unit_names: [], start: false)
-      execute!(Actions::Recreate, filter_unit_names(unit_names), start: start)
+    def recreate!(unit_names: [], start: false, force: false)
+      execute!(Actions::Recreate, filter_unit_names(unit_names), start: start, force: force)
     end
 
     def purge!(unit_names: [], force: false)

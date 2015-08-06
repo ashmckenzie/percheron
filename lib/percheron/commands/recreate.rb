@@ -3,10 +3,11 @@ module Percheron
     class Recreate < Abstract
 
       default_create_parameters!
+      option([ '-f', '--force' ], :flag, 'Force purge and create', default: false)
 
       def execute
         super
-        stack.recreate!(unit_names: unit_names, start: start?)
+        stack.recreate!(unit_names: unit_names, start: start?, force: force?)
       end
     end
   end

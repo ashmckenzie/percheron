@@ -289,11 +289,11 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Recreate') }
 
       it 'asks each Container to recreate' do
-        expect(klass).to receive(:new).with(pseudo2_unit, start: false).and_return(action_double)
-        expect(klass).to receive(:new).with(pseudo1_unit, start: false).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_unit, start: false).and_return(action_double)
-        expect(klass).to receive(:new).with(external_unit, start: false).and_return(action_double)
-        expect(klass).to receive(:new).with(unit, start: false).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo2_unit, start: false, force: false).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit, start: false, force: false).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_unit, start: false, force: false).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit, start: false, force: false).and_return(action_double)
+        expect(klass).to receive(:new).with(unit, start: false, force: false).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(5).times
         subject.recreate!
       end
