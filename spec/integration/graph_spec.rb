@@ -13,7 +13,7 @@ describe 'percheron' do
 
     it 'creates a dependancy graph' do
       Percheron::Commands::Graph.run(Dir.pwd, %W(--output #{file.path} percheron-test))
-      expect(FileMagic.new(FileMagic::MAGIC_SYMLINK).file(file.path)).to eql('PNG image data, 531 x 267, 8-bit/color RGBA, non-interlaced')
+      expect(FileMagic.new(FileMagic::MAGIC_SYMLINK).file(file.path)).to eql('PNG image data, 437 x 305, 8-bit/color RGBA, non-interlaced')
     end
   end
 end

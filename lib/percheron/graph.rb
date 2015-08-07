@@ -33,24 +33,31 @@ module Percheron
       end
 
       def graph_opts
-        { type: :digraph, nodesep: 0.75, ranksep: 1.0, label: header_label, fontsize: 12 }
+        { type: :digraph, nodesep: 0.75, ranksep: 1.0, label: header_label }
+      end
+
+      def header_label
+        '<
+          <table border="0" cellborder="0">
+            <tr><td height="36" valign="bottom">
+              <font face="Arial Bold" point-size="14">%s</font>
+            </td></tr>
+            <tr><td height="18"><font face="Arial Italic" point-size="11">%s</font></td></tr>
+          </table>
+          >' % [ stack.name, stack_description ]
+      end
+
+      def stack_description
+        stack.description || ' '
       end
 
       def units
         @units ||= stack.units
       end
 
-      def header_label
-        '\n%s\n%s\n' % [ stack.name, stack.description ]
-      end
-
       def add_nodes
         units.each do |_, unit|
-          if unit.pseudo?
-            add_pseudo_node(unit)
-          else
-            add_node(unit)
-          end
+          unit.pseudo? ? add_pseudo_node(unit) : add_node(unit)
         end
       end
 
@@ -70,14 +77,17 @@ module Percheron
       end
 
       def cluster_opts(unit)
-        { label: unit.pseudo_name, style: 'filled', color: 'lightgrey' }
+        label = '<<font face="Arial Bold">%s</font>>' % unit.pseudo_name
+        { label: label, style: 'filled', color: 'lightgrey', fontsize: 13 }
       end
 
       def node_opts(unit)
         shape = unit.startable? ? 'box' : 'ellipse'
-        label = [ unit.name ]
-        unit.ports.each { |ports| label << 'public: %s, internal: %s' % ports.split(':') }
-        { shape: shape, label: label.join("\n"), fontname: 'arial', fontsize: 12 }
+        label = [ '<font face="Arial Bold" point-size="12">%s</font><br/>' % unit.name ]
+        unit.ports.each do |ports|
+          label << '<font point-size="11">p: %s, i: %s</font>' % ports.split(':')
+        end
+        { shape: shape, label: '<%s>' % label.join('<br/>'), fontname: 'arial' }
       end
 
       def pseudo_node_opts(unit)

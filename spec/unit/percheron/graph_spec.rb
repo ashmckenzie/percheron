@@ -9,7 +9,7 @@ describe Percheron::Graph do
   subject { described_class.new(stack) }
 
   before do
-    expect(GraphViz).to receive(:new).with(:G, type: :digraph, nodesep: 0.75, ranksep: 1.0, label: '\ndebian_jessie\n\n', fontsize: 12).and_return(graph)
+    expect(GraphViz).to receive(:new).with(:G, type: :digraph, nodesep: 0.75, ranksep: 1.0, label: "<\n          <table border=\"0\" cellborder=\"0\">\n            <tr><td height=\"36\" valign=\"bottom\">\n              <font face=\"Arial Bold\" point-size=\"14\">debian_jessie</font>\n            </td></tr>\n            <tr><td height=\"18\"><font face=\"Arial Italic\" point-size=\"11\"> </font></td></tr>\n          </table>\n          >").and_return(graph)
   end
 
   describe '#save!' do
