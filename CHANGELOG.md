@@ -1,3 +1,7 @@
+## v0.7.16 / 2015-08-07
+
+* Improved graph look
+
 ## v0.7.15 / 2015-08-06
 
 * Allow --force to be used when recreating
