@@ -37,7 +37,7 @@ module Percheron
     end
 
     def hostname
-      unit_config.fetch('hostname', name)
+      unit_config.fetch('hostname', full_name)
     end
 
     def image_name

@@ -44,7 +44,7 @@ describe Percheron::Actions::Create do
           {
             'name' => 'debian_jessie_debian_external',
             'Image' => 'debian:jessie',
-            'Hostname' => 'debian_external',
+            'Hostname' => 'debian_jessie_debian_external',
             'Env' => [],
             'ExposedPorts' => {},
             'Cmd' => [],
@@ -73,7 +73,7 @@ describe Percheron::Actions::Create do
           {
             'name' => 'debian_jessie_debian',
             'Image' => 'debian_jessie_debian:1.0.0',
-            'Hostname' => 'debian',
+            'Hostname' => 'debian_jessie_debian',
             'Env' => [],
             'ExposedPorts' => {
               '9999' => {}

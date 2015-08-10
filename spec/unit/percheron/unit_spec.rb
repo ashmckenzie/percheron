@@ -39,7 +39,7 @@ describe Percheron::Unit do
     describe '#hostname' do
       context 'when hostname is not explicitly defined' do
         it 'is valid' do
-          expect(subject.hostname).to eql('debian')
+          expect(subject.hostname).to eql('debian_jessie_debian')
         end
       end
 
