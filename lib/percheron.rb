@@ -7,6 +7,7 @@ require 'semantic'
 require 'metastore'
 require 'liquid'
 require 'singleton'
+require 'securerandom'
 
 require 'percheron/oh_dear'
 require 'percheron/core_extensions'
