@@ -2,6 +2,7 @@
 
 * Hostname is the full `<stack_name>_<name>` by default
 * Support for defining restart policy for each unit
+* Support privileged mode
 
 ## v0.7.16 / 2015-08-07
 

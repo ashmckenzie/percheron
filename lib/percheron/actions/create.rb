@@ -46,20 +46,25 @@ module Percheron
         end
 
         def host_config_options
-          config = {
+          {
             'HostConfig'    => {
               'PortBindings'  => port_bindings,
               'Links'         => unit.links,
               'Binds'         => unit.volumes,
-              'RestartPolicy' => unit.restart_policy
+              'RestartPolicy' => unit.restart_policy,
+              'Privileged'    => unit.privileged
             }
           }
-          config['Dns'] = unit.dns unless unit.dns.empty?
-          config
+        end
+
+        def host_config_dns_options
+          unit.dns.empty? ? {} : { 'HostConfig' => { 'Dns' => unit.dns } }
         end
 
         def options
-          @options ||= base_options.merge(host_config_options)
+          @options ||= begin
+            base_options.merge(host_config_options).merge(host_config_dns_options)
+          end
         end
 
         def port_bindings

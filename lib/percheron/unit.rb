@@ -52,6 +52,10 @@ module Percheron
       end
     end
 
+    def privileged
+      unit_config.fetch('privileged', false)
+    end
+
     def image_repo
       if !buildable?
         unit_config.docker_image.split(':')[0]

@@ -53,7 +53,8 @@ describe Percheron::Actions::Create do
               'PortBindings' => {},
               'Links' => [],
               'Binds' => [],
-              'RestartPolicy' => { 'Name' => 'always', 'MaximumRetryCount' => 0 }
+              'RestartPolicy' => { 'Name' => 'always', 'MaximumRetryCount' => 0 },
+              'Privileged' => false
             }
           }
         end
@@ -87,7 +88,8 @@ describe Percheron::Actions::Create do
               },
               'Links' => [ 'debian_jessie_dependant_debian:debian_jessie_dependant_debian' ],
               'Binds' => [ '/outside/container/path:/inside/container/path' ],
-              'RestartPolicy' => { 'Name' => 'always', 'MaximumRetryCount' => 0 }
+              'RestartPolicy' => { 'Name' => 'always', 'MaximumRetryCount' => 0 },
+              'Privileged' => false
             }
           }
         end
