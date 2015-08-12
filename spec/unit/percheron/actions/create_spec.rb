@@ -52,7 +52,8 @@ describe Percheron::Actions::Create do
             'HostConfig' => {
               'PortBindings' => {},
               'Links' => [],
-              'Binds' => []
+              'Binds' => [],
+              'RestartPolicy' => { 'Name' => 'always', 'MaximumRetryCount' => 0 }
             }
           }
         end
@@ -85,7 +86,8 @@ describe Percheron::Actions::Create do
                 '9999' => [ { 'HostPort' => '9999' } ]
               },
               'Links' => [ 'debian_jessie_dependant_debian:debian_jessie_dependant_debian' ],
-              'Binds' => [ '/outside/container/path:/inside/container/path' ]
+              'Binds' => [ '/outside/container/path:/inside/container/path' ],
+              'RestartPolicy' => { 'Name' => 'always', 'MaximumRetryCount' => 0 }
             }
           }
         end

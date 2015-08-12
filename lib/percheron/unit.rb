@@ -44,6 +44,14 @@ module Percheron
       '%s:%s' % [ image_repo, image_version.to_s ] if image_repo && image_version
     end
 
+    def restart_policy
+      @restart_policy ||= begin
+        name = unit_config.fetch('restart_policy', 'always')
+        max_retry_count = unit_config.fetch('restart_policy_retry_count', 0)
+        { 'Name' => name, 'MaximumRetryCount' => max_retry_count }
+      end
+    end
+
     def image_repo
       if !buildable?
         unit_config.docker_image.split(':')[0]

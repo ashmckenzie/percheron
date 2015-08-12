@@ -50,7 +50,8 @@ module Percheron
             'HostConfig'    => {
               'PortBindings'  => port_bindings,
               'Links'         => unit.links,
-              'Binds'         => unit.volumes
+              'Binds'         => unit.volumes,
+              'RestartPolicy' => unit.restart_policy
             }
           }
           config['Dns'] = unit.dns unless unit.dns.empty?
