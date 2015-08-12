@@ -1,3 +1,8 @@
+## v0.7.17 / 2015-XX-XX
+
+* Hostname is the full `<stack_name>_<name>` by default
+* Support for defining restart policy for each unit
+
 ## v0.7.16 / 2015-08-07
 
 * Improved graph look
