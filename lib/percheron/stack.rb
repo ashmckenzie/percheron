@@ -22,7 +22,7 @@ module Percheron
     end
 
     def metastore_key
-      @metastore_key ||= 'stacks.%s' % name
+      @metastore_key ||= 'stacks.%s' % [ name ]
     end
 
     def unit_configs
@@ -38,7 +38,7 @@ module Percheron
 
     def graph!(file)
       Graph.new(self).save!(file)
-      $logger.info "Saved '%s'" % file
+      $logger.info "Saved '%s'" % [ file ]
     end
 
     def shell!(unit_name, command: Percheron::Actions::Shell::DEFAULT_COMMAND)
@@ -75,7 +75,7 @@ module Percheron
       nil
     end
 
-    def create!(unit_names: [],  start: false)
+    def create!(unit_names: [], start: false)
       execute!(Actions::Create, dependant_units_for(unit_names), start: start)
     end
 
@@ -111,17 +111,13 @@ module Percheron
       end
 
       # FIXME: yuck
-      # rubocop:disable Style/Next
       def filter_unit_names(unit_names = [])
         stack_config.fetch('units', {}).map do |unit_name, unit_config|
-          if unit_names.empty? || unit_names.include?(unit_name) ||
-             (unit_config.pseudo_name &&
-               unit_names.include?(unit_config.pseudo_name))
-            unit_config.name
-          end
+          next if !unit_names.empty? || !unit_names.include?(unit_name)
+          next if !unit_config.pseudo_name && !unit_names.include?(unit_config.pseudo_name)
+          unit_config.name
         end.compact
       end
-      # rubocop:enable Style/Next
 
       def exec_on_dependant_units_for(unit_names)
         exec_on_units(unit_names) do |unit|

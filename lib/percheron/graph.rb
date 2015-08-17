@@ -87,7 +87,7 @@ module Percheron
         unit.ports.each do |ports|
           label << '<font point-size="11">p: %s, i: %s</font>' % ports.split(':')
         end
-        { shape: shape, label: '<%s>' % label.join('<br/>'), fontname: 'arial' }
+        { shape: shape, label: '<%s>' % [ label.join('<br/>') ], fontname: 'arial' }
       end
 
       def pseudo_node_opts(unit)
@@ -108,6 +108,5 @@ module Percheron
         color     = unit.startable? ? 'black' : 'gray'
         { dir: direction, style: style, color: color }
       end
-
   end
 end

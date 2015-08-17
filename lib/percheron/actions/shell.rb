@@ -17,14 +17,14 @@ module Percheron
 
       private
 
-        attr_reader :unit
+        attr_reader :unit, :command
 
         def valid?
           Validators::DockerClient.new.valid?
         end
 
         def command
-          "sh -c '%s'" % @command
+          "sh -c '%s'" & [ command ]
         end
 
         def exec!

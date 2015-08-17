@@ -34,7 +34,7 @@ module Percheron
           Start.new(unit, exec_scripts: false).execute! unless unit_running
           execute_scripts!
           commit_and_tag_new_image!
-          Stop.new(unit).execute!  unless unit_running
+          Stop.new(unit).execute! unless unit_running
         end
 
         def commit_and_tag_new_image!

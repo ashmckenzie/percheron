@@ -78,7 +78,8 @@ module Percheron
         @stacks = @yaml_contents = @raw_contents = @contents = nil
       end
 
-      def process_stacks!   # FIXME: bugs here :(
+      # FIXME: bugs here :(
+      def process_stacks!
         stacks_by_name = contents.stacks.to_hash_by_key(:name)
         scanned = scan_unit_configs(stacks_by_name)
         stacks_by_name.each do |_, stack|
@@ -110,7 +111,8 @@ module Percheron
         all[config.name] = config
       end
 
-      def scan_unit_configs(stacks_by_name)  # FIXME
+      # FIXME
+      def scan_unit_configs(stacks_by_name)
         all = {}
         stacks_by_name.each do |_, stack|
           stack.fetch(:units, []).each do |unit_config|
@@ -123,7 +125,8 @@ module Percheron
         all
       end
 
-      def expand_unit_config(unit_config, new_unit_names)  # FIXME
+      # FIXME
+      def expand_unit_config(unit_config, new_unit_names)
         new_unit_names.each_with_object({}) do |new_name, all|
           temp_unit_config = unit_config.dup
           temp_unit_config.delete(:instances)
