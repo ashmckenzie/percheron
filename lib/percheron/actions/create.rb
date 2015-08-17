@@ -47,7 +47,7 @@ module Percheron
 
         def host_config_options
           {
-            'HostConfig'    => {
+            'HostConfig' => {
               'PortBindings'  => port_bindings,
               'Links'         => unit.links,
               'Binds'         => unit.volumes,
