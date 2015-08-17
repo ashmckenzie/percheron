@@ -19,6 +19,8 @@ module Percheron
 
       def execute
         stack.valid?
+      rescue Percheron::Errors::StackInvalid => e
+        signal_usage_error(e.message)
       rescue => e
         puts "%s\n\n%s\n\n" % [ e.inspect, e.backtrace.join("\n") ]
         signal_usage_error(e.message)
