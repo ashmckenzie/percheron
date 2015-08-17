@@ -3,9 +3,9 @@ module Percheron
     class Build
       include Base
 
-      def initialize(unit, nocache: false, forcerm: false, exec_scripts: true)
+      def initialize(unit, usecache: true, forcerm: false, exec_scripts: true)
         @unit = unit
-        @nocache = nocache
+        @usecache = usecache
         @forcerm = forcerm
         @exec_scripts = exec_scripts
       end
@@ -21,15 +21,17 @@ module Percheron
 
       private
 
-        attr_reader :unit, :nocache, :forcerm, :exec_scripts
+        attr_reader :unit, :usecache, :forcerm, :exec_scripts
+        alias_method :usecache?, :usecache
+        alias_method :forcerm?, :forcerm
         alias_method :exec_scripts?, :exec_scripts
 
         def options
           {
             'dockerfile'  => dockerfile,
             't'           => unit.image_name,
-            'forcerm'     => forcerm,
-            'nocache'     => nocache
+            'forcerm'     => forcerm?,
+            'nocache'     => !usecache?
           }
         end
 

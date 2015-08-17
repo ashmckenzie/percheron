@@ -3,11 +3,12 @@ module Percheron
     class Build < Abstract
 
       default_parameters!
-      option('--forcerm', :flag, 'force removal of intermediate containers', default: false)
+      option('--usecache', :flag, 'Use image cache', default: true)
+      option('--forcerm', :flag, 'Force removal of intermediate containers', default: false)
 
       def execute
         super
-        stack.build!(unit_names: unit_names, forcerm: forcerm?)
+        stack.build!(unit_names: unit_names, usecache: usecache?, forcerm: forcerm?)
       end
     end
   end
