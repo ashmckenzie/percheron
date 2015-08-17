@@ -2,7 +2,7 @@ module Percheron
   module Commands
     class Main < Abstract
       subcommand %w(list status), 'List stacks and its units', List
-      subcommand 'console', 'Start a pry console session', Console
+      subcommand 'console', '', Console
       subcommand 'start', 'Start a stack', Start
       subcommand 'stop', 'Stop a stack', Stop
       subcommand 'restart', 'Restart a stack', Restart
