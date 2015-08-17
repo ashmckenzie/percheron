@@ -8,7 +8,7 @@ module Percheron
 
       def execute
         super
-        stack.shell!(unit_name, command: command)
+        stack.shell!(unit_name, raw_command: command)
       rescue Errors::DockerClientInvalid => e
         signal_usage_error(e.message)
       end

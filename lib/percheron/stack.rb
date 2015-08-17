@@ -41,8 +41,8 @@ module Percheron
       $logger.info "Saved '%s'" % [ file ]
     end
 
-    def shell!(unit_name, command: Percheron::Actions::Shell::DEFAULT_COMMAND)
-      Actions::Shell.new(unit_from_name(unit_name), command: command).execute!
+    def shell!(unit_name, raw_command: Percheron::Actions::Shell::DEFAULT_COMMAND)
+      Actions::Shell.new(unit_from_name(unit_name), raw_command: raw_command).execute!
     end
 
     def logs!(unit_name, follow: false)

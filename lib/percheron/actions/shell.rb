@@ -6,9 +6,9 @@ module Percheron
       DEFAULT_COMMAND = '/bin/sh'
       DOCKER_CLIENT = 'docker'
 
-      def initialize(unit, command: DEFAULT_COMMAND)
+      def initialize(unit, raw_command: DEFAULT_COMMAND)
         @unit = unit
-        @command = command
+        @raw_command = raw_command
       end
 
       def execute!
@@ -17,14 +17,14 @@ module Percheron
 
       private
 
-        attr_reader :unit, :command
+        attr_reader :unit, :raw_command
 
         def valid?
           Validators::DockerClient.new.valid?
         end
 
         def command
-          "sh -c '%s'" & [ command ]
+          "sh -c '%s'" % [ raw_command ]
         end
 
         def exec!
