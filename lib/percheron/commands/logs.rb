@@ -4,7 +4,7 @@ module Percheron
 
       parameter('STACK_NAME', 'stack name', required: true)
       parameter('UNIT_NAME', 'unit name', required: true)
-      option('--follow', :flag, 'follow the logs', default: false)
+      option([ '-f', '-t', '--follow', '--tail' ], :flag, 'Follow the logs', default: false)
 
       def execute
         super
