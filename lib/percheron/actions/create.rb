@@ -1,7 +1,6 @@
 module Percheron
   module Actions
     class Create
-
       include Base
 
       def initialize(unit, start: false, cmd: false, exec_scripts: true)

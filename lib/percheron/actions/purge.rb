@@ -1,7 +1,6 @@
 module Percheron
   module Actions
     class Purge
-
       include Base
 
       def initialize(unit, force: false)

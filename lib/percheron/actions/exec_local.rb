@@ -3,7 +3,6 @@ require 'open3'
 module Percheron
   module Actions
     class ExecLocal
-
       include Base
 
       def initialize(unit, scripts, description)

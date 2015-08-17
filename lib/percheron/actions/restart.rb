@@ -1,7 +1,6 @@
 module Percheron
   module Actions
     class Restart
-
       include Base
 
       def initialize(unit)

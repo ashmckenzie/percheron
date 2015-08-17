@@ -1,7 +1,6 @@
 module Percheron
   module Actions
     class Stop
-
       include Base
 
       def initialize(unit)

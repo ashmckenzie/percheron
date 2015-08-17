@@ -1,7 +1,6 @@
 module Percheron
   module Actions
     class Build
-
       include Base
 
       def initialize(unit, nocache: false, forcerm: false, exec_scripts: true)

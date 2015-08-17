@@ -1,7 +1,6 @@
 module Percheron
   module Actions
     class Exec
-
       include Base
 
       def initialize(unit, dependant_units, scripts, description)
