@@ -3,12 +3,21 @@ module Percheron
     class Purge < Abstract
 
       default_parameters!
-      option([ '-f', '--force' ], :flag, 'Force unit/image removal', default: false)
+      option('--yes', :flag, 'Yes, purge image / unit', default: false)
+      option('--force', :flag, 'Force image / unit removal', default: false)
 
       def execute
         super
-        stack.purge!(unit_names: unit_names, force: force?)
+        stack.purge!(unit_names: unit_names, force: force?) if yes? || confirm?
       end
+
+      private
+
+        def confirm?
+          ask('Are you sure? (y|n) ') do |q|
+            q.validate = /y(es)?|n(o)?/i
+          end.match(/y(es)?/i)
+        end
     end
   end
 end

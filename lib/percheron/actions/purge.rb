@@ -11,8 +11,8 @@ module Percheron
       def execute!
         results = []
         results << stop!
-        results << delete_unit!
-        results << delete_image!
+        results << delete_unit!  if delete_unit?
+        results << delete_image! if delete_image?
         results.compact.empty? ? nil : unit
       end
 
@@ -24,12 +24,15 @@ module Percheron
           Stop.new(unit).execute!
         end
 
+        def delete_unit?
+          unit.exists?
+        end
+
         def delete_image?
           unit.image_exists? && unit.buildable?
         end
 
         def delete_unit!
-          return nil unless unit.exists?
           $logger.info "Deleting '#{unit.display_name}' unit"
           unit.container.remove(force: force)
         rescue Docker::Error::ConflictError => e
@@ -37,13 +40,11 @@ module Percheron
         end
 
         def delete_image!
-          return nil unless delete_image?
           $logger.info "Deleting '#{unit.image_name}' image"
           unit.image.remove(force: force)
         rescue Docker::Error::ConflictError => e
           $logger.error "Unable to delete '%s' image - %s" % [ unit.image_name, e.inspect ]
         end
-
     end
   end
 end
