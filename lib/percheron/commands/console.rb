@@ -32,11 +32,6 @@ module Percheron
           nil
         end
 
-        def recreate(unit_names, start: false)
-          stack.create!(unit_names: [ *unit_names ], start: start)
-          nil
-        end
-
         def start(unit_names)
           stack.start!(unit_names: [ *unit_names ])
           nil
