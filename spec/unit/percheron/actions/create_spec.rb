@@ -99,14 +99,14 @@ describe Percheron::Actions::Create do
         before do
           expect(unit).to receive(:dependant_units).and_return(dependant_units)
           expect(unit).to receive(:image).and_return(image)
+          expect(Percheron::Actions::Build).to receive(:new).with(unit).and_return(build_double)
+          expect(build_double).to receive(:execute!)
         end
 
         context 'and Docker image does not exist' do
           let(:image_exists) { false }
 
           it 'calls Actions::Build#execute! AND creates a Docker::Container' do
-            expect(Percheron::Actions::Build).to receive(:new).with(unit).and_return(build_double)
-            expect(build_double).to receive(:execute!)
             expect(image).to receive(:insert_local).with('localPath' => %r{/spec/unit/support/post_start_script2.sh}, 'outputPath' => '/tmp/post_start_script2.sh').and_return(new_image)
             expect(new_image).to receive(:tag).with(repo: 'debian_jessie_debian', tag: '1.0.0', force: true)
             subject.execute!
@@ -117,7 +117,6 @@ describe Percheron::Actions::Create do
           let(:image_exists) { true }
 
           it 'creates just a Docker::Container' do
-            expect(Percheron::Actions::Build).to_not receive(:new).with(unit)
             expect(image).to receive(:insert_local).with('localPath' => %r{/spec/unit/support/post_start_script2.sh}, 'outputPath' => '/tmp/post_start_script2.sh').and_return(new_image)
             expect(new_image).to receive(:tag).with(repo: 'debian_jessie_debian', tag: '1.0.0', force: true)
             subject.execute!
@@ -128,7 +127,6 @@ describe Percheron::Actions::Create do
             let(:start_double) { double('Percheron::Actions::Start') }
 
             it 'starts up the Docker::Container' do
-              expect(Percheron::Actions::Build).to_not receive(:new).with(unit)
               expect(image).to receive(:insert_local).with('localPath' => %r{/spec/unit/support/post_start_script2.sh}, 'outputPath' => '/tmp/post_start_script2.sh').and_return(new_image)
               expect(new_image).to receive(:tag).with(repo: 'debian_jessie_debian', tag: '1.0.0', force: true)
               expect(Percheron::Actions::Start).to receive(:new).with(unit).and_return(start_double)
@@ -149,7 +147,6 @@ describe Percheron::Actions::Create do
       end
 
       it 'creates a Docker::Container' do
-        expect(logger).to receive(:debug).with("Unit 'debian_jessie:debian' already exists")
         subject.execute!
       end
     end

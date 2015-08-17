@@ -244,11 +244,11 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Build') }
 
       it 'asks each Container to build' do
-        expect(klass).to receive(:new).with(pseudo2_unit, forcerm: false).and_return(action_double)
-        expect(klass).to receive(:new).with(pseudo1_unit, forcerm: false).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_unit, forcerm: false).and_return(action_double)
-        expect(klass).to receive(:new).with(external_unit, forcerm: false).and_return(action_double)
-        expect(klass).to receive(:new).with(unit, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo2_unit, usecache: true, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit, usecache: true, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_unit, usecache: true, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit, usecache: true, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(unit, usecache: true, forcerm: false).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(5).times
         subject.build!
       end
@@ -281,21 +281,6 @@ describe Percheron::Stack do
         expect(klass).to receive(:new).with(unit, force: false).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(5).times
         subject.purge!
-      end
-    end
-
-    describe '#recreate!' do
-      let(:klass) { Percheron::Actions::Recreate }
-      let(:action_double) { double('Percheron::Actions::Recreate') }
-
-      it 'asks each Container to recreate' do
-        expect(klass).to receive(:new).with(pseudo2_unit, start: false, force: false).and_return(action_double)
-        expect(klass).to receive(:new).with(pseudo1_unit, start: false, force: false).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_unit, start: false, force: false).and_return(action_double)
-        expect(klass).to receive(:new).with(external_unit, start: false, force: false).and_return(action_double)
-        expect(klass).to receive(:new).with(unit, start: false, force: false).and_return(action_double)
-        expect(action_double).to receive(:execute!).exactly(5).times
-        subject.recreate!
       end
     end
   end
