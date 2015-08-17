@@ -110,11 +110,10 @@ module Percheron
         @stack_config ||= (config.stacks[stack_name] || Hashie::Mash.new({}))
       end
 
-      # FIXME: yuck
       def filter_unit_names(unit_names = [])
         stack_config.fetch('units', {}).map do |unit_name, unit_config|
-          next if !unit_names.empty? || !unit_names.include?(unit_name)
-          next if !unit_config.pseudo_name && !unit_names.include?(unit_config.pseudo_name)
+          next if unit_names.include?(unit_name)
+          next if unit_config.pseudo_name && unit_names.include?(unit_config.pseudo_name)
           unit_config.name
         end.compact
       end
