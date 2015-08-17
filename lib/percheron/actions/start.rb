@@ -30,7 +30,7 @@ module Percheron
 
         def create!
           return nil if unit.exists?
-          Create.new(unit, cmd: cmd, exec_scripts: exec_scripts).execute!
+          Create.new(unit, cmd: cmd).execute!
         end
 
         def start!

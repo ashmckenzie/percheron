@@ -6,8 +6,8 @@ module Percheron
       subcommand 'start', 'Start a stack', Start
       subcommand 'stop', 'Stop a stack', Stop
       subcommand 'restart', 'Restart a stack', Restart
-      subcommand 'create', 'Build images and create units for a stack', Create
       subcommand %w(build rebuild), '(Re)build image(s) for a stack', Build
+      subcommand %w(create recreate), '(Re)build image(s) and (re)create units for a stack', Create
       subcommand 'purge', 'Purge a stack', Purge
       subcommand 'shell', 'Shell into a unit', Shell
       subcommand 'logs', 'Show logs for a unit', Logs

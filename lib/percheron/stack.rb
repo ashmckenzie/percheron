@@ -75,12 +75,9 @@ module Percheron
       nil
     end
 
-    def create!(unit_names: [], start: false)
-      execute!(Actions::Create, dependant_units_for(unit_names), start: start)
-    end
-
-    def recreate!(unit_names: [], start: false, force: false)
-      execute!(Actions::Recreate, filter_unit_names(unit_names), start: start, force: force)
+    def create!(unit_names: [], build: true, start: false, force: false)
+      opts = { build: build, start: start, force: force }
+      execute!(Actions::Create, dependant_units_for(unit_names), opts)
     end
 
     def purge!(unit_names: [], force: false)

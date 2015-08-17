@@ -17,11 +17,6 @@ module Percheron
         end
       end
 
-      def self.default_create_parameters!
-        default_parameters!
-        option('--start', :flag, 'Start unit', default: false)
-      end
-
       def execute
         stack.valid?
       rescue => e

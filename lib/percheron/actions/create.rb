@@ -3,34 +3,29 @@ module Percheron
     class Create
       include Base
 
-      def initialize(unit, start: false, cmd: false, exec_scripts: true)
+      def initialize(unit, build: true, start: false, force: false, cmd: false)
         @unit = unit
+        @build = build
         @start = start
-        @exec_scripts = exec_scripts
-        @cmd = cmd
+        @force = force
+        @cmd = (cmd || unit.start_args)
         @unit_image_existed = unit.image_exists?
       end
 
       def execute!
         results = []
-        if unit.exists?
-          $logger.debug "Unit '#{unit.display_name}' already exists"
-        else
-          results << create!
-        end
+        results << unit.buildable? ? build_image! : pull_image!
+        results << create! if unit.startable?
         results.compact.empty? ? nil : unit
       end
 
       private
 
-        attr_reader :unit, :start, :exec_scripts, :unit_image_existed
+        attr_reader :unit, :build, :start, :force, :cmd, :unit_image_existed
+        alias_method :build?, :build
         alias_method :start?, :start
-        alias_method :exec_scripts?, :exec_scripts
+        alias_method :force?, :force
         alias_method :unit_image_existed?, :unit_image_existed
-
-        def cmd
-          @cmd ||= (@cmd || unit.start_args)
-        end
 
         def base_options
           {
@@ -74,19 +69,20 @@ module Percheron
         end
 
         def create!
-          unit.buildable? ? build_image! : pull_image!
-          return unless unit.startable?
           insert_scripts!
-          create_unit!
-          update_dockerfile_md5!
-          start!
+          if force? || !unit.exists?
+            create_unit!
+            update_dockerfile_md5!
+            start! if start?
+          else
+            $logger.debug "Unit '#{unit.display_name}' already exists (--force to overwrite)"
+          end
         end
 
         def build_image!
-          Build.new(unit).execute! unless unit.image_exists?
+          Build.new(unit).execute! if build?
         end
 
-        # FIXME: move this
         def pull_image!
           return nil if unit.image_exists?
           $logger.info "Pulling '#{unit.image_name}' image"
@@ -95,13 +91,20 @@ module Percheron
           end
         end
 
+        def delete_unit!
+          $logger.info "Deleting '#{unit.display_name}' unit"
+          unit.container.remove(force: force?)
+        rescue Docker::Error::ConflictError => e
+          $logger.error "Unable to delete '%s' unit - %s" % [ unit.name, e.inspect ]
+        end
+
         def create_unit!
+          delete_unit! if force?
           $logger.info "Creating '#{unit.display_name}' unit"
           Connection.perform(Docker::Container, :create, options)
         end
 
         def start!
-          return nil if !unit.startable? || !start?
           Start.new(unit).execute!
         end
 
@@ -111,11 +114,7 @@ module Percheron
 
         def insert_scripts!
           return nil if unit_image_existed?
-          insert_files!(unit.post_start_scripts)
-        end
-
-        def insert_files!(files)
-          files.each { |file| insert_file!(file) }
+          unit.post_start_scripts.each { |file| insert_file!(file) }
         end
 
         def insert_file!(file)
