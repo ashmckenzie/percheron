@@ -17,6 +17,15 @@ module Percheron
         end
       end
 
+      def runit
+        yield
+      rescue Docker::Error::UnexpectedResponseError => e
+        $logger.error('')
+        $logger.error('An exception occurred :(')
+        $logger.error('')
+        $logger.error(e.inspect)
+      end
+
       def execute
         stack.valid?
       rescue Errno::ENOENT, Errors::ConfigFileInvalid, Errors::StackInvalid => e
