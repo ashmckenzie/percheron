@@ -126,8 +126,8 @@ stacks:
         docker_image: gliderlabs/consul-server:0.5
         start_args: [ "-bootstrap", "-client", "0.0.0.0", "-data-dir", "/data", "-ui-dir", "/ui" ]
         ports:
-          - 8500:8500
-          - 8600:53/udp
+          - "8500:8500"
+          - "8600:53/udp"
       - name: agent
         version: 1.0.0
         instances: 2
