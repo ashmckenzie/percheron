@@ -213,10 +213,6 @@ percheron graph consul-stack
 
 ![consul-stack](https://raw.githubusercontent.com/ashmckenzie/percheron-consul/master/assets/stack.png)
 
-## Demo asciicast
-
-[![asciicast](https://asciinema.org/a/7l1ar35xlmfsaphhptrqvx7jg.png)](https://asciinema.org/a/7l1ar35xlmfsaphhptrqvx7jg)
-
 ## Debugging
 
 To perform debugging you will need to install the `pry-byebug` gem:
