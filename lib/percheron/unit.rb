@@ -5,9 +5,8 @@ module Percheron
     extend ConfigDelegator
 
     def_delegators :unit_config, :name, :pseudo_name, :docker_image
-    def_config_item_with_default :unit_config, [], :env, :ports, :volumes,
-                                 :needed_unit_names, :pre_build_scripts,
-                                 :post_start_scripts, :start_args, :dns
+    def_config_item_with_default :unit_config, [], :env, :ports, :volumes, :needed_unit_names,
+                                 :pre_build_scripts, :post_start_scripts, :start_args, :dns
     def_config_item_with_default :unit_config, true, :startable
 
     def initialize(config, stack, unit_name)
@@ -107,9 +106,7 @@ module Percheron
     end
 
     def links
-      startable_needed_units.map do |_, unit|
-        '%s:%s' % [ unit.full_name, unit.full_name ]
-      end
+      startable_needed_units.map { |_, unit| '%s:%s' % [ unit.full_name, unit.full_name ] }
     end
 
     def container
