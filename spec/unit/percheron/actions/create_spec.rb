@@ -126,6 +126,12 @@ describe Percheron::Actions::Create do
     context 'when a Docker unit already exists' do
       let(:unit_exists) { true }
       let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
+      let(:container_double) { double('Docker::Container') }
+
+      before do
+        expect(Percheron::Actions::Build).to receive(:new).with(unit).and_return(build_double)
+        expect(build_double).to receive(:execute!)
+      end
 
       context 'with no force' do
         it 'warns the unit already exists' do
@@ -157,11 +163,7 @@ describe Percheron::Actions::Create do
         let(:metastore_key) { 'stacks.debian_jessie.units.debian.dockerfile_md5' }
         let(:metastore_key_md5) { '0b03152a88e90de1c5466d6484b8ce5b' }
 
-        let(:container_double) { double('Docker::Container') }
-
         before do
-          expect(Percheron::Actions::Build).to receive(:new).with(unit).and_return(build_double)
-          expect(build_double).to receive(:execute!)
           expect(unit).to receive(:container).and_return(container_double)
         end
 
