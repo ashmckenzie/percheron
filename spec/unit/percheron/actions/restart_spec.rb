@@ -1,15 +1,15 @@
 require 'unit/spec_helper'
 
 describe Percheron::Actions::Restart do
-  let(:dependant_unit) { double('Perheron::Unit') }
-  let(:dependant_units) { [ dependant_unit ] }
+  let(:needed_unit) { double('Perheron::Unit') }
+  let(:needed_units) { [ needed_unit ] }
   let(:unit) do
     double(
       'Perheron::Unit',
       name: 'debian',
-      dependant_units: { 'dependant_debian' => dependant_unit },
-      dependant_unit_names: %w(dependant_debian),
-      startable_dependant_units: { 'dependant_unit' => dependant_unit }
+      needed_units: { 'needed_debian' => needed_unit },
+      needed_unit_names: %w(needed_debian),
+      startable_needed_units: { 'needed_unit' => needed_unit }
     )
   end
 
@@ -23,7 +23,7 @@ describe Percheron::Actions::Restart do
       expect(Percheron::Actions::Stop).to receive(:new).with(unit).and_return(stop_action)
       expect(stop_action).to receive(:execute!)
 
-      expect(Percheron::Actions::Start).to receive(:new).with(unit, dependant_units: dependant_units).and_return(start_action)
+      expect(Percheron::Actions::Start).to receive(:new).with(unit, needed_units: needed_units).and_return(start_action)
       expect(start_action).to receive(:execute!)
 
       subject.execute!

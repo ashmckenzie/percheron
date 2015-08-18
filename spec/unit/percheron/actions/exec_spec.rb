@@ -11,11 +11,11 @@ describe Percheron::Actions::Exec do
   let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
-  let(:dependant_units) { unit.dependant_units.values }
-  let(:dependant_unit) { dependant_units.first }
+  let(:needed_units) { unit.needed_units.values }
+  let(:needed_unit) { needed_units.first }
   let(:scripts) { [ '/tmp/test.sh' ] }
 
-  subject { described_class.new(unit, dependant_units, scripts, 'TEST') }
+  subject { described_class.new(unit, needed_units, scripts, 'TEST') }
 
   before do
     $logger = logger
@@ -32,9 +32,9 @@ describe Percheron::Actions::Exec do
     end
 
     it 'executes scripts' do
-      expect(Percheron::Actions::Start).to receive(:new).with(dependant_unit, dependant_units: [], exec_scripts: true).and_return(start_action1)
+      expect(Percheron::Actions::Start).to receive(:new).with(needed_unit, needed_units: [], exec_scripts: true).and_return(start_action1)
       expect(Percheron::Actions::Start).to receive(:new).with(unit, exec_scripts: false).and_return(start_action2)
-      expect(start_action1).to receive(:execute!).and_return(dependant_unit)
+      expect(start_action1).to receive(:execute!).and_return(needed_unit)
       expect(start_action2).to receive(:execute!).and_return(unit)
       expect(container).to receive(:exec).with(['/bin/sh', '-x', '/tmp/test.sh', '2>&1']).and_yield(:stdout, 'output from test.sh')
       subject.execute!

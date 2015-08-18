@@ -21,12 +21,12 @@ describe Percheron::Actions::Base do
   let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
-  let(:dependant_units) { unit.dependant_units }
+  let(:needed_units) { unit.needed_units }
 
   before do
     $logger = logger
     Timecop.freeze(Time.local(1990))
-    allow(unit).to receive(:dependant_units).and_return(dependant_units)
+    allow(unit).to receive(:needed_units).and_return(needed_units)
   end
 
   after do

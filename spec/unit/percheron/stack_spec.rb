@@ -4,15 +4,15 @@ describe Percheron::Stack do
   let(:logger) { double('Logger').as_null_object }
   let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
 
-  let(:dependant_unit) do
+  let(:needed_unit) do
     double(
       'Perheron::Unit',
-      name: 'dependant_debian',
-      full_name: 'debian_jessie-dependant_debian',
-      display_name: 'debian_jessie:dependant_debian',
-      dependant_unit_names: [],
-      dependant_units: {},
-      startable_dependant_units: {},
+      name: 'needed_debian',
+      full_name: 'debian_jessie-needed_debian',
+      display_name: 'debian_jessie:needed_debian',
+      needed_unit_names: [],
+      needed_units: {},
+      startable_needed_units: {},
       startable?: true
     )
   end
@@ -23,9 +23,9 @@ describe Percheron::Stack do
       name: 'debian',
       full_name: 'debian_jessie-debian',
       display_name: 'debian_jessie:debian',
-      dependant_unit_names: %w(dependant_debian),
-      dependant_units: { 'dependant_debian' => dependant_unit },
-      startable_dependant_units: { 'dependant_debian' => dependant_unit },
+      needed_unit_names: %w(needed_debian),
+      needed_units: { 'needed_debian' => needed_unit },
+      startable_needed_units: { 'needed_debian' => needed_unit },
       startable?: true
     )
   end
@@ -36,9 +36,9 @@ describe Percheron::Stack do
       name: 'debian_external',
       full_name: 'debian_jessie-debian_external',
       display_name: 'debian_jessie:debian_external',
-      dependant_unit_names: [],
-      dependant_units: {},
-      startable_dependant_units: {},
+      needed_unit_names: [],
+      needed_units: {},
+      startable_needed_units: {},
       startable?: true
     )
   end
@@ -49,9 +49,9 @@ describe Percheron::Stack do
       name: 'debian_pseudo1',
       full_name: 'debian_jessie-xxx',
       display_name: 'debian_jessie:xxx',
-      dependant_unit_names: [],
-      dependant_units: {},
-      startable_dependant_units: {},
+      needed_unit_names: [],
+      needed_units: {},
+      startable_needed_units: {},
       startable?: true
     )
   end
@@ -62,14 +62,14 @@ describe Percheron::Stack do
       name: 'debian_pseudo2',
       full_name: 'debian_jessie-xxx',
       display_name: 'debian_jessie:xxx',
-      dependant_unit_names: [],
-      dependant_units: {},
-      startable_dependant_units: {},
+      needed_unit_names: [],
+      needed_units: {},
+      startable_needed_units: {},
       startable?: true
     )
   end
 
-  let(:dependant_units) { [ dependant_unit ] }
+  let(:needed_units) { [ needed_unit ] }
 
   subject { described_class.new(config, 'debian_jessie') }
 
@@ -156,7 +156,7 @@ describe Percheron::Stack do
     before do
       allow(Percheron::Unit).to receive(:new).with(config, subject, 'debian').and_return(unit)
       allow(Percheron::Unit).to receive(:new).with(config, subject, 'debian_external').and_return(external_unit)
-      allow(Percheron::Unit).to receive(:new).with(config, subject, 'dependant_debian').and_return(dependant_unit)
+      allow(Percheron::Unit).to receive(:new).with(config, subject, 'needed_debian').and_return(needed_unit)
       allow(Percheron::Unit).to receive(:new).with(config, subject, 'debian_pseudo1').and_return(pseudo1_unit)
       allow(Percheron::Unit).to receive(:new).with(config, subject, 'debian_pseudo2').and_return(pseudo2_unit)
     end
@@ -201,7 +201,7 @@ describe Percheron::Stack do
       it 'asks each Container to stop' do
         expect(klass).to receive(:new).with(unit).and_return(action_double)
         expect(klass).to receive(:new).with(external_unit).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(needed_unit).and_return(action_double)
         expect(klass).to receive(:new).with(pseudo1_unit).and_return(action_double)
         expect(klass).to receive(:new).with(pseudo2_unit).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(5).times
@@ -214,11 +214,11 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Start') }
 
       it 'asks each Container to start' do
-        expect(klass).to receive(:new).with(pseudo2_unit, dependant_units: []).and_return(action_double)
-        expect(klass).to receive(:new).with(pseudo1_unit, dependant_units: []).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_unit, dependant_units: []).and_return(action_double)
-        expect(klass).to receive(:new).with(external_unit, dependant_units: []).and_return(action_double)
-        expect(klass).to receive(:new).with(unit, dependant_units: dependant_units).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo2_unit, needed_units: []).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit, needed_units: []).and_return(action_double)
+        expect(klass).to receive(:new).with(needed_unit, needed_units: []).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit, needed_units: []).and_return(action_double)
+        expect(klass).to receive(:new).with(unit, needed_units: needed_units).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(5).times
         subject.start!
       end
@@ -231,7 +231,7 @@ describe Percheron::Stack do
       it 'asks each Container to restart' do
         expect(klass).to receive(:new).with(pseudo2_unit).and_return(action_double)
         expect(klass).to receive(:new).with(pseudo1_unit).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_unit).and_return(action_double)
+        expect(klass).to receive(:new).with(needed_unit).and_return(action_double)
         expect(klass).to receive(:new).with(external_unit).and_return(action_double)
         expect(klass).to receive(:new).with(unit).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(5).times
@@ -246,7 +246,7 @@ describe Percheron::Stack do
       it 'asks each Container to build' do
         expect(klass).to receive(:new).with(pseudo2_unit, usecache: true, forcerm: false).and_return(action_double)
         expect(klass).to receive(:new).with(pseudo1_unit, usecache: true, forcerm: false).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_unit, usecache: true, forcerm: false).and_return(action_double)
+        expect(klass).to receive(:new).with(needed_unit, usecache: true, forcerm: false).and_return(action_double)
         expect(klass).to receive(:new).with(external_unit, usecache: true, forcerm: false).and_return(action_double)
         expect(klass).to receive(:new).with(unit, usecache: true, forcerm: false).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(5).times
@@ -262,7 +262,7 @@ describe Percheron::Stack do
         expected_opts = { build: true, start: false, force: false }
         expect(klass).to receive(:new).with(pseudo2_unit, expected_opts).and_return(action_double)
         expect(klass).to receive(:new).with(pseudo1_unit, expected_opts).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_unit, expected_opts).and_return(action_double)
+        expect(klass).to receive(:new).with(needed_unit, expected_opts).and_return(action_double)
         expect(klass).to receive(:new).with(external_unit, expected_opts).and_return(action_double)
         expect(klass).to receive(:new).with(unit, expected_opts).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(5).times
@@ -277,7 +277,7 @@ describe Percheron::Stack do
       it 'asks each Container to purge' do
         expect(klass).to receive(:new).with(pseudo2_unit, force: false).and_return(action_double)
         expect(klass).to receive(:new).with(pseudo1_unit, force: false).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_unit, force: false).and_return(action_double)
+        expect(klass).to receive(:new).with(needed_unit, force: false).and_return(action_double)
         expect(klass).to receive(:new).with(external_unit, force: false).and_return(action_double)
         expect(klass).to receive(:new).with(unit, force: false).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(5).times

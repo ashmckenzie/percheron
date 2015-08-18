@@ -55,10 +55,10 @@ module Percheron
 
     # FIXME: bug when non-startable unit specified, all units started
     def start!(unit_names: [])
-      unit_names = dependant_units_for(unit_names)
-      exec_on_dependant_units_for(unit_names) do |unit|
-        dependant_units = unit.startable_dependant_units.values
-        Actions::Start.new(unit, dependant_units: dependant_units).execute!
+      unit_names = needed_units_for(unit_names)
+      exec_on_needed_units_for(unit_names) do |unit|
+        needed_units = unit.startable_needed_units.values
+        Actions::Start.new(unit, needed_units: needed_units).execute!
       end
       nil
     end
@@ -68,16 +68,22 @@ module Percheron
     end
 
     def build!(unit_names: [], usecache: true, forcerm: false)
-      unit_names = dependant_units_for(unit_names)
-      exec_on_dependant_units_for(unit_names) do |unit|
+      unit_names = needed_units_for(unit_names)
+      exec_on_needed_units_for(unit_names) do |unit|
         Actions::Build.new(unit, usecache: usecache, forcerm: forcerm).execute!
       end
       nil
     end
 
-    def create!(unit_names: [], build: true, start: false, force: false)
+    def create!(unit_names: [], build: true, start: false, deep: false, force: false)
       opts = { build: build, start: start, force: force }
-      execute!(Actions::Create, dependant_units_for(unit_names), opts)
+      unit_names = if deep
+                     unit_names = stack_units.keys if unit_names.empty?
+                     needed_units_for(unit_names)
+                   else
+                     filter_unit_names(unit_names)
+                   end
+      execute!(Actions::Create, unit_names, opts)
     end
 
     def purge!(unit_names: [], force: false)
@@ -85,12 +91,8 @@ module Percheron
     end
 
     def execute!(klass, unit_names, args=nil)
-      exec_on_dependant_units_for(unit_names) do |unit|
-        if args
-          klass.new(unit, args).execute!
-        else
-          klass.new(unit).execute!
-        end
+      exec_on_needed_units_for(unit_names) do |unit|
+        args ? klass.new(unit, args).execute! : klass.new(unit).execute!
       end
       nil
     end
@@ -115,7 +117,7 @@ module Percheron
         end.compact
       end
 
-      def exec_on_dependant_units_for(unit_names)
+      def exec_on_needed_units_for(unit_names)
         exec_on_units(unit_names) do |unit|
           $logger.debug "Processing '#{unit.display_name}' unit"
           yield(unit)
@@ -127,21 +129,21 @@ module Percheron
         units(unit_names).each { |_, unit| yield(unit) }
       end
 
-      def dependant_units_for(unit_names)
+      def needed_units_for(unit_names)
         list = []
         unit_names = filter_unit_names(unit_names)
-        units = all_units_and_dependants(unit_names)
-        units.each do |unit_name, dependant_unit_names|
-          list += dependant_unit_names unless dependant_unit_names.empty?
+        units = all_units_and_neededs(unit_names)
+        units.each do |unit_name, needed_unit_names|
+          list += needed_unit_names unless needed_unit_names.empty?
           list << unit_name
         end
         list.uniq
       end
 
-      def all_units_and_dependants(unit_names)
+      def all_units_and_neededs(unit_names)
         all_units = units
         units = unit_names.each_with_object({}) do |unit_name, all|
-          all[unit_name] = all_units[unit_name].dependant_unit_names
+          all[unit_name] = all_units[unit_name].needed_unit_names
         end
         units.sort { |x, y| x[1].length <=> y[1].length } # FIXME
       end

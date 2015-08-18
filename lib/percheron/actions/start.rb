@@ -3,9 +3,9 @@ module Percheron
     class Start
       include Base
 
-      def initialize(unit, dependant_units: [], cmd: false, exec_scripts: true)
+      def initialize(unit, needed_units: [], cmd: false, exec_scripts: true)
         @unit = unit
-        @dependant_units = dependant_units
+        @needed_units = needed_units
         @cmd = cmd
         @exec_scripts = exec_scripts
       end
@@ -22,7 +22,7 @@ module Percheron
 
       private
 
-        attr_reader :unit, :dependant_units, :cmd, :exec_scripts
+        attr_reader :unit, :needed_units, :cmd, :exec_scripts
 
         def exec_scripts?
           !unit.post_start_scripts.empty? && exec_scripts
@@ -41,7 +41,7 @@ module Percheron
 
         def execute_post_start_scripts!
           scripts = unit.post_start_scripts
-          Exec.new(unit, dependant_units, scripts, 'POST start').execute! if exec_scripts?
+          Exec.new(unit, needed_units, scripts, 'POST start').execute! if exec_scripts?
         end
 
     end

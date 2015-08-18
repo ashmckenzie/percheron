@@ -7,9 +7,9 @@ describe Percheron::Actions::Start do
   let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
-  let(:dependant_units) { unit.dependant_units.values }
+  let(:needed_units) { unit.needed_units.values }
 
-  subject { described_class.new(unit, dependant_units: dependant_units) }
+  subject { described_class.new(unit, needed_units: needed_units) }
 
   before do
     $logger = logger
@@ -26,7 +26,7 @@ describe Percheron::Actions::Start do
       allow(Percheron::Connection).to receive(:perform).with(Docker::Container, :get, 'debian_jessie_debian').and_return(container)
       expect(unit).to receive(:exists?).and_return(unit_exists).at_least(:once)
       expect(unit).to receive(:running?).and_return(unit_running).at_least(:once)
-      allow(Percheron::Actions::Exec).to receive(:new).with(unit, dependant_units, ['./post_start_script2.sh'], 'POST start').and_return(exec_action)
+      allow(Percheron::Actions::Exec).to receive(:new).with(unit, needed_units, ['./post_start_script2.sh'], 'POST start').and_return(exec_action)
       allow(exec_action).to receive(:execute!)
     end
 

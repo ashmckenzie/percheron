@@ -23,7 +23,7 @@ module Percheron
         end
 
         def start!
-          opts = { dependant_units: unit.startable_dependant_units.values }
+          opts = { needed_units: unit.startable_needed_units.values }
           Start.new(unit, opts).execute!
         end
 

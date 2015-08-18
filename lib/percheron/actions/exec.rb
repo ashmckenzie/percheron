@@ -3,9 +3,9 @@ module Percheron
     class Exec
       include Base
 
-      def initialize(unit, dependant_units, scripts, description)
+      def initialize(unit, needed_units, scripts, description)
         @unit = unit
-        @dependant_units = dependant_units
+        @needed_units = needed_units
         @scripts = scripts
         @description = description
       end
@@ -18,13 +18,13 @@ module Percheron
 
       private
 
-        attr_reader :unit, :dependant_units, :scripts, :description
+        attr_reader :unit, :needed_units, :scripts, :description
 
         def exec!
           results = []
-          started_dependant_units = start_units!(dependant_units)
+          started_needed_units = start_units!(needed_units)
           results << execute_scripts_on_running_unit!
-          results << stop_units!(started_dependant_units)
+          results << stop_units!(started_needed_units)
           results
         end
 
@@ -66,8 +66,8 @@ module Percheron
         def start_units!(units, scripts: true)
           exec_on_units!(units) do |unit|
             next if unit.running?
-            units = unit.startable_dependant_units.values
-            Start.new(unit, dependant_units: units, exec_scripts: scripts).execute!
+            units = unit.startable_needed_units.values
+            Start.new(unit, needed_units: units, exec_scripts: scripts).execute!
           end
         end
 

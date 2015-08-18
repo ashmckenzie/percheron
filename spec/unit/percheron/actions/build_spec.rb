@@ -7,14 +7,14 @@ describe Percheron::Actions::Build do
   let(:config) { Percheron::Config.load!('./spec/unit/support/.percheron_valid.yml') }
   let(:stack) { Percheron::Stack.new(config, 'debian_jessie') }
   let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
-  let(:dependant_units) { unit.dependant_units }
+  let(:needed_units) { unit.needed_units }
 
   subject { described_class.new(unit) }
 
   before do
     $logger = logger
     allow(SecureRandom).to receive(:urlsafe_base64).and_return('temp1234')
-    allow(unit).to receive(:dependant_units).and_return(dependant_units)
+    allow(unit).to receive(:needed_units).and_return(needed_units)
   end
 
   after do

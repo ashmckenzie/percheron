@@ -3,7 +3,7 @@ require 'unit/spec_helper'
 describe Percheron::Unit do
   let(:extra_data) { {} }
   let(:container) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
-  let(:dependant_unit) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
+  let(:needed_unit) { double('Docker::Container', Hashie::Mash.new(docker_data)) }
   let(:docker_data) do
     {
       name: 'debian',
@@ -183,18 +183,18 @@ describe Percheron::Unit do
     end
 
     describe '#links' do
-      it 'returns an array of dependant unit names' do
-        expect(subject.links).to eql(%w(debian_jessie_dependant_debian:debian_jessie_dependant_debian))
+      it 'returns an array of needed unit names' do
+        expect(subject.links).to eql(%w(debian_jessie_needed_debian:debian_jessie_needed_debian))
       end
     end
 
-    describe '#dependant_units' do
-      it 'returns a Hash of dependant Containers' do
-        expect(subject.dependant_units).to be_a(Hash)
+    describe '#needed_units' do
+      it 'returns a Hash of needed Units' do
+        expect(subject.needed_units).to be_a(Hash)
       end
 
-      it 'units the dependant_debian Container' do
-        expect(subject.dependant_units['dependant_debian']).to be_a(Percheron::Unit)
+      it 'units the needed_debian Unit' do
+        expect(subject.needed_units['needed_debian']).to be_a(Percheron::Unit)
       end
     end
 
@@ -256,7 +256,7 @@ describe Percheron::Unit do
   context 'when the Docker Container does not exist' do
     before do
       allow(Docker::Container).to receive(:get).with('debian_jessie_debian').and_raise(Docker::Error::NotFoundError)
-      allow(Docker::Container).to receive(:get).with('debian_jessie_dependant_debian').and_raise(Docker::Error::NotFoundError)
+      allow(Docker::Container).to receive(:get).with('debian_jessie_needed_debian').and_raise(Docker::Error::NotFoundError)
       allow(subject).to receive(:exists?).and_return(false)
     end
 
@@ -344,7 +344,7 @@ describe Percheron::Unit do
 
     before do
       allow(Docker::Container).to receive(:get).with('debian_jessie_debian').and_return(container)
-      allow(Docker::Container).to receive(:get).with('debian_jessie_dependant_debian').and_return(dependant_unit)
+      allow(Docker::Container).to receive(:get).with('debian_jessie_needed_debian').and_return(needed_unit)
       allow(subject).to receive(:exists?).and_return(true)
     end
 

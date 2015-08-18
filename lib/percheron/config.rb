@@ -104,9 +104,9 @@ module Percheron
       end
 
       def replace_scanned(all, config, scanned)
-        match = config.fetch(:dependant_unit_names, [])
+        match = config.fetch(:needed_unit_names, [])
         unless (match & scanned.keys).empty?
-          config.dependant_unit_names = match.map { |v| scanned[v] }.flatten
+          config.needed_unit_names = match.map { |v| scanned[v] }.flatten
         end
         all[config.name] = config
       end

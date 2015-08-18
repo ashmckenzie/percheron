@@ -10,13 +10,13 @@ stacks:
       - name: app1
         version: 9.9.9
         dockerfile: ./Dockerfile.app1
-        dependant_unit_names:
+        needed_unit_names:
           - base
 
       - name: app2
         version: 9.9.9
         dockerfile: ./Dockerfile.app1
-        dependant_unit_names:
+        needed_unit_names:
           - base
         post_start_scripts:
           - ./post_start.sh

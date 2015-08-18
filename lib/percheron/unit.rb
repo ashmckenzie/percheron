@@ -6,7 +6,7 @@ module Percheron
 
     def_delegators :unit_config, :name, :pseudo_name, :docker_image
     def_config_item_with_default :unit_config, [], :env, :ports, :volumes,
-                                 :dependant_unit_names, :pre_build_scripts,
+                                 :needed_unit_names, :pre_build_scripts,
                                  :post_start_scripts, :start_args, :dns
     def_config_item_with_default :unit_config, true, :startable
 
@@ -18,14 +18,14 @@ module Percheron
       self
     end
 
-    def dependant_units
-      dependant_unit_names.each_with_object({}) do |unit_name, all|
+    def needed_units
+      needed_unit_names.each_with_object({}) do |unit_name, all|
         all[unit_name] = stack.units[unit_name]
       end
     end
 
-    def startable_dependant_units
-      dependant_units.select { |_, unit| unit.startable? }
+    def startable_needed_units
+      needed_units.select { |_, unit| unit.startable? }
     end
 
     def metastore_key
@@ -107,7 +107,7 @@ module Percheron
     end
 
     def links
-      startable_dependant_units.map do |_, unit|
+      startable_needed_units.map do |_, unit|
         '%s:%s' % [ unit.full_name, unit.full_name ]
       end
     end

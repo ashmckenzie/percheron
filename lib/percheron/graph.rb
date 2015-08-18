@@ -96,8 +96,8 @@ module Percheron
 
       def add_links
         units.each do |name, unit|
-          unit.dependant_units.each do |dependant_name, dependant_unit|
-            graph.add_edges(nodes[name], nodes[dependant_name], node_link_opts(dependant_unit))
+          unit.needed_units.each do |needed_name, needed_unit|
+            graph.add_edges(nodes[name], nodes[needed_name], node_link_opts(needed_unit))
           end
         end
       end

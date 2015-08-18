@@ -14,5 +14,5 @@ stacks:
           - '9999:9999'
         volumes:
           - '/outside/container/path:/inside/container/path'
-        dependant_unit_names:
-          - dependant_debian
+        needed_unit_names:
+          - needed_debian

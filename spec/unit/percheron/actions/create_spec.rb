@@ -72,7 +72,7 @@ describe Percheron::Actions::Create do
 
       context 'for a buildable Docker unit' do
         let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
-        let(:dependant_units) { unit.dependant_units }
+        let(:needed_units) { unit.needed_units }
         let(:create_options) do
           {
             'name' => 'debian_jessie_debian',
@@ -88,7 +88,7 @@ describe Percheron::Actions::Create do
               'PortBindings' => {
                 '9999' => [ { 'HostPort' => '9999' } ]
               },
-              'Links' => [ 'debian_jessie_dependant_debian:debian_jessie_dependant_debian' ],
+              'Links' => [ 'debian_jessie_needed_debian:debian_jessie_needed_debian' ],
               'Binds' => [ '/outside/container/path:/inside/container/path' ],
               'RestartPolicy' => { 'Name' => 'always', 'MaximumRetryCount' => 0 },
               'Privileged' => false
@@ -153,7 +153,7 @@ describe Percheron::Actions::Create do
             'Labels' => { version: '1.0.0', created_by: /Percheron \d+\.\d+\.\d+/ },
             'HostConfig' => {
               'PortBindings' => { '9999' => [ { 'HostPort' => '9999' } ] },
-              'Links' => [ 'debian_jessie_dependant_debian:debian_jessie_dependant_debian' ],
+              'Links' => [ 'debian_jessie_needed_debian:debian_jessie_needed_debian' ],
               'Binds' => [ '/outside/container/path:/inside/container/path' ],
               'RestartPolicy' => { 'Name' => 'always', 'MaximumRetryCount' => 0 },
               'Privileged' => false
