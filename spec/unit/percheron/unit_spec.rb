@@ -35,7 +35,7 @@ describe Percheron::Unit do
     $logger = $metastore = nil
   end
 
-  context 'when the Docker Container does / does not exist' do
+  context 'when the Docker Unit does / does not exist' do
     describe '#hostname' do
       context 'when hostname is not explicitly defined' do
         it 'is valid' do
@@ -253,7 +253,7 @@ describe Percheron::Unit do
     end
   end
 
-  context 'when the Docker Container does not exist' do
+  context 'when the Docker Unit does not exist' do
     before do
       allow(Docker::Container).to receive(:get).with('debian_jessie_debian').and_raise(Docker::Error::NotFoundError)
       allow(Docker::Container).to receive(:get).with('debian_jessie_needed_debian').and_raise(Docker::Error::NotFoundError)
@@ -339,7 +339,7 @@ describe Percheron::Unit do
     end
   end
 
-  context 'when the Docker Container exists' do
+  context 'when the Docker Unit exists' do
     let(:extra_data) { { 'NetworkSettings' => { 'IPAddress' => '1.1.1.1' }, 'Config' => { 'Labels' => { 'version' => '1.0.0' } } } }
 
     before do
@@ -448,14 +448,14 @@ describe Percheron::Unit do
       expect(Docker::Container).to receive(:get).with('debian_jessie_debian').and_return(container)
     end
 
-    context 'when the Container does not exist' do
+    context 'when the Unit does not exist' do
       it 'returns false' do
         expect(container).to receive(:info).and_return({})
         expect(subject.exists?).to be(false)
       end
     end
 
-    context 'when the Container does exist' do
+    context 'when the Unit does exist' do
       it 'returns true' do
         expect(container).to receive(:info).and_return(not: 'empty')
         expect(subject.exists?).to be(true)

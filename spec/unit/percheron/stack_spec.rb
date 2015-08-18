@@ -120,7 +120,7 @@ describe Percheron::Stack do
   end
 
   describe '#unit_configs' do
-    it 'returns a Hash of Container objects' do
+    it 'returns a Hash of Unit objects' do
       expect(subject.unit_configs).to be_a(Hash)
     end
 
@@ -131,7 +131,7 @@ describe Percheron::Stack do
   end
 
   describe '#units' do
-    it 'returns a Hash of Containers' do
+    it 'returns a Hash of Units' do
       expect(subject.units).to be_a(Hash)
     end
 
@@ -176,7 +176,7 @@ describe Percheron::Stack do
       let(:klass) { Percheron::Actions::Shell }
       let(:action_double) { double('Percheron::Actions::Shell') }
 
-      it 'executes a shell on a given Container' do
+      it 'executes a shell on a given Unit' do
         expect(klass).to receive(:new).with(unit, raw_command: '/bin/sh').and_return(action_double)
         expect(action_double).to receive(:execute!)
         subject.shell!('debian')
@@ -187,7 +187,7 @@ describe Percheron::Stack do
       let(:klass) { Percheron::Actions::Logs }
       let(:action_double) { double('Percheron::Actions::Logs') }
 
-      it 'displays the logs for a given Container' do
+      it 'displays the logs for a given Unit' do
         expect(klass).to receive(:new).with(unit, follow: false).and_return(action_double)
         expect(action_double).to receive(:execute!)
         subject.logs!('debian')
@@ -198,7 +198,7 @@ describe Percheron::Stack do
       let(:klass) { Percheron::Actions::Stop }
       let(:action_double) { double('Percheron::Actions::Stop') }
 
-      it 'asks each Container to stop' do
+      it 'asks each Unit to stop' do
         expect(klass).to receive(:new).with(unit).and_return(action_double)
         expect(klass).to receive(:new).with(external_unit).and_return(action_double)
         expect(klass).to receive(:new).with(needed_unit).and_return(action_double)
@@ -213,7 +213,7 @@ describe Percheron::Stack do
       let(:klass) { Percheron::Actions::Start }
       let(:action_double) { double('Percheron::Actions::Start') }
 
-      it 'asks each Container to start' do
+      it 'asks each Unit to start' do
         expect(klass).to receive(:new).with(pseudo2_unit, needed_units: []).and_return(action_double)
         expect(klass).to receive(:new).with(pseudo1_unit, needed_units: []).and_return(action_double)
         expect(klass).to receive(:new).with(needed_unit, needed_units: []).and_return(action_double)
@@ -228,7 +228,7 @@ describe Percheron::Stack do
       let(:klass) { Percheron::Actions::Restart }
       let(:action_double) { double('Percheron::Actions::Restart') }
 
-      it 'asks each Container to restart' do
+      it 'asks each Unit to restart' do
         expect(klass).to receive(:new).with(pseudo2_unit).and_return(action_double)
         expect(klass).to receive(:new).with(pseudo1_unit).and_return(action_double)
         expect(klass).to receive(:new).with(needed_unit).and_return(action_double)
@@ -243,7 +243,7 @@ describe Percheron::Stack do
       let(:klass) { Percheron::Actions::Build }
       let(:action_double) { double('Percheron::Actions::Build') }
 
-      it 'asks each Container to build' do
+      it 'asks each Unit to build' do
         expect(klass).to receive(:new).with(pseudo2_unit, usecache: true, forcerm: false).and_return(action_double)
         expect(klass).to receive(:new).with(pseudo1_unit, usecache: true, forcerm: false).and_return(action_double)
         expect(klass).to receive(:new).with(needed_unit, usecache: true, forcerm: false).and_return(action_double)
@@ -258,7 +258,7 @@ describe Percheron::Stack do
       let(:klass) { Percheron::Actions::Create }
       let(:action_double) { double('Percheron::Actions::Create') }
 
-      it 'asks each Container to create' do
+      it 'asks each Unit to create' do
         expected_opts = { build: true, start: false, force: false }
         expect(klass).to receive(:new).with(pseudo2_unit, expected_opts).and_return(action_double)
         expect(klass).to receive(:new).with(pseudo1_unit, expected_opts).and_return(action_double)
@@ -274,7 +274,7 @@ describe Percheron::Stack do
       let(:klass) { Percheron::Actions::Purge }
       let(:action_double) { double('Percheron::Actions::Purge') }
 
-      it 'asks each Container to purge' do
+      it 'asks each Unit to purge' do
         expect(klass).to receive(:new).with(pseudo2_unit, force: false).and_return(action_double)
         expect(klass).to receive(:new).with(pseudo1_unit, force: false).and_return(action_double)
         expect(klass).to receive(:new).with(needed_unit, force: false).and_return(action_double)

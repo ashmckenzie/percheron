@@ -26,7 +26,7 @@ describe Percheron::Actions::Create do
       expect(unit).to receive(:exists?).and_return(unit_exists)
     end
 
-    context 'when a Docker Container does not exist' do
+    context 'when a Docker Unit does not exist' do
       let(:unit_exists) { false }
       let(:image_double) { double('Docker::Image') }
       let(:new_image_double) { double('Docker::Image') }
@@ -107,7 +107,7 @@ describe Percheron::Actions::Create do
           subject.execute!
         end
 
-        context 'and the Container should start' do
+        context 'and the Unit should start' do
           let(:new_opts) { { start: true } }
           let(:start_double) { double('Percheron::Actions::Start') }
 

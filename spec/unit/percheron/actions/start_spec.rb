@@ -64,7 +64,7 @@ describe Percheron::Actions::Start do
       let(:unit_exists) { true }
       let(:unit_running) { true }
 
-      it 'does not try to start the Container' do
+      it 'does not try to start the Unit' do
         expect(container).to_not receive(:start!)
         subject.execute!
       end
