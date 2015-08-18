@@ -30,7 +30,7 @@ module Percheron
     end
 
     def units(unit_names = [])
-      unit_names = !unit_names.empty? ? unit_names : filter_unit_names
+      unit_names = unit_names.empty? ? stack_units.keys : unit_names
       unit_names.each_with_object({}) do |unit_name, all|
         all[unit_name] = unit_from_name(unit_name)
       end
@@ -107,6 +107,10 @@ module Percheron
 
       def stack_config
         @stack_config ||= (config.stacks[stack_name] || Hashie::Mash.new({}))
+      end
+
+      def stack_units
+        @stack_units ||= stack_config.fetch('units', {})
       end
 
       def filter_unit_names(unit_names = [])
