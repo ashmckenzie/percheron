@@ -268,6 +268,17 @@ describe Percheron::Stack do
         expect(action_double).to receive(:execute!).exactly(5).times
         subject.create!
       end
+
+      it "asks each Unit and it's needed units to create" do
+        expected_opts = { build: true, start: false, force: false }
+        expect(klass).to receive(:new).with(pseudo2_unit, expected_opts).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit, expected_opts).and_return(action_double)
+        expect(klass).to receive(:new).with(needed_unit, expected_opts).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit, expected_opts).and_return(action_double)
+        expect(klass).to receive(:new).with(unit, expected_opts).and_return(action_double)
+        expect(action_double).to receive(:execute!).exactly(5).times
+        subject.create!(deep: true)
+      end
     end
 
     describe '#purge!' do
