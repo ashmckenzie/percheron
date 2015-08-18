@@ -94,7 +94,7 @@ module Percheron
           return nil if unit.image_exists?
           $logger.info "Pulling '#{unit.image_name}' image"
           Connection.perform(Docker::Image, :create, fromImage: unit.image_name) do |out|
-            $logger.debug JSON.parse(out)
+            $logger.info JSON.parse(out)
           end
         end
 

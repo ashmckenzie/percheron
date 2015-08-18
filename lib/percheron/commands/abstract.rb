@@ -19,11 +19,13 @@ module Percheron
 
       def execute
         stack.valid?
-      rescue Percheron::Errors::StackInvalid => e
+      rescue Errno::ENOENT, Errors::ConfigFileInvalid, Errors::StackInvalid => e
         signal_usage_error(e.message)
+        exit(1)
       rescue => e
         puts "%s\n\n%s\n\n" % [ e.inspect, e.backtrace.join("\n") ]
         signal_usage_error(e.message)
+        exit(1)
       end
 
       def stack
@@ -37,9 +39,6 @@ module Percheron
             Percheron::Connection.load!(c)
           end
         end
-      rescue Errors::ConfigFileInvalid => e
-        $logger.error e.inspect
-        exit(1)
       end
     end
   end

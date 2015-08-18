@@ -68,7 +68,7 @@ module Percheron
             execute_pre_build_scripts!
             $logger.info "Building '#{unit.image_name}' image"
             Connection.perform(Docker::Image, :build_from_dir, base_dir, options) do |out|
-              $logger.debug '%s' % [ out.strip ]
+              $logger.info '%s' % [ out.strip ]
             end
           end
         ensure
