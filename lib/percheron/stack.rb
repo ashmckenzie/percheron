@@ -114,11 +114,12 @@ module Percheron
       end
 
       def filter_unit_names(unit_names = [])
-        stack_config.fetch('units', {}).map do |unit_name, unit_config|
-          next if unit_names.include?(unit_name)
-          next if unit_config.pseudo_name && unit_names.include?(unit_config.pseudo_name)
-          unit_config.name
-        end.compact
+        stack_units.map do |unit_name, unit_config|
+          if unit_names.include?(unit_name) ||
+             (unit_config.pseudo_name && unit_names.include?(unit_config.pseudo_name))
+            unit_config.name
+          end
+        end.compact.uniq
       end
 
       def exec_on_needed_units_for(unit_names)
