@@ -1,8 +1,11 @@
+require 'percheron/unit/image_helper'
+
 module Percheron
   class Unit
 
     extend Forwardable
     extend ConfigDelegator
+    include Unit::ImageHelper
 
     def_delegators :unit_config, :name, :pseudo_name, :docker_image
     def_config_item_with_default :unit_config, [], :env, :ports, :volumes, :needed_unit_names,
@@ -39,10 +42,6 @@ module Percheron
       unit_config.fetch('hostname', full_name)
     end
 
-    def image_name
-      '%s:%s' % [ image_repo, image_version.to_s ] if image_repo && image_version
-    end
-
     def restart_policy
       @restart_policy ||= begin
         name = unit_config.fetch('restart_policy', 'always')
@@ -53,26 +52,6 @@ module Percheron
 
     def privileged
       unit_config.fetch('privileged', false)
-    end
-
-    def image_repo
-      if !buildable?
-        unit_config.docker_image.split(':')[0]
-      elsif pseudo?
-        pseudo_full_name
-      else
-        full_name
-      end
-    end
-
-    def image_version
-      if buildable?
-        unit_config.version
-      elsif !unit_config.docker_image.nil?
-        unit_config.docker_image.split(':')[1] || 'latest'
-      else
-        fail Errors::UnitInvalid, 'Cannot determine image version'
-      end
     end
 
     def full_name
@@ -150,10 +129,6 @@ module Percheron
       !info.empty?
     end
 
-    def image_exists?
-      image.nil? ? false : true
-    end
-
     def buildable?
       !dockerfile.nil? && unit_config.docker_image.nil?
     end
@@ -187,6 +162,5 @@ module Percheron
       def info
         Hashie::Mash.new(container.info)
       end
-
   end
 end
