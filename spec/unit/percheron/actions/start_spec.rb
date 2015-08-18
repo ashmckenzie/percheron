@@ -41,7 +41,7 @@ describe Percheron::Actions::Start do
         let(:unit_exists) { false }
 
         before do
-          expect(Percheron::Actions::Create).to receive(:new).with(unit, cmd: false, exec_scripts: true).and_return(create_double)
+          expect(Percheron::Actions::Create).to receive(:new).with(unit, cmd: false).and_return(create_double)
           allow(create_double).to receive(:execute!)
         end
 
