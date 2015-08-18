@@ -1,8 +1,10 @@
-## v0.7.17 / 2015-XX-XX
+## v0.8.0 / 2015-XX-XX
 
 * Hostname is the full `<stack_name>_<name>` by default
 * Support for defining restart policy for each unit
 * Support privileged mode
+* Tidied up (re)create, (re)build and log commands
+* Improved logging and error handling
 
 ## v0.7.16 / 2015-08-07
 
