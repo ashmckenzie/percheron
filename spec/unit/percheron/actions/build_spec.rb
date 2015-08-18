@@ -22,7 +22,7 @@ describe Percheron::Actions::Build do
   end
 
   describe '#execute!' do
-    let(:out) { 'output from Docker::Image.build_from_dir()' }
+    let(:out) { { 'stream' => 'output from Docker::Image.build_from_dir()' }.to_json }
 
     before do
       expected_opts = { 'dockerfile' => 'Dockerfile.temp1234', 't' => 'debian_jessie_debian:1.0.0', 'forcerm' => false, 'nocache' => false }
