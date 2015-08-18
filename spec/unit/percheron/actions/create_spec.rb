@@ -28,18 +28,16 @@ describe Percheron::Actions::Create do
 
     context 'when a Docker Container does not exist' do
       let(:unit_exists) { false }
-      let(:image) { double('Docker::Image') }
-      let(:new_image) { double('Docker::Image') }
+      let(:image_double) { double('Docker::Image') }
+      let(:new_image_double) { double('Docker::Image') }
 
       before do
-        expect(unit).to receive(:image_exists?).and_return(false, image_exists)
         expect(Percheron::Connection).to receive(:perform).with(Docker::Container, :create, create_options)
         expect(metastore).to receive(:set).with(metastore_key, metastore_key_md5)
       end
 
       context 'for a non-buildable Docker unit' do
         let(:unit) { Percheron::Unit.new(config, stack, 'debian_external') }
-        let(:image_exists) { false }
         let(:create_options) do
           {
             'name' => 'debian_jessie_debian_external',
@@ -60,6 +58,10 @@ describe Percheron::Actions::Create do
         end
         let(:metastore_key) { 'stacks.debian_jessie.units.debian_external.dockerfile_md5' }
         let(:metastore_key_md5) { '02ce896e512816bf86458b581255d20c' }
+
+        before do
+          expect(unit).to receive(:image_exists?).and_return(false)
+        end
 
         it 'pulls down the Docker image' do
           expect(JSON).to receive(:parse).with(fromImage: 'debian:jessie')
@@ -97,42 +99,25 @@ describe Percheron::Actions::Create do
         let(:metastore_key_md5) { '0b03152a88e90de1c5466d6484b8ce5b' }
 
         before do
-          expect(unit).to receive(:dependant_units).and_return(dependant_units)
-          expect(unit).to receive(:image).and_return(image)
           expect(Percheron::Actions::Build).to receive(:new).with(unit).and_return(build_double)
           expect(build_double).to receive(:execute!)
         end
 
-        context 'and Docker image does not exist' do
-          let(:image_exists) { false }
-
-          it 'calls Actions::Build#execute! AND creates a Docker::Container' do
-            expect(image).to receive(:insert_local).with('localPath' => %r{/spec/unit/support/post_start_script2.sh}, 'outputPath' => '/tmp/post_start_script2.sh').and_return(new_image)
-            expect(new_image).to receive(:tag).with(repo: 'debian_jessie_debian', tag: '1.0.0', force: true)
-            subject.execute!
-          end
+        it 'builds a Docker::Image and creates a Docker::Container' do
+          subject.execute!
         end
 
-        context 'and a Docker image already exists' do
-          let(:image_exists) { true }
+        context 'and the Container should start' do
+          let(:new_opts) { { start: true } }
+          let(:start_double) { double('Percheron::Actions::Start') }
 
-          it 'creates just a Docker::Container' do
-            expect(image).to receive(:insert_local).with('localPath' => %r{/spec/unit/support/post_start_script2.sh}, 'outputPath' => '/tmp/post_start_script2.sh').and_return(new_image)
-            expect(new_image).to receive(:tag).with(repo: 'debian_jessie_debian', tag: '1.0.0', force: true)
+          it 'starts up the Docker::Container' do
+            expect(unit).to receive(:image).and_return(image_double)
+            expect(image_double).to receive(:insert_local).with('localPath' => %r{/spec/unit/support/post_start_script2.sh}, 'outputPath' => '/tmp/post_start_script2.sh').and_return(new_image_double)
+            expect(new_image_double).to receive(:tag).with(repo: 'debian_jessie_debian', tag: '1.0.0', force: true)
+            expect(Percheron::Actions::Start).to receive(:new).with(unit).and_return(start_double)
+            expect(start_double).to receive(:execute!)
             subject.execute!
-          end
-
-          context 'and the Container should start' do
-            let(:new_opts) { { start: true } }
-            let(:start_double) { double('Percheron::Actions::Start') }
-
-            it 'starts up the Docker::Container' do
-              expect(image).to receive(:insert_local).with('localPath' => %r{/spec/unit/support/post_start_script2.sh}, 'outputPath' => '/tmp/post_start_script2.sh').and_return(new_image)
-              expect(new_image).to receive(:tag).with(repo: 'debian_jessie_debian', tag: '1.0.0', force: true)
-              expect(Percheron::Actions::Start).to receive(:new).with(unit).and_return(start_double)
-              expect(start_double).to receive(:execute!)
-              subject.execute!
-            end
           end
         end
       end
@@ -142,12 +127,57 @@ describe Percheron::Actions::Create do
       let(:unit_exists) { true }
       let(:unit) { Percheron::Unit.new(config, stack, 'debian') }
 
-      before do
-        expect(unit).to receive(:image_exists?).and_return(true)
+      context 'with no force' do
+        it 'warns the unit already exists' do
+          expect($logger).to receive(:warn).with(/Unit 'debian_jessie:debian' already exists/)
+          subject.execute!
+        end
       end
 
-      it 'creates a Docker::Container' do
-        subject.execute!
+      context 'with force' do
+        let(:new_opts) { { force: true } }
+        let(:create_options) do
+          {
+            'name' => 'debian_jessie_debian',
+            'Image' => 'debian_jessie_debian:1.0.0',
+            'Hostname' => 'debian_jessie_debian',
+            'Env' => [],
+            'ExposedPorts' => { '9999' => {} },
+            'Cmd' => [],
+            'Labels' => { version: '1.0.0', created_by: /Percheron \d+\.\d+\.\d+/ },
+            'HostConfig' => {
+              'PortBindings' => { '9999' => [ { 'HostPort' => '9999' } ] },
+              'Links' => [ 'debian_jessie_dependant_debian:debian_jessie_dependant_debian' ],
+              'Binds' => [ '/outside/container/path:/inside/container/path' ],
+              'RestartPolicy' => { 'Name' => 'always', 'MaximumRetryCount' => 0 },
+              'Privileged' => false
+            }
+          }
+        end
+        let(:metastore_key) { 'stacks.debian_jessie.units.debian.dockerfile_md5' }
+        let(:metastore_key_md5) { '0b03152a88e90de1c5466d6484b8ce5b' }
+
+        let(:container_double) { double('Docker::Container') }
+
+        before do
+          expect(Percheron::Actions::Build).to receive(:new).with(unit).and_return(build_double)
+          expect(build_double).to receive(:execute!)
+          expect(unit).to receive(:container).and_return(container_double)
+        end
+
+        it 'creates a Docker::Container' do
+          expect(container_double).to receive(:remove).with(force: true)
+          expect(Percheron::Connection).to receive(:perform).with(Docker::Container, :create, create_options)
+          expect(metastore).to receive(:set).with(metastore_key, metastore_key_md5)
+          subject.execute!
+        end
+
+        context 'but the Docker::Container cannot be deleted' do
+          it 'cannot create a Docker::Container' do
+            expect(container_double).to receive(:remove).and_raise(Docker::Error::ConflictError)
+            subject.execute!
+          end
+        end
       end
     end
   end

@@ -9,23 +9,25 @@ module Percheron
         @start = start
         @force = force
         @cmd = (cmd || unit.start_args)
-        @unit_image_existed = unit.image_exists?
       end
 
       def execute!
         results = []
-        results << unit.buildable? ? build_image! : pull_image!
-        results << create! if unit.startable?
+        results << build_or_pull_image!
+        results << create!
         results.compact.empty? ? nil : unit
       end
 
       private
 
-        attr_reader :unit, :build, :start, :force, :cmd, :unit_image_existed
+        attr_reader :unit, :build, :start, :force, :cmd
         alias_method :build?, :build
         alias_method :start?, :start
         alias_method :force?, :force
-        alias_method :unit_image_existed?, :unit_image_existed
+
+        def create?
+          unit.startable? && (!unit.exists? || force)
+        end
 
         def base_options
           {
@@ -68,15 +70,20 @@ module Percheron
           end
         end
 
+        def build_or_pull_image!
+          unit.buildable? ? build_image! : pull_image!
+        end
+
         def create!
-          insert_scripts!
-          if force? || !unit.exists?
+          if create?
             create_unit!
             update_dockerfile_md5!
-            start! if start?
+            start_and_insert_scripts! if start?
           else
-            $logger.debug "Unit '#{unit.display_name}' already exists (--force to overwrite)"
+            $logger.warn("Unit '#{unit.display_name}' already exists (--force to overwrite)")
           end
+        rescue Errors::DockerContainerCannotDelete => e
+          $logger.error "Unable to delete '%s' unit - %s" % [ unit.name, e.inspect ]
         end
 
         def build_image!
@@ -95,7 +102,7 @@ module Percheron
           $logger.info "Deleting '#{unit.display_name}' unit"
           unit.container.remove(force: force?)
         rescue Docker::Error::ConflictError => e
-          $logger.error "Unable to delete '%s' unit - %s" % [ unit.name, e.inspect ]
+          raise(Errors::DockerContainerCannotDelete.new, e)
         end
 
         def create_unit!
@@ -104,16 +111,16 @@ module Percheron
           Connection.perform(Docker::Container, :create, options)
         end
 
-        def start!
+        def start_and_insert_scripts!
           Start.new(unit).execute!
+          insert_post_start_scripts!
         end
 
         def update_dockerfile_md5!
           unit.update_dockerfile_md5!
         end
 
-        def insert_scripts!
-          return nil if unit_image_existed?
+        def insert_post_start_scripts!
           unit.post_start_scripts.each { |file| insert_file!(file) }
         end
 

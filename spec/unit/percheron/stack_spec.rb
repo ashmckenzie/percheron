@@ -177,7 +177,7 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Shell') }
 
       it 'executes a shell on a given Container' do
-        expect(klass).to receive(:new).with(unit, command: '/bin/sh').and_return(action_double)
+        expect(klass).to receive(:new).with(unit, raw_command: '/bin/sh').and_return(action_double)
         expect(action_double).to receive(:execute!)
         subject.shell!('debian')
       end
@@ -259,11 +259,12 @@ describe Percheron::Stack do
       let(:action_double) { double('Percheron::Actions::Create') }
 
       it 'asks each Container to create' do
-        expect(klass).to receive(:new).with(pseudo2_unit, start: false).and_return(action_double)
-        expect(klass).to receive(:new).with(pseudo1_unit, start: false).and_return(action_double)
-        expect(klass).to receive(:new).with(dependant_unit, start: false).and_return(action_double)
-        expect(klass).to receive(:new).with(external_unit, start: false).and_return(action_double)
-        expect(klass).to receive(:new).with(unit, start: false).and_return(action_double)
+        expected_opts = { build: true, start: false, force: false }
+        expect(klass).to receive(:new).with(pseudo2_unit, expected_opts).and_return(action_double)
+        expect(klass).to receive(:new).with(pseudo1_unit, expected_opts).and_return(action_double)
+        expect(klass).to receive(:new).with(dependant_unit, expected_opts).and_return(action_double)
+        expect(klass).to receive(:new).with(external_unit, expected_opts).and_return(action_double)
+        expect(klass).to receive(:new).with(unit, expected_opts).and_return(action_double)
         expect(action_double).to receive(:execute!).exactly(5).times
         subject.create!
       end
