@@ -50,11 +50,12 @@ module Percheron
     end
 
     def stop!(unit_names: [])
+      unit_names = stack_units.keys if unit_names.empty?
       execute!(Actions::Stop, filter_unit_names(unit_names).reverse)
     end
 
-    # FIXME: bug when non-startable unit specified, all units started
     def start!(unit_names: [])
+      unit_names = stack_units.keys if unit_names.empty?
       unit_names = needed_units_for(unit_names)
       exec_on_needed_units_for(unit_names) do |unit|
         needed_units = unit.startable_needed_units.values
@@ -64,10 +65,12 @@ module Percheron
     end
 
     def restart!(unit_names: [])
+      unit_names = stack_units.keys if unit_names.empty?
       execute!(Actions::Restart, filter_unit_names(unit_names))
     end
 
     def build!(unit_names: [], usecache: true, forcerm: false)
+      unit_names = stack_units.keys if unit_names.empty?
       unit_names = needed_units_for(unit_names)
       exec_on_needed_units_for(unit_names) do |unit|
         Actions::Build.new(unit, usecache: usecache, forcerm: forcerm).execute!
@@ -87,6 +90,7 @@ module Percheron
     end
 
     def purge!(unit_names: [], force: false)
+      unit_names = stack_units.keys if unit_names.empty?
       execute!(Actions::Purge, filter_unit_names(unit_names).reverse, force: force)
     end
 
