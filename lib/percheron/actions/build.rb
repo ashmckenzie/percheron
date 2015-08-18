@@ -68,11 +68,17 @@ module Percheron
             execute_pre_build_scripts!
             $logger.info "Building '#{unit.image_name}' image"
             Connection.perform(Docker::Image, :build_from_dir, base_dir, options) do |out|
-              $logger.info '%s' % [ JSON.parse(out)['stream'].strip ]
+              $logger.info '%s' % [ extract_content(out) ]
             end
           end
         ensure
           remove_temp_dockerfile!
+        end
+
+        def extract_content(out)
+          json = JSON.parse(out)
+          return '' unless json['stream']
+          json['stream'].strip
         end
 
         def execute_pre_build_scripts!
