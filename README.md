@@ -133,7 +133,7 @@ stacks:
         instances: 2
         docker_image: gliderlabs/consul-agent:0.5
         start_args: [ "-join", "master" ]
-        needed_unit_names_unit_names:
+        needed_unit_names:
           - master
 ```
 
