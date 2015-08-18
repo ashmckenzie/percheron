@@ -81,13 +81,11 @@ Parameters:
 
 Subcommands:
     list, status                  List stacks and its units
-    console                       Start a pry console session
     start                         Start a stack
     stop                          Stop a stack
     restart                       Restart a stack
-    build                         Build images for a stack
-    create                        Build images and create units for a stack
-    recreate                      Recreate a stack
+    build, rebuild                (Re)build image(s) for a stack
+    create, recreate              (Re)build image(s) and (re)create units for a stack
     purge                         Purge a stack
     shell                         Shell into a unit
     logs                          Show logs for a unit
@@ -96,12 +94,14 @@ Subcommands:
 Options:
     -h, --help                    print help
     -c, --config_file CONFIG      Config file (default: ".percheron.yml")
-    --version                     show version
+    --version                     show versionn
 ```
 
 ## Demo (using boot2docker)
 
 1) Get boot2docker up and running
+
+Follow the directions at https://docs.docker.com/installation
 
 ```bash
 boot2docker up && eval $(boot2docker shellinit) && export BOOT2DOCKER_IP=$(boot2docker ip)
@@ -133,7 +133,7 @@ stacks:
         instances: 2
         docker_image: gliderlabs/consul-agent:0.5
         start_args: [ "-join", "master" ]
-        dependent_unit_names:
+        needed_unit_names_unit_names:
           - master
 ```
 
@@ -169,7 +169,7 @@ percheron status consul-stack
 6) Ensure consul is running
 
 ```bash
-curl http://boot2docker:8500/v1/catalog/nodes
+curl http://${BOOT2DOCKER_IP}:8500/v1/catalog/nodes
 
 [{"Node":"agent1","Address":"172.17.0.5"},{"Node":"agent2","Address":"172.17.0.6"},{"Node":"master","Address":"172.17.0.4"}]
 ```
@@ -177,7 +177,7 @@ curl http://boot2docker:8500/v1/catalog/nodes
 7) Perform some DNS lookups using consul
 
 ```bash
-dig @boot2docker -p 8600 master.node.consul agent1.node.consul agent2.node.consul +short
+dig @${BOOT2DOCKER_IP} -p 8600 master.node.consul agent1.node.consul agent2.node.consul +short
 
 172.17.0.7
 172.17.0.8
@@ -187,7 +187,7 @@ dig @boot2docker -p 8600 master.node.consul agent1.node.consul agent2.node.consu
 8) Bring up the consul UI
 
 ```bash
-open http://boot2docker:8500/ui
+open http://${BOOT2DOCKER_IP}:8500/ui
 ```
 
 9) Purge it!
