@@ -37,22 +37,18 @@ module Percheron
         end
 
         def delete_unit!
-          msg = "'%s' unit" % [ unit.image_name ]
-          failure_msg = "'%s' unit" % [ unit.name ]
-          delete!(msg, failure_msg) { unit.container.remove(opts) }
+          delete!('unit', unit.display_name) { unit.container.remove(opts) }
         end
 
         def delete_image!
-          msg = "'%s' image" % [ unit.image_name ]
-          failure_msg = "'%s' image" % [ unit.image_name ]
-          delete!(msg, failure_msg) { unit.image.remove(opts) }
+          delete!('image', unit.image_name) { unit.image.remove(opts) }
         end
 
-        def delete!(msg, failure_msg)
-          $logger.info('Deleting %s' % [ msg ])
+        def delete!(type, value)
+          $logger.info("Deleting '%s' %s" % [ value, type ])
           yield
         rescue Docker::Error::ConflictError => e
-          $logger.error('Unable to delete %s - %s' % [ failure_msg, e.inspect ])
+          $logger.error("Unable to delete '%s' %s - %s" % [ value, type, e.inspect ])
         end
     end
   end
