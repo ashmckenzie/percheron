@@ -37,7 +37,7 @@ describe Percheron::Actions::Build do
     end
 
     it 'creates a Docker::Image' do
-      expect(logger).to receive(:debug).with('output from Docker::Image.build_from_dir()')
+      expect(logger).to receive(:info).with('output from Docker::Image.build_from_dir()')
       subject.execute!
     end
   end
