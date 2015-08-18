@@ -8,7 +8,7 @@ module Percheron
 
       def execute
         super
-        stack.build!(unit_names: unit_names, usecache: usecache?, forcerm: forcerm?)
+        runit { stack.build!(unit_names: unit_names, usecache: usecache?, forcerm: forcerm?) }
       end
     end
   end

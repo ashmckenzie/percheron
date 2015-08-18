@@ -6,7 +6,7 @@ module Percheron
 
       def execute
         super
-        stack.start!(unit_names: unit_names)
+        runit { stack.start!(unit_names: unit_names) }
       end
     end
   end

@@ -11,7 +11,7 @@ module Percheron
       def execute
         super
         opts = { unit_names: unit_names, build: build?, start: start?, deep: deep?, force: force? }
-        stack.create!(opts)
+        runit { stack.create!(opts) }
       end
     end
   end

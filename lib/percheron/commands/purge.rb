@@ -8,7 +8,7 @@ module Percheron
 
       def execute
         super
-        stack.purge!(unit_names: unit_names, force: force?) if yes? || confirm?
+        runit { stack.purge!(unit_names: unit_names, force: force?) if yes? || confirm? }
       end
 
       private
