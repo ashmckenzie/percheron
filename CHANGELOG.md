@@ -1,4 +1,4 @@
-## v0.8.0 / 2015-XX-XX
+## v0.8.0 / 2015-08-19
 
 * Hostname is the full `<stack_name>_<name>` by default
 * Support for defining restart policy for each unit
