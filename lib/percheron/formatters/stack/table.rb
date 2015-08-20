@@ -30,6 +30,7 @@ module Percheron
               'IP',
               'Ports',
               'Volumes',
+              'Size',
               'Version'
             ]
           end
@@ -59,6 +60,7 @@ module Percheron
               unit.ip,
               unit.ports.join(', '),
               unit.volumes.join("\n"),
+              unit.image_size,
               version(unit)
             ]
           end

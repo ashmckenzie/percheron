@@ -28,6 +28,10 @@ module Percheron
       def image_exists?
         image.nil? ? false : true
       end
+
+      def image_size
+        image.nil? ? nil : '%s MB' % [ image.info['VirtualSize'] / 1_048_576 ]
+      end
     end
   end
 end

@@ -12,8 +12,25 @@ describe Percheron::Formatters::Stack::Table do
   end
 
   describe '#generate' do
-    it 'returns a Terminal::Table' do
-      expect(subject.generate).to be_a(Terminal::Table)
+    context 'when none of the images or units exist' do
+      it 'returns a Terminal::Table' do
+        expect(Percheron::Connection).to receive(:perform).with(Docker::Container, :get, anything).and_raise(Docker::Error::NotFoundError).exactly(11).times
+        expect(Percheron::Connection).to receive(:perform).with(Docker::Image, :get, anything).and_raise(Docker::Error::NotFoundError).exactly(3).times
+        expect(subject.generate).to be_a(Terminal::Table)
+      end
+    end
+
+    context 'when the images and units exist' do
+      let(:container_info) { { 'id' => 'abc123', 'Config' => { 'Labels' => { 'version' => '1.0.0' } }, 'NetworkSettings' => { 'IPAddress' => '1.1.1.1' }, 'State' => { 'Running' => false } } }
+      let(:container_double) { double('Docker::Container', info: container_info) }
+      let(:image_info) { { 'VirtualSize' => 123_456_789 } }
+      let(:image_double) { double('Docker::Image', info: image_info) }
+
+      it 'returns a Terminal::Table' do
+        expect(Percheron::Connection).to receive(:perform).with(Docker::Container, :get, anything).and_return(container_double).exactly(25).times
+        expect(Percheron::Connection).to receive(:perform).with(Docker::Image, :get, anything).and_return(image_double).exactly(6).times
+        expect(subject.generate).to be_a(Terminal::Table)
+      end
     end
   end
 end
