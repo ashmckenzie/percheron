@@ -1,3 +1,9 @@
+## v0.8.1 / 2015-08-21
+
+* BUGfix when creating units via Start action
+* Support needed_unit_names and dependant_unit_names
+* Added image size to the ascii table for status
+
 ## v0.8.0 / 2015-08-19
 
 * Hostname is the full `<stack_name>_<name>` by default
