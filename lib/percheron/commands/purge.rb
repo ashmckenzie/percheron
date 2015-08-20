@@ -14,7 +14,7 @@ module Percheron
       private
 
         def confirm?
-          ask('Are you sure? (y|n) ') do |q|
+          ask('Are you sure you want to purge? (y|n) ') do |q|
             q.validate = /y(es)?|n(o)?/i
           end.match(/y(es)?/i)
         end
