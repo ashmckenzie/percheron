@@ -112,8 +112,8 @@ module Percheron
         end
 
         def start_and_insert_scripts!
-          Start.new(unit).execute!
           insert_post_start_scripts!
+          Start.new(unit, create: false).execute!
         end
 
         def update_dockerfile_md5!
