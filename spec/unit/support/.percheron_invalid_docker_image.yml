@@ -12,8 +12,6 @@ stacks:
         docker_image: debian
         pre_build_scripts:
           - ./pre_build_script2.sh
-        post_start_scripts:
-          - ./post_start_script2.sh
         ports:
           - '9999:9999'
         volumes:

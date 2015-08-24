@@ -13,8 +13,6 @@ stacks:
         dockerfile: ./Dockerfile
         pre_build_scripts:
           - ./pre_build_script1.sh
-        post_start_scripts:
-          - ./post_start_script1.sh
         ports:
           - '8888:8888'
         volumes:
@@ -27,8 +25,6 @@ stacks:
         instances: 2
         pre_build_scripts:
           - ./pre_build_script2.sh
-        post_start_scripts:
-          - ./post_start_script2.sh
         ports:
           - '9999:9999'
         volumes:

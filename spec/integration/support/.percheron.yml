@@ -18,8 +18,6 @@ stacks:
         dockerfile: ./Dockerfile.app1
         needed_unit_names:
           - base
-        post_start_scripts:
-          - ./post_start.sh
         ports:
           - 12349:12349
 
