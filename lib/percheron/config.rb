@@ -52,7 +52,7 @@ module Percheron
     end
 
     def userdata
-      contents.userdata || {}
+      yaml_contents.userdata || {}
     end
 
     def self.docker
@@ -150,7 +150,7 @@ module Percheron
       end
 
       def templated_contents
-        Liquid::Template.parse(raw_contents).render('secrets' => secrets)
+        Liquid::Template.parse(raw_contents).render('secrets' => secrets, 'userdata' => userdata)
       end
 
       def parsed_contents
@@ -169,7 +169,8 @@ module Percheron
       end
 
       def env_docker_host
-        ENV['DOCKER_HOST'] || fail("Docker host not defined in '#{file}' or ENV['DOCKER_HOST']")
+        ENV['DOCKER_HOST'] || fail(Errors::DockerHostNotDefined,
+                                   "Docker host not defined in '#{file}' or ENV['DOCKER_HOST']")
       end
 
       def env_cert_path
