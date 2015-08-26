@@ -12,6 +12,10 @@ module Percheron
       self
     end
 
+    def self.all(config)
+      get(config)
+    end
+
     def self.get(config, name = nil)
       stacks = name.nil? ? config.stacks : { name => config.stacks[name] }
       stacks.each_with_object({}) do |stack_config, all|
@@ -34,11 +38,6 @@ module Percheron
       unit_names.each_with_object({}) do |unit_name, all|
         all[unit_name] = unit_from_name(unit_name)
       end
-    end
-
-    def graph!(file)
-      Graph.new(self).save!(file)
-      $logger.info "Saved '%s'" % [ file ]
     end
 
     def shell!(unit_name, raw_command: Percheron::Actions::Shell::DEFAULT_COMMAND)

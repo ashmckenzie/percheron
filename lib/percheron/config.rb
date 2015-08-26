@@ -63,6 +63,14 @@ module Percheron
       contents.docker
     end
 
+    def self.project
+      instance.project
+    end
+
+    def project
+      contents.project || {}
+    end
+
     private
 
       def file

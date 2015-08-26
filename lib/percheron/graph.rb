@@ -3,9 +3,13 @@ require 'graphviz'
 module Percheron
   class Graph
 
-    def initialize(stack)
-      @stack = stack
+    def initialize(config, stacks, stack_name)
+      @config = config
+      @stacks = stacks
+      @stack_name = stack_name
+
       @nodes = {}
+      @all_nodes ={}
       @graphs = {}
     end
 
@@ -16,8 +20,8 @@ module Percheron
 
     private
 
-      attr_reader :stack
-      attr_accessor :nodes, :graphs
+      attr_reader :config, :stacks, :stack_name
+      attr_accessor :nodes, :all_nodes, :graphs
 
       def generate
         add_nodes
@@ -32,6 +36,10 @@ module Percheron
         @graph ||= GraphViz.new(:G, graph_opts)
       end
 
+      def stack
+        @stack ||= stacks[stack_name]
+      end
+
       def graph_opts
         { type: :digraph, nodesep: 0.75, ranksep: 1.0, label: header_label }
       end
@@ -44,30 +52,59 @@ module Percheron
             </td></tr>
             <tr><td height="18"><font face="Arial Italic" point-size="11">%s</font></td></tr>
           </table>
-          >' % [ stack.name, stack_description ]
+          >' % [ graph_name, graph_description ]
       end
 
-      def stack_description
-        stack.description || ' '
+      def graph_name
+        return stack_name if stack_name
+        config.project.name || ' '
       end
 
-      def units
-        @units ||= stack.units
+      def graph_description
+        return stack.description if stack && stack.description
+        config.project.description || ' '
       end
 
-      def add_nodes
-        units.each do |_, unit|
-          unit.pseudo? ? add_pseudo_node(unit) : add_node(unit)
+      def stacks_and_units
+        @stacks_and_units ||= begin
+          stacks.each_with_object({}) do |stack_tuple, all|
+            stack_name, stack = stack_tuple
+            all[stack_name] = stack.units
+          end
         end
       end
 
-      def add_node(unit)
-        nodes[unit.name] = graph.add_nodes(unit.name, node_opts(unit))
+      def stack_units_for(stack_name)
+        if stack_name
+          { stack_name => stacks_and_units[stack_name] }
+        else
+          stacks_and_units
+        end
       end
 
-      def add_pseudo_node(unit)
+      def add_nodes
+        stack_units_for(stack_name).each do |stack_name, units|
+          units.each do |unit_name, unit|
+            key = '%s:%s' % [ stack_name, unit_name ]
+            $logger.debug "Adding #{key}"
+            nodes[key] = unit.pseudo? ? pseudo_node_from(unit) : node_from(unit)
+
+            unit.needed_units(stacks).each do |un, u|
+              next if nodes[un]
+              $logger.debug "Adding dep #{un}"
+              nodes[un] = unit.pseudo? ? pseudo_node_from(u) : node_from(u)
+            end
+          end
+        end
+      end
+
+      def node_from(unit)
+        graph.add_nodes(unit.name, node_opts(unit))
+      end
+
+      def pseudo_node_from(unit)
         create_cluster(unit)
-        nodes[unit.name] = graphs[unit.pseudo_name].add_nodes(unit.name, pseudo_node_opts(unit))
+        graphs[unit.pseudo_name].add_nodes(unit.name, pseudo_node_opts(unit))
       end
 
       def create_cluster(unit)
@@ -95,9 +132,13 @@ module Percheron
       end
 
       def add_links
-        units.each do |name, unit|
-          unit.needed_units.each do |needed_name, needed_unit|
-            graph.add_edges(nodes[name], nodes[needed_name], node_link_opts(needed_unit))
+        stack_units_for(stack_name).each do |stack_name, units|
+          units.each do |unit_name, unit|
+            unit.needed_units(stacks).each do |needed_name, needed_unit|
+              name = '%s:%s' % [ stack_name, unit_name ]
+              $logger.debug "Adding link for #{name} to #{needed_name}"
+              graph.add_edges(nodes[name], nodes[needed_name], node_link_opts(needed_unit))
+            end
           end
         end
       end

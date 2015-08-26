@@ -2,17 +2,18 @@ module Percheron
   module Commands
     class Graph < Abstract
 
-      parameter('STACK_NAME', 'stack name', required: true)
-      option([ '-o', '--output' ], 'OUTPUT', 'Output file')
+      parameter('STACK_NAME', 'stack name', required: false)
 
       def execute
         super
-        stack.graph!(output || default_output)
+         Percheron::Graph.new(config, Stack.all(config), stack_name).save!(file_name)
       end
 
-      def default_output
-        'percheron_%s.png' % stack.name
-      end
+      private
+
+        def file_name
+          'percheron_%s.png' % [ stack.name || 'all' ]
+        end
     end
   end
 end
