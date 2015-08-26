@@ -38,7 +38,7 @@ module Percheron
           unit_name = match[:two]
         end
 
-        key = "%s:%s" % [ stack_name, unit_name ]
+        key = '%s:%s' % [ stack_name, unit_name ]
         all[key] = stacks[stack_name].units[unit_name]
       end
     end

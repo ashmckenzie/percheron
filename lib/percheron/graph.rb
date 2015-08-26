@@ -88,7 +88,6 @@ module Percheron
             key = '%s:%s' % [ stack_name, unit_name ]
             $logger.debug "Adding #{key}"
             nodes[key] = unit.pseudo? ? pseudo_node_from(unit) : node_from(unit)
-
             unit.needed_units(stacks).each do |un, u|
               next if nodes[un]
               $logger.debug "Adding dep #{un}"
@@ -99,12 +98,12 @@ module Percheron
       end
 
       def node_from(unit)
-        graph.add_nodes(unit.name, node_opts(unit))
+        graph.add_nodes(unit.full_name, node_opts(unit))
       end
 
       def pseudo_node_from(unit)
         create_cluster(unit)
-        graphs[unit.pseudo_name].add_nodes(unit.name, pseudo_node_opts(unit))
+        graphs[unit.pseudo_name].add_nodes(unit.full_name, pseudo_node_opts(unit))
       end
 
       def create_cluster(unit)
@@ -114,13 +113,15 @@ module Percheron
       end
 
       def cluster_opts(unit)
-        label = '<<font face="Arial Bold">%s</font>>' % unit.pseudo_name
-        { label: label, style: 'filled', color: 'lightgrey', fontsize: 13 }
+        {
+          label: '<<font face="Arial Bold">%s</font>>' % [ unit.pseudo_name ],
+          style: 'filled', color: 'lightgrey', fontsize: 13
+        }
       end
 
       def node_opts(unit)
         shape = unit.startable? ? 'box' : 'ellipse'
-        label = [ '<font face="Arial Bold" point-size="12">%s</font><br/>' % unit.name ]
+        label = [ '<font face="Arial Bold" point-size="12">%s</font><br/>' % unit.display_name ]
         unit.ports.each do |ports|
           label << '<font point-size="11">p: %s, i: %s</font>' % ports.split(':')
         end
