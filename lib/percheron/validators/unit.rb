@@ -28,6 +28,7 @@ module Percheron
             :validate_name,
             :validate_dockerfile_and_image_name,
             :validate_dockerfile,
+            :validate_docker_image_and_start_args,
             :validate_image,
             :validate_version
           ]
@@ -50,6 +51,10 @@ module Percheron
           if !unit.dockerfile.nil? && !File.exist?(unit.dockerfile)
             'Dockerfile is invalid'
           end
+        end
+
+        def validate_docker_image_and_start_args
+          # raise('FIXME')
         end
 
         def validate_image

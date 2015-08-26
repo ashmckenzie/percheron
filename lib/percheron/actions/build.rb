@@ -45,7 +45,7 @@ module Percheron
 
         def temp_dockerfile_name
           @temp_dockerfile_name ||= begin
-            '%s/%s.%s' % [
+            '%s/%s.generated.%s' % [
               unit.dockerfile.expand_path.dirname.to_s,
               unit.dockerfile.basename.to_s,
               SecureRandom.urlsafe_base64
@@ -73,12 +73,6 @@ module Percheron
           end
         ensure
           remove_temp_dockerfile!
-        end
-
-        def extract_content(out)
-          json = JSON.parse(out)
-          return '' unless json['stream']
-          json['stream'].strip
         end
 
         def execute_pre_build_scripts!

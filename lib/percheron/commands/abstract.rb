@@ -28,13 +28,12 @@ module Percheron
 
       def execute
         stack.valid?
-      rescue Errno::ENOENT, Errors::ConfigFileInvalid, Errors::StackInvalid => e
-        signal_usage_error(e.message)
-        exit(1)
+      rescue Errno::ENOENT, Errors::ConfigFileInvalid, Errors::DockerHostNotDefined,
+             Errors::StackInvalid => e
+        error!(e)
       rescue => e
         puts "%s\n\n%s\n\n" % [ e.inspect, e.backtrace.join("\n") ]
-        signal_usage_error(e.message)
-        exit(1)
+        error!(e)
       end
 
       def stack
@@ -48,6 +47,13 @@ module Percheron
             Percheron::Connection.load!(c)
           end
         end
+      rescue Errors::DockerHostNotDefined => e
+        error!(e)
+      end
+
+      def error!(e, exit_code: 1)
+        signal_usage_error(e.message)
+        exit(exit_code)
       end
     end
   end

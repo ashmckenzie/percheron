@@ -14,7 +14,7 @@ module Percheron
       def execute!
         results = []
         results << build_or_pull_image!
-        results << create!
+        results << create_check
         results.compact.empty? ? nil : unit
       end
 
@@ -74,16 +74,21 @@ module Percheron
           unit.buildable? ? build_image! : pull_image!
         end
 
-        def create!
+        def create_check
+          return unless unit.startable?
           if create?
-            create_unit!
-            update_dockerfile_md5!
-            start_and_insert_scripts! if start?
+            create!
           else
             $logger.warn("Unit '#{unit.display_name}' already exists (--force to overwrite)")
           end
         rescue Errors::DockerContainerCannotDelete => e
           $logger.error "Unable to delete '%s' unit - %s" % [ unit.name, e.inspect ]
+        end
+
+        def create!
+          create_unit!
+          update_dockerfile_md5!
+          start! if start?
         end
 
         def build_image!
@@ -99,6 +104,7 @@ module Percheron
         end
 
         def delete_unit!
+          return nil unless unit.exists?
           $logger.info "Deleting '#{unit.display_name}' unit"
           unit.container.remove(force: force?)
         rescue Docker::Error::ConflictError => e
@@ -111,24 +117,12 @@ module Percheron
           Connection.perform(Docker::Container, :create, options)
         end
 
-        def start_and_insert_scripts!
-          insert_post_start_scripts!
+        def start!
           Start.new(unit, create: false).execute!
         end
 
         def update_dockerfile_md5!
           unit.update_dockerfile_md5!
-        end
-
-        def insert_post_start_scripts!
-          unit.post_start_scripts.each { |file| insert_file!(file) }
-        end
-
-        def insert_file!(file)
-          file = Pathname.new(File.expand_path(file, base_dir))
-          opts = { 'localPath' => file.to_s, 'outputPath' => "/tmp/#{file.basename}" }
-          new_image = unit.image.insert_local(opts)
-          new_image.tag(repo: unit.image_repo, tag: unit.version.to_s, force: true)
         end
     end
   end

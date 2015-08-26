@@ -42,11 +42,21 @@ module Percheron
     end
 
     def shell!(unit_name, raw_command: Percheron::Actions::Shell::DEFAULT_COMMAND)
-      Actions::Shell.new(unit_from_name(unit_name), raw_command: raw_command).execute!
+      unit = unit_from_name(unit_name)
+      if unit.running?
+        Actions::Shell.new(unit_from_name(unit_name), raw_command: raw_command).execute!
+      else
+        $logger.warn "'%s' unit does not exist or is not running" % [ unit.display_name ]
+      end
     end
 
     def logs!(unit_name, follow: false)
-      Actions::Logs.new(unit_from_name(unit_name), follow: follow).execute!
+      unit = unit_from_name(unit_name)
+      if unit.exists?
+        Actions::Logs.new(unit, follow: follow).execute!
+      else
+        $logger.warn "'%s' unit does not exist" % [ unit.display_name ]
+      end
     end
 
     def stop!(unit_names: [])

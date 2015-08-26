@@ -5,6 +5,7 @@ module Percheron
       parameter('STACK_NAME', 'stack name', required: false)
 
       def execute
+        super
         Stack.get(config, stack_name).each do |_, stack|
           begin
             stack.valid?

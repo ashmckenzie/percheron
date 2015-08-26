@@ -12,6 +12,12 @@ module Percheron
       ensure
         Dir.chdir(old_dir)
       end
+
+      def extract_content(out)
+        json = JSON.parse(out)
+        return '' unless json['stream']
+        json['stream'].strip
+      end
     end
   end
 end

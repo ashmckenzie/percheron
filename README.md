@@ -30,12 +30,12 @@ It is intended to be used in a test, development or prototyping scenario.
 * Build, create and start units and their dependencies
 * Build units using a Dockerfile or by pulling Docker images from Docker Hub
 * Build 'bare/base' images and build new images on top of them
-* Support for pre-build and post-start scripts when generating images and starting units
+* Support for pre-build scripts when generating images and starting units
 * Version control of images and units
 * Partial template (liquid) support within `.percheron.yml`
 * Generate Graphviz dependency graphs dynamically based purely on your `.percheron.yml`
 * Support for userdata key/value pairs
-* Support for secrets in YML format
+* Support for secrets in separate YML file
 * Written in Ruby :)
 
 ## Supported platforms

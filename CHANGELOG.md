@@ -1,3 +1,7 @@
+## v0.8.2 / 2015-08-??
+
+* BUGfix when calling recreate --force when no images / units exist
+
 ## v0.8.1 / 2015-08-21
 
 * BUGfix when creating units via Start action

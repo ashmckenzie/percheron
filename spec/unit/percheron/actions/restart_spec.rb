@@ -23,7 +23,7 @@ describe Percheron::Actions::Restart do
       expect(Percheron::Actions::Stop).to receive(:new).with(unit).and_return(stop_action)
       expect(stop_action).to receive(:execute!)
 
-      expect(Percheron::Actions::Start).to receive(:new).with(unit, needed_units: needed_units).and_return(start_action)
+      expect(Percheron::Actions::Start).to receive(:new).with(unit, needed_units: needed_units, create: false).and_return(start_action)
       expect(start_action).to receive(:execute!)
 
       subject.execute!

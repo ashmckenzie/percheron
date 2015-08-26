@@ -4,6 +4,7 @@ module Percheron
     class StackInvalid < StandardError; end
     class UnitInvalid < StandardError; end
     class UnitDoesNotExist < StandardError; end
+    class DockerHostNotDefined < StandardError; end
     class DockerClientInvalid < StandardError; end
     class DockerContainerCannotDelete < StandardError; end
   end

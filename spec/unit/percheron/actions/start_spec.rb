@@ -28,7 +28,6 @@ describe Percheron::Actions::Start do
     before do
       allow(Percheron::Connection).to receive(:perform).with(Docker::Container, :get, 'debian_jessie_debian').and_return(container)
       allow(Percheron::Connection).to receive(:perform).with(Docker::Container, :get, 'debian_jessie_needed_debian').and_return(needed_container)
-      allow(Percheron::Actions::Exec).to receive(:new).with(unit, needed_units, ['./post_start_script2.sh'], 'POST start').and_return(exec_action)
       allow(exec_action).to receive(:execute!)
     end
 

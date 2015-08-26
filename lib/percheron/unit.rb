@@ -8,8 +8,8 @@ module Percheron
     include Unit::ImageHelper
 
     def_delegators :unit_config, :name, :pseudo_name, :docker_image
-    def_config_item_with_default :unit_config, [], :env, :ports, :volumes, :pre_build_scripts,
-                                 :post_start_scripts, :start_args, :dns
+    def_config_item_with_default :unit_config, [], :env, :ports, :volumes, :pre_build_scripts, :dns,
+                                 :start_args
     def_config_item_with_default :unit_config, true, :startable
 
     def initialize(config, stack, unit_name)

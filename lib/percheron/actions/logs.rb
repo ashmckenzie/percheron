@@ -30,13 +30,11 @@ module Percheron
         def display_logs!
           if follow?
             opts = options.merge(follow: true)
-            unit.container.streaming_logs(opts) do |stream, chunk|
-              puts "#{stream}: #{chunk}"
-            end
+            unit.container.streaming_logs(opts) { |_, chunk| puts chunk }
           else
             puts unit.container.logs(options)
           end
-        rescue Interrupt
+        rescue Docker::Error::TimeoutError, Interrupt
           nil
         end
     end

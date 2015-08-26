@@ -113,7 +113,6 @@ describe Percheron::Actions::Create do
 
           it 'starts up the Docker::Container' do
             expect(unit).to receive(:image).and_return(image_double)
-            expect(image_double).to receive(:insert_local).with('localPath' => %r{/spec/unit/support/post_start_script2.sh}, 'outputPath' => '/tmp/post_start_script2.sh').and_return(new_image_double)
             expect(new_image_double).to receive(:tag).with(repo: 'debian_jessie_debian', tag: '1.0.0', force: true)
             expect(Percheron::Actions::Start).to receive(:new).with(unit, create: false).and_return(start_double)
             expect(start_double).to receive(:execute!)

@@ -3,32 +3,24 @@ module Percheron
     class Start
       include Base
 
-      def initialize(unit, needed_units: [], create: true, cmd: false, exec_scripts: true)
+      def initialize(unit, needed_units: [], create: true, cmd: false)
         @unit = unit
         @needed_units = needed_units
         @create = create
         @cmd = cmd
-        @exec_scripts = exec_scripts
       end
 
       def execute!
         return nil if unit.running?
         results = [ create! ]
-        if unit.startable?
-          results << start!
-          results << execute_post_start_scripts!
-        end
+        results << start! if unit.startable?
         results.compact.empty? ? nil : unit
       end
 
       private
 
-        attr_reader :unit, :needed_units, :create, :cmd, :exec_scripts
+        attr_reader :unit, :needed_units, :create, :cmd
         alias_method :create?, :create
-
-        def exec_scripts?
-          !unit.post_start_scripts.empty? && exec_scripts
-        end
 
         def create!
           return nil unless create?
@@ -58,12 +50,6 @@ module Percheron
             end
           end
         end
-
-        def execute_post_start_scripts!
-          scripts = unit.post_start_scripts
-          Exec.new(unit, needed_units, scripts, 'POST start').execute! if exec_scripts?
-        end
-
     end
   end
 end
