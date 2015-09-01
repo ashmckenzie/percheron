@@ -25,7 +25,7 @@ module Percheron
           $logger.debug "Executing #{description} scripts '#{scripts.inspect}' locally"
           scripts.each do |script|
             in_working_directory(base_dir) do
-              execute_command!('/bin/sh -x %s 2>&1' % [ Pathname.new(File.expand_path(script)) ])
+              execute_command!('%s 2>&1' % [ Pathname.new(File.expand_path(script)) ])
             end
           end
         end
