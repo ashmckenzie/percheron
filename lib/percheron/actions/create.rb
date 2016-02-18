@@ -48,7 +48,8 @@ module Percheron
               'Links'         => unit.links,
               'Binds'         => unit.volumes,
               'RestartPolicy' => unit.restart_policy,
-              'Privileged'    => unit.privileged
+              'Privileged'    => unit.privileged,
+              'NetworkMode'   => unit.network
             }
           }
         end

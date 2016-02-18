@@ -67,6 +67,10 @@ module Percheron
       end
     end
 
+    def network
+      unit_config.fetch('network', 'bridge')
+    end
+
     def privileged
       unit_config.fetch('privileged', false)
     end
