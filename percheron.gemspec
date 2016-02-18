@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = [ 'lib' ]
 
   spec.add_runtime_dependency 'clamp', '~> 1.0.0'
-  spec.add_runtime_dependency 'docker-api', '~> 1.22.0'
+  spec.add_runtime_dependency 'docker-api', '~> 1.0'
   spec.add_runtime_dependency 'hashie', '~> 3.4.0'
   spec.add_runtime_dependency 'highline', '~> 1.7.1'
   spec.add_runtime_dependency 'liquid', '~> 3.0.0'
