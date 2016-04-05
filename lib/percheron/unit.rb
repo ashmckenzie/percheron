@@ -2,7 +2,6 @@ require 'percheron/unit/image_helper'
 
 module Percheron
   class Unit
-
     extend Forwardable
     extend ConfigDelegator
     include Unit::ImageHelper

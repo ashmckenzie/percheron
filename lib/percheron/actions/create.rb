@@ -21,6 +21,7 @@ module Percheron
       private
 
         attr_reader :unit, :build, :start, :force, :cmd
+
         alias_method :build?, :build
         alias_method :start?, :start
         alias_method :force?, :force

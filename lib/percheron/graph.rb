@@ -2,14 +2,13 @@ require 'graphviz'
 
 module Percheron
   class Graph
-
     def initialize(config, stacks, stack_name)
       @config = config
       @stacks = stacks
       @stack_name = stack_name
 
       @nodes = {}
-      @all_nodes ={}
+      @all_nodes = {}
       @graphs = {}
     end
 
