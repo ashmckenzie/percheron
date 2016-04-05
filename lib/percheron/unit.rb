@@ -29,7 +29,8 @@ module Percheron
 
     # FIXME
     def needed_units(stacks=nil)
-      stacks = { stack.name => stack } unless stacks
+      stacks = Stack.all(config) unless stacks
+
       needed_unit_names.each_with_object({}) do |unit_name_tuple, all|
         match = unit_name_tuple.match(/^(?<one>[^:]+):*(?<two>[^:]*)$/)
 
