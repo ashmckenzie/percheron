@@ -3,8 +3,10 @@ require 'highline/import'
 module Percheron
   class Stack
     extend Forwardable
+    extend ConfigDelegator
 
     def_delegators :stack_config, :name, :description
+    def_config_item_with_default :stack_config, [], :env
 
     def initialize(config, stack_name)
       @config = config

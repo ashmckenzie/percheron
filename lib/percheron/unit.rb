@@ -7,7 +7,7 @@ module Percheron
     include Unit::ImageHelper
 
     def_delegators :unit_config, :name, :pseudo_name, :docker_image
-    def_config_item_with_default :unit_config, [], :env, :ports, :volumes, :pre_build_scripts, :dns,
+    def_config_item_with_default :unit_config, [], :ports, :volumes, :pre_build_scripts, :dns,
                                  :start_args
     def_config_item_with_default :unit_config, true, :startable
 
@@ -17,6 +17,10 @@ module Percheron
       @unit_name = unit_name
       @unit_config = stack.unit_configs[unit_name] || Hashie::Mash.new({}) # FIXME
       self
+    end
+
+    def env
+      stack.env + unit_config.fetch('env', [])
     end
 
     def needed_unit_names
