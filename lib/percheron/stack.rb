@@ -27,6 +27,10 @@ module Percheron
       end
     end
 
+    def network
+      stack_config.fetch('network', 'bridge')
+    end
+
     def metastore_key
       @metastore_key ||= 'stacks.%s' % [ name ]
     end
