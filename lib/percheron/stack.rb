@@ -18,8 +18,13 @@ module Percheron
       get(config)
     end
 
-    def self.get(config, name = nil)
-      stacks = name.nil? ? config.stacks : { name => config.stacks[name] }
+    def self.get(config, names = [])
+      stacks =
+        if names.empty?
+          config.stacks
+        else
+          names.each_with_object({}) { |name, all| all[name] = config.stacks[name] }
+        end
       stacks.each_with_object({}) do |stack_config, all|
         stack_name = stack_config.shift
         stack = new(config, stack_name)
@@ -42,8 +47,12 @@ module Percheron
     def units(unit_names = [])
       unit_names = unit_names.empty? ? stack_units.keys : unit_names
       unit_names.each_with_object({}) do |unit_name, all|
-        all[unit_name] = unit_from_name(unit_name)
+        all[full_unit_name_for(unit_name)] = unit_from_name(unit_name)
       end
+    end
+
+    def full_unit_name_for(unit_name)
+      '%s:%s' % [ name, unit_name ]
     end
 
     def shell!(unit_name, raw_command: Percheron::Actions::Shell::DEFAULT_COMMAND)
@@ -73,6 +82,7 @@ module Percheron
       unit_names = stack_units.keys if unit_names.empty?
       unit_names = needed_units_for(unit_names)
       exec_on_needed_units_for(unit_names) do |unit|
+        next unless unit.startable?
         needed_units = unit.startable_needed_units.values
         Actions::Start.new(unit, needed_units: needed_units).execute!
       end
@@ -136,7 +146,7 @@ module Percheron
         stack_units.map do |unit_name, unit_config|
           if unit_names.include?(unit_name) ||
              (unit_config.pseudo_name && unit_names.include?(unit_config.pseudo_name))
-            unit_config.name
+            full_unit_name_for(unit_config.name)
           end
         end.compact.uniq
       end
@@ -150,7 +160,9 @@ module Percheron
       end
 
       def exec_on_units(unit_names)
-        units(unit_names).each { |_, unit| yield(unit) }
+        units(unit_names).each do |_, unit|
+          yield(unit)
+        end
       end
 
       def needed_units_for(unit_names)
@@ -173,7 +185,16 @@ module Percheron
       end
 
       def unit_from_name(unit_name)
-        Unit.new(config, self, unit_name)
+        match = unit_name.match(/^(?<one>[^:]+):*(?<two>[^:]*)$/)
+        if match[:two].empty?
+          unit_name = match[:one]
+          stack = self
+        else
+          stack = self.class.new(config, match[:one])
+          unit_name = match[:two]
+        end
+
+        Unit.new(config, stack, unit_name)
       end
   end
 end

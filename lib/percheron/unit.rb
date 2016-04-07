@@ -24,16 +24,8 @@ module Percheron
     end
 
     def needed_unit_names
-      unit_config.fetch('needed_unit_names', unit_config.fetch('dependant_unit_names', []))
-    end
-
-    # FIXME
-    def needed_units(stacks=nil)
-      stacks = Stack.all(config) unless stacks
-
-      needed_unit_names.each_with_object({}) do |unit_name_tuple, all|
-        match = unit_name_tuple.match(/^(?<one>[^:]+):*(?<two>[^:]*)$/)
-
+      unit_config.fetch('needed_unit_names', unit_config.fetch('dependant_unit_names', [])).map do |u|
+        match = u.match(/^(?<one>[^:]+):*(?<two>[^:]*)$/)
         if match[:two].empty?
           unit_name = match[:one]
           stack_name = stack.name
@@ -41,9 +33,17 @@ module Percheron
           stack_name = match[:one]
           unit_name = match[:two]
         end
+        '%s:%s' % [ stack_name, unit_name ]
+      end
+    end
 
-        key = '%s:%s' % [ stack_name, unit_name ]
-        all[key] = stacks[stack_name].units[unit_name]
+    # FIXME
+    def needed_units(stacks=nil)
+      stacks = Stack.all(config) unless stacks
+      needed_unit_names.each_with_object({}) do |full_unit_name, all|
+        stack_name, unit_name = full_unit_name.split(':')
+        # FIXME
+        all[full_unit_name] = stacks[stack_name].units[full_unit_name]
       end
     end
 

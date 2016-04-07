@@ -1,8 +1,7 @@
 module Percheron
   module Commands
     class Start < Abstract
-
-      default_parameters!
+      new_default_parameters!
 
       def execute
         super

@@ -10,6 +10,11 @@ module Percheron
         exit(0)
       end
 
+      def self.new_default_parameters!
+        parameter('STACK_NAMES', 'stack names', default: [], required: false) { |s| s.split(/,/) }
+        parameter('UNIT_NAMES', 'unit names', default: [], required: false) { |n| n.split(/,/) }
+      end
+
       def self.default_parameters!
         parameter('STACK_NAME', 'stack name', required: true)
         parameter('UNIT_NAMES', 'unit names', default: [], required: false) do |names|
@@ -37,8 +42,7 @@ module Percheron
       end
 
       def stack
-        return NullStack.new if stack_name.nil?
-        Percheron::Stack.new(config, stack_name)
+        Percheron::Stacks.new(config, stack_names)
       end
 
       def config
