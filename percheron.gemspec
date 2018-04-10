@@ -29,7 +29,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'semantic', '~> 1.4.0'
   spec.add_runtime_dependency 'terminal-table', '~> 1.5.0'
 
-  spec.add_development_dependency 'bundler', '~> 1.10.0'
   spec.add_development_dependency 'cane', '~> 2.6.0'
   spec.add_development_dependency 'climate_control', '~> 0.0.3'
   spec.add_development_dependency 'guard-rspec', '~> 4.6.0'

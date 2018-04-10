@@ -10,3 +10,4 @@
 .ruby-version
 percheron.sublime-*
 .envrc
+*.swp
